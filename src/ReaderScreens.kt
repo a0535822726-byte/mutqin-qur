@@ -3,6 +3,7 @@ package com.mutqin.app
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -157,7 +158,7 @@ fun ReaderScreen(
       if (showBasmala) {
         item {
           Text(
-            repo.ayah(1, 1),
+            "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
             fontSize = size.sp,
             lineHeight = (size * 1.9f).sp,
             textAlign = TextAlign.Center,
