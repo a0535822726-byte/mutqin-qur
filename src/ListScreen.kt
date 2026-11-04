@@ -20,7 +20,8 @@ fun SurahListScreen(
   dark: Boolean,
   onDark: (Boolean) -> Unit,
   onOpenSurah: (Int) -> Unit,
-  onResume: (Int, Int, Int) -> Unit
+  onResume: (Int, Int, Int) -> Unit,
+  onOpenRecorder: () -> Unit
 ) {
   var query by remember { mutableStateOf("") }
   val last = remember { prefs.lastPosition() }
@@ -46,6 +47,9 @@ fun SurahListScreen(
         Spacer(Modifier.width(8.dp))
         Switch(checked = dark, onCheckedChange = onDark)
       }
+    }
+    Button(onClick = onOpenRecorder, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+      Text("🎙 تسجيل التلاوة والاستماع")
     }
     OutlinedTextField(
       value = query,
