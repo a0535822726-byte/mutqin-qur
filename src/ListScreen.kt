@@ -22,7 +22,8 @@ fun SurahListScreen(
   onOpenSurah: (Int) -> Unit,
   onResume: (Int, Int, Int) -> Unit,
   onOpenRecorder: () -> Unit,
-  onOpenTajweed: () -> Unit
+  onOpenTajweed: () -> Unit,
+  onOpenStories: () -> Unit
 ) {
   var query by remember { mutableStateOf("") }
   val last = remember { prefs.lastPosition() }
@@ -55,6 +56,9 @@ fun SurahListScreen(
       }
       OutlinedButton(onClick = onOpenTajweed, modifier = Modifier.fillMaxWidth()) {
         Text("📖 دروس التجويد والاختبار")
+      }
+      OutlinedButton(onClick = onOpenStories, modifier = Modifier.fillMaxWidth()) {
+        Text("📚 قصص الأنبياء من القرآن")
       }
     }
     OutlinedTextField(
