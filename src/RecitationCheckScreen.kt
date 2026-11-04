@@ -90,7 +90,7 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
 
   LaunchedEffect(recording) {
     while (recording) {
-      delay(250)
+      delay(1000)
       elapsed += 1
       val value = try { recorder?.maxAmplitude ?: 0 } catch (_: Exception) { 0 }
       amplitude = (value / 32767f).coerceIn(0f, 1f)
