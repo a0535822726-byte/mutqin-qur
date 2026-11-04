@@ -58,15 +58,23 @@ fun StoriesScreen(onBack: () -> Unit) {
   val filtered = remember(query) { stories.withIndex().filter { it.value.title.contains(query.trim(), true) || it.value.group.contains(query.trim(), true) } }
   val colors = MaterialTheme.colorScheme
   Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding()) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-      TextButton(onClick = onBack) { Text("رجوع") }
-      Column(Modifier.weight(1f)) {
-        Text("مكتبة القصص", fontSize = 23.sp, fontWeight = FontWeight.ExtraBold, color = colors.primary)
-        Text("${stories.size} قصة ووقفة تدبر", fontSize = 11.sp, color = colors.onSurfaceVariant)
+    Card(Modifier.fillMaxWidth().padding(horizontal = 13.dp, vertical = 9.dp), shape = RoundedCornerShape(26.dp), colors = CardDefaults.cardColors(containerColor = colors.primary)) {
+      Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          TextButton(onClick = onBack, colors = ButtonDefaults.textButtonColors(contentColor = colors.onPrimary)) { Text("رجوع") }
+          Spacer(Modifier.weight(1f))
+          Text("مكتبة مُتقن", color = colors.onPrimary.copy(alpha = .85f), fontSize = 11.sp)
+        }
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+          Box(Modifier.size(52.dp).background(colors.onPrimary.copy(alpha = .14f), RoundedCornerShape(17.dp)), contentAlignment = Alignment.Center) { Text("📚", fontSize = 27.sp) }
+          Column {
+            Text("مكتبة القصص", fontSize = 24.sp, fontWeight = FontWeight.Black, color = colors.onPrimary)
+            Text("${stories.size} قصة • اقرأ وتدبّر وتعلّم", fontSize = 11.sp, color = colors.onPrimary.copy(alpha = .88f))
+          }
+        }
       }
-      Text("📚", fontSize = 25.sp)
     }
-    Card(Modifier.fillMaxWidth().padding(horizontal = 14.dp), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = colors.primaryContainer)) {
+    Card(Modifier.fillMaxWidth().padding(horizontal = 14.dp), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant)) {
       Column(Modifier.padding(15.dp)) {
         Text("اقرأ القصة من مصدرها", fontWeight = FontWeight.Bold, color = colors.onPrimaryContainer)
         Text("كل ملخص مرتبط بمواضع الآيات لتعود إلى القرآن وتتدبر السياق بنفسك.", fontSize = 11.sp, color = colors.onPrimaryContainer)
@@ -77,7 +85,7 @@ fun StoriesScreen(onBack: () -> Unit) {
       items(filtered, key = { it.index }) { indexed ->
         val i = indexed.index
         val story = indexed.value
-        Card(Modifier.fillMaxWidth().clickable { expanded = if (expanded == i) -1 else i; pageIndex = 0 }, shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
+        Card(Modifier.fillMaxWidth().clickable { expanded = if (expanded == i) -1 else i; pageIndex = 0 }, shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
           Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
               Column(Modifier.weight(1f)) { Text(story.title, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.primary); Text(story.group, fontSize = 10.sp, color = colors.onSurfaceVariant) }
