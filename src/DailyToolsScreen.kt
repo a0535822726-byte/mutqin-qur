@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +23,7 @@ private data class DhikrKind(val key: String, val title: String, val phrase: Str
 @Composable
 fun DailyToolsScreen(prefs: AppPrefs, onBack: () -> Unit) {
   val colors = MaterialTheme.colorScheme
+  val context = LocalContext.current
   val today = LocalDate.now().toString()
   val kinds = listOf(
     DhikrKind("tasbih", "التسبيح", "سبحان الله", 33),
@@ -33,7 +35,6 @@ fun DailyToolsScreen(prefs: AppPrefs, onBack: () -> Unit) {
   var selected by remember { mutableIntStateOf(0) }
   var refresh by remember { mutableIntStateOf(0) }
   var showGoals by remember { mutableStateOf(false) }
-  var showNoteTools by remember { mutableStateOf(false) }
   var verseGoal by remember { mutableIntStateOf(prefs.toolInt("vgoal_$today", 20).coerceAtLeast(1)) }
   var memorGoal by remember { mutableIntStateOf(prefs.toolInt("mgoal_$today", 5).coerceAtLeast(1)) }
   var reviewGoal by remember { mutableIntStateOf(prefs.toolInt("rgoal_$today", 10).coerceAtLeast(1)) }
@@ -146,7 +147,7 @@ fun DailyToolsScreen(prefs: AppPrefs, onBack: () -> Unit) {
         Text("دفتر التدبر وملاحظات الحفظ", fontSize = 17.sp, fontWeight = FontWeight.Bold)
         OutlinedTextField(value=note, onValueChange={ note=it; prefs.setToolText("note_$today",it) }, modifier=Modifier.fillMaxWidth(), minLines=3, label={Text("اكتب فائدة أو آية تريد الرجوع إليها")})
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-          OutlinedButton(onClick = { showNoteTools=true }, modifier=Modifier.weight(1f)) { Text("مشاركة الملاحظة") }
+          OutlinedButton(onClick = { if (note.isNotBlank()) { val send = android.content.Intent(android.content.Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(android.content.Intent.EXTRA_TEXT, note) }; context.startActivity(android.content.Intent.createChooser(send, "مشاركة الملاحظة")) } }, modifier=Modifier.weight(1f)) { Text("مشاركة الملاحظة") }
           OutlinedButton(onClick = { note=""; prefs.setToolText("note_$today","") }, modifier=Modifier.weight(1f)) { Text("مسح الملاحظة") }
         }
       }
@@ -167,9 +168,6 @@ fun DailyToolsScreen(prefs: AppPrefs, onBack: () -> Unit) {
       } else goalInput.toIntOrNull()?.coerceIn(1,9999)?.let{prefs.setToolInt("dhgoal_${active.key}",it)}
       showGoals=false; refresh++
     }){Text("حفظ")} }, dismissButton={TextButton(onClick={showGoals=false}){Text("إلغاء")}})
-  }
-  if (showNoteTools) {
-    AlertDialog(onDismissRequest={showNoteTools=false},title={Text("مشاركة الملاحظة")},text={Text(note.ifBlank{"لا توجد ملاحظة لمشاركتها."})},confirmButton={TextButton(onClick={showNoteTools=false}){Text("حسنًا")}})
   }
 }
 
