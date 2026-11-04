@@ -89,11 +89,13 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   }
 
   LaunchedEffect(recording) {
+    var ticks = 0
     while (recording) {
-      delay(1000)
-      elapsed += 1
+      delay(120)
       val value = try { recorder?.maxAmplitude ?: 0 } catch (_: Exception) { 0 }
       amplitude = (value / 32767f).coerceIn(0f, 1f)
+      ticks++
+      if (ticks % 8 == 0) elapsed += 1
     }
   }
 
@@ -122,6 +124,16 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         Text("السورة: ${SURAH_NAMES[surah - 1]} • ${toArabic(count)} آية", color = colors.primary, fontWeight = FontWeight.SemiBold)
         OutlinedTextField(value = ayahInput, onValueChange = { ayahInput = it.filter(Char::isDigit).take(4) }, modifier = Modifier.fillMaxWidth(), singleLine = true, label = { Text("رقم الآية") })
         Text("الموضع المحدد: ${SURAH_NAMES[surah - 1]} — الآية ${toArabic(ayah)}", fontSize = 12.sp, color = colors.onSurfaceVariant)
+        Surface(shape = RoundedCornerShape(16.dp), color = colors.primary.copy(alpha=.08f)) {
+          Column(Modifier.fillMaxWidth().padding(13.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("الآية التي ستسمّعها",fontSize=11.sp,fontWeight=FontWeight.Bold,color=colors.primary)
+            Text(repo.ayah(surah,ayah),fontSize=21.sp,lineHeight=38.sp,color=colors.onSurface)
+            Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+              OutlinedButton(onClick={ayahInput=(ayah-1).coerceAtLeast(1).toString()},enabled=ayah>1,modifier=Modifier.weight(1f)){Text("الآية السابقة")}
+              OutlinedButton(onClick={ayahInput=(ayah+1).coerceAtMost(count).toString()},enabled=ayah<count,modifier=Modifier.weight(1f)){Text("الآية التالية")}
+            }
+          }
+        }
       }
     }
     Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant)) {
@@ -131,6 +143,11 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         }
         Text(if (recording) "جارٍ الاستماع لصوتك" else "جاهز لبدء التلاوة", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Text("%02d:%02d".format(elapsed / 60, elapsed % 60), fontSize = 27.sp, fontWeight = FontWeight.ExtraBold, color = colors.primary)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.SpaceBetween) {
+          Text("مستوى إشارة الميكروفون",fontSize=11.sp,color=colors.onSurfaceVariant)
+          Text("${(amplitude*100).toInt()}%",fontSize=11.sp,fontWeight=FontWeight.Bold,color=colors.primary)
+        }
+        LinearProgressIndicator(progress={amplitude},modifier=Modifier.fillMaxWidth().height(7.dp).clip(CircleShape))
         Row(Modifier.fillMaxWidth().height(54.dp), horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
           repeat(24) { i ->
             val wave = if (recording) ((amplitude * 18f + ((i * 7) % 9) + 3f) / 30f).coerceIn(.12f, 1f) else .12f
