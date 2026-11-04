@@ -12,7 +12,7 @@ jobs:
       - name: Check sources
         id: check
         run: |
-          if [ -f src/Data.kt ] && [ -f src/MainActivity.kt ] && [ -f src/ListScreen.kt ] && [ -f src/ReaderScreens.kt ]; then
+          if [ -f src/Data.kt ] && [ -f src/MainActivity.kt ] && [ -f src/ListScreen.kt ] && [ -f src/ReaderScreens.kt ] && [ -f src/RecorderScreen.kt ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
@@ -27,21 +27,6 @@ jobs:
         if: steps.check.outputs.ready == 'true'
         with:
           gradle-version: '8.9'
-      - name: Signing key
-        if: steps.check.outputs.ready == 'true'
-        run: |
-          mkdir -p ~/.android
-          if [ -f mutqin-debug.keystore ]; then
-            cp mutqin-debug.keystore ~/.android/debug.keystore
-          else
-            keytool -genkeypair -keystore mutqin-debug.keystore -storepass android -keypass android -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Mutqin,O=Mutqin,C=SA"
-            cp mutqin-debug.keystore ~/.android/debug.keystore
-            git config user.name "github-actions"
-            git config user.email "actions@github.com"
-            git add mutqin-debug.keystore
-            git commit -m "add signing key"
-            git push
-          fi
       - name: Create project
         if: steps.check.outputs.ready == 'true'
         run: |
@@ -91,8 +76,8 @@ jobs:
                   applicationId = "com.mutqin.app"
                   minSdk = 26
                   targetSdk = 35
-                  versionCode = 2
-                  versionName = "0.2.0"
+                  versionCode = 3
+                  versionName = "0.3.0"
               }
               compileOptions {
                   sourceCompatibility = JavaVersion.VERSION_17
@@ -116,6 +101,7 @@ jobs:
           cat > app/src/main/AndroidManifest.xml <<'EOT'
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.RECORD_AUDIO" />
               <application
                   android:allowBackup="true"
                   android:icon="@drawable/ic_launcher"
@@ -199,5 +185,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete latest --cleanup-tag -y || true
-          gh release create latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "مُتقن" --notes "أحدث نسخة"
+          if gh release view latest >/dev/null 2>&1; then
+            gh release upload latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --clobber
+            gh release edit latest --title "مُتقن" --notes "أحدث نسخة مبنية آليًا"
+          else
+            gh release create latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "مُتقن" --notes "أحدث نسخة مبنية آليًا"
+          fi
