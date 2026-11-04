@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: mutqin-apk-build
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,7 +15,7 @@ jobs:
       - name: Check sources
         id: check
         run: |
-          if [ -f src/Data.kt ] && [ -f src/MainActivity.kt ] && [ -f src/ListScreen.kt ] && [ -f src/ReaderScreens.kt ] && [ -f src/RecorderScreen.kt ]; then
+          if [ -f src/Data.kt ] && [ -f src/MainActivity.kt ] && [ -f src/ListScreen.kt ] && [ -f src/ReaderScreens.kt ] && [ -f src/RecorderScreen.kt ] && [ -f src/TajweedScreen.kt ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
