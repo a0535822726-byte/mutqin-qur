@@ -1,171 +1,174 @@
 package com.mutqin.app
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Bundle
-import android.speech.RecognitionListener
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
+import android.media.MediaPlayer
+import android.media.MediaRecorder
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.delay
+import java.io.File
 
-private fun mutqinWords(s: String): List<String> = s
-  .replace(Regex("[\\u064B-\\u065F\\u0670]"), "")
-  .replace("ـ", "").replace(Regex("[،؛؟.!]"), " ")
-  .replace('أ', 'ا').replace('إ', 'ا').replace('آ', 'ا')
-  .replace('ى', 'ي').replace('ة', 'ه')
-  .trim().split(Regex("\\s+")).filter { it.isNotBlank() }
-
-private data class WordAlignment(val expected: String?, val heard: String?, val kind: String)
-
-private fun alignRecitationWords(expected: List<String>, heard: List<String>): List<WordAlignment> {
-  val rows = expected.size
-  val cols = heard.size
-  val dp = Array(rows + 1) { IntArray(cols + 1) }
-  for (i in 0..rows) dp[i][0] = i
-  for (j in 0..cols) dp[0][j] = j
-  for (i in 1..rows) {
-    for (j in 1..cols) {
-      val cost = if (expected[i - 1] == heard[j - 1]) 0 else 1
-      dp[i][j] = minOf(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost)
-    }
-  }
-  val result = mutableListOf<WordAlignment>()
-  var i = rows
-  var j = cols
-  while (i > 0 || j > 0) {
-    if (i > 0 && j > 0 && expected[i - 1] == heard[j - 1] && dp[i][j] == dp[i - 1][j - 1]) {
-      result.add(WordAlignment(expected[i - 1], heard[j - 1], "match")); i--; j--
-    } else if (i > 0 && j > 0 && dp[i][j] == dp[i - 1][j - 1] + 1) {
-      result.add(WordAlignment(expected[i - 1], heard[j - 1], "different")); i--; j--
-    } else if (i > 0 && dp[i][j] == dp[i - 1][j] + 1) {
-      result.add(WordAlignment(expected[i - 1], null, "missing")); i--
-    } else {
-      result.add(WordAlignment(null, heard[j - 1], "extra")); j--
-    }
-  }
-  return result.asReversed()
-}
 @Composable
 fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   val context = LocalContext.current
   var surahInput by remember { mutableStateOf("1") }
-  var fromInput by remember { mutableStateOf("1") }
-  var toInput by remember { mutableStateOf("7") }
-  var transcript by remember { mutableStateOf("") }
-  var status by remember { mutableStateOf("اختر السورة والآيات، ثم ابدأ القراءة بصوت واضح.") }
-  var listening by remember { mutableStateOf(false) }
-  var recognizer by remember { mutableStateOf<SpeechRecognizer?>(null) }
-  val surah = surahInput.toIntOrNull()?.coerceIn(1, 114) ?: 1
+  var ayahInput by remember { mutableStateOf("1") }
+  val surah = (surahInput.toIntOrNull() ?: 1).coerceIn(1, 114)
   val count = repo.ayahCount(surah)
-  val from = (fromInput.toIntOrNull() ?: 1).coerceIn(1, count)
-  val to = (toInput.toIntOrNull() ?: from).coerceIn(from, count)
-  val expected = (from..to).joinToString(" ") { repo.ayah(surah, it) }
-  val expectedWords = remember(expected) { mutqinWords(expected) }
-  val heardWords = remember(transcript) { mutqinWords(transcript) }
-  val alignment = remember(expectedWords, heardWords) { alignRecitationWords(expectedWords, heardWords) }
-  val matching = alignment.count { it.kind == "match" }
+  val ayah = (ayahInput.toIntOrNull() ?: 1).coerceIn(1, count)
+  var hasPermission by remember { mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) }
+  var recording by remember { mutableStateOf(false) }
+  var elapsed by remember { mutableIntStateOf(0) }
+  var amplitude by remember { mutableFloatStateOf(0f) }
+  var status by remember { mutableStateOf("اختر موضع المراجعة، ثم ابدأ التلاوة.") }
+  var savedFile by remember { mutableStateOf<File?>(null) }
+  var player by remember { mutableStateOf<MediaPlayer?>(null) }
+  var recorder by remember { mutableStateOf<MediaRecorder?>(null) }
   val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-    status = if (granted) "تم السماح بالميكروفون. اضغط بدء التسميع." else "لم يتم السماح بالميكروفون."
+    hasPermission = granted
+    status = if (granted) "تم السماح بالميكروفون. ابدأ التلاوة." else "يلزم السماح بالميكروفون لاستخدام جلسة الصوت."
   }
-  DisposableEffect(Unit) { onDispose { recognizer?.destroy(); recognizer = null } }
 
-  Column(Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(18.dp),
-    verticalArrangement = Arrangement.spacedBy(13.dp)) {
-    TextButton(onClick = onBack) { Text("رجوع") }
-    Text("اختبار التسميع", fontSize = 27.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
-    Text("اقرأ الآيات المحددة، وسيحوّل الهاتف صوتك إلى كلمات ثم يقارنها بالنص القرآني.")
-    Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
-      Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedTextField(value = surahInput, onValueChange = { surahInput = it.filter(Char::isDigit); fromInput = "1"; toInput = "7" },
-          label = { Text("رقم السورة من 1 إلى 114") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        Text("السورة المختارة: " + SURAH_NAMES[surah - 1] + " • " + toArabic(count) + " آية", fontWeight = FontWeight.SemiBold)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-          OutlinedTextField(value = fromInput, onValueChange = { fromInput = it.filter(Char::isDigit) }, label = { Text("من آية") }, singleLine = true, modifier = Modifier.weight(1f))
-          OutlinedTextField(value = toInput, onValueChange = { toInput = it.filter(Char::isDigit) }, label = { Text("إلى آية") }, singleLine = true, modifier = Modifier.weight(1f))
-        }
-        Text("النطاق الفعلي: " + toArabic(from) + " إلى " + toArabic(to), fontSize = 12.sp)
+  fun startCapture() {
+    try {
+      val folder = File(context.filesDir, "mutqin_sessions").apply { mkdirs() }
+      val file = File(folder, "recitation_${System.currentTimeMillis()}.m4a")
+      val r = if (Build.VERSION.SDK_INT >= 31) MediaRecorder(context) else MediaRecorder()
+      r.setAudioSource(MediaRecorder.AudioSource.MIC)
+      r.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+      r.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+      r.setAudioEncodingBitRate(128000)
+      r.setAudioSamplingRate(44100)
+      r.setOutputFile(file.absolutePath)
+      r.prepare()
+      r.start()
+      recorder = r
+      savedFile = file
+      elapsed = 0
+      amplitude = 0f
+      recording = true
+      status = "الميكروفون يعمل الآن. اقرأ بهدوء ثم أوقف الجلسة."
+    } catch (_: Exception) {
+      try { recorder?.release() } catch (_: Exception) {}
+      recorder = null
+      recording = false
+      status = "تعذر تشغيل الميكروفون. أغلق أي تطبيق يستخدمه ثم حاول مجددًا."
+    }
+  }
+
+  fun stopCapture() {
+    try {
+      recorder?.stop()
+      status = "انتهت الجلسة وحُفظ التسجيل على الجهاز."
+    } catch (_: Exception) {
+      savedFile = null
+      status = "لم يكتمل التسجيل. أعد المحاولة."
+    } finally {
+      try { recorder?.release() } catch (_: Exception) {}
+      recorder = null
+      recording = false
+      amplitude = 0f
+    }
+  }
+
+  LaunchedEffect(recording) {
+    while (recording) {
+      delay(250)
+      elapsed += 1
+      val value = try { recorder?.maxAmplitude ?: 0 } catch (_: Exception) { 0 }
+      amplitude = (value / 32767f).coerceIn(0f, 1f)
+    }
+  }
+
+  DisposableEffect(Unit) {
+    onDispose {
+      try { recorder?.stop() } catch (_: Exception) {}
+      try { recorder?.release() } catch (_: Exception) {}
+      try { player?.release() } catch (_: Exception) {}
+    }
+  }
+
+  val colors = MaterialTheme.colorScheme
+  Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      TextButton(onClick = onBack) { Text("رجوع") }
+      Column(Modifier.weight(1f)) {
+        Text("جلسة التسميع", fontSize = 23.sp, fontWeight = FontWeight.ExtraBold, color = colors.primary)
+        Text("تدريب صوتي خاص بك", fontSize = 11.sp, color = colors.onSurfaceVariant)
+      }
+      Text("🎙", fontSize = 27.sp)
+    }
+    Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
+      Column(Modifier.fillMaxWidth().padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text("موضع المراجعة", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        OutlinedTextField(value = surahInput, onValueChange = { surahInput = it.filter(Char::isDigit).take(3); ayahInput = "1" }, modifier = Modifier.fillMaxWidth(), singleLine = true, label = { Text("رقم السورة (١–١١٤)") })
+        Text("السورة: ${SURAH_NAMES[surah - 1]} • ${toArabic(count)} آية", color = colors.primary, fontWeight = FontWeight.SemiBold)
+        OutlinedTextField(value = ayahInput, onValueChange = { ayahInput = it.filter(Char::isDigit).take(4) }, modifier = Modifier.fillMaxWidth(), singleLine = true, label = { Text("رقم الآية") })
+        Text("الموضع المحدد: ${SURAH_NAMES[surah - 1]} — الآية ${toArabic(ayah)}", fontSize = 12.sp, color = colors.onSurfaceVariant)
       }
     }
-    Card(shape = RoundedCornerShape(22.dp)) {
-      Column(Modifier.padding(17.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text(if (listening) "🎙 يستمع إليك الآن" else "🎧 جاهز للتسميع", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Text(status, fontSize = 13.sp)
-        Button(onClick = {
-          val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-          if (!granted) permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-          else if (!SpeechRecognizer.isRecognitionAvailable(context)) status = "خدمة التعرف على الكلام غير متاحة على جهازك. تحقق من خدمة Google للتعرف على الكلام."
-          else try {
-            recognizer?.destroy()
-            val sr = SpeechRecognizer.createSpeechRecognizer(context)
-            recognizer = sr
-            sr.setRecognitionListener(object : RecognitionListener {
-              override fun onReadyForSpeech(params: Bundle?) { status = "ابدأ التلاوة الآن…" }
-              override fun onBeginningOfSpeech() { listening = true; status = "جارٍ التقاط صوتك…" }
-              override fun onRmsChanged(rmsdB: Float) {}
-              override fun onBufferReceived(buffer: ByteArray?) {}
-              override fun onEndOfSpeech() { listening = false; status = "انتهى الاستماع، جارٍ تجهيز المقارنة…" }
-              override fun onError(error: Int) { listening = false; status = "تعذر فهم الصوت (رمز " + error + "). جرّب مكانًا هادئًا ثم أعد المحاولة." }
-              override fun onResults(results: Bundle?) {
-                listening = false
-                transcript = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull().orEmpty()
-                status = if (transcript.isBlank()) "لم يتم التقاط كلمات واضحة. أعد المحاولة." else "تم تحويل الصوت إلى نص. راجع المقارنة."
-              }
-              override fun onPartialResults(partialResults: Bundle?) {}
-              override fun onEvent(eventType: Int, params: Bundle?) {}
-            })
-            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-              putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-              putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA")
-              putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "ar-SA")
-              putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-              putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false)
-            }
-            transcript = ""
-            sr.startListening(intent)
-          } catch (_: Exception) { listening = false; status = "تعذر تشغيل التعرف الصوتي على هذا الجهاز." }
-        }, enabled = !listening, modifier = Modifier.fillMaxWidth()) {
-          Text(if (listening) "يستمع…" else "🎙 ابدأ التسميع")
+    Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant)) {
+      Column(Modifier.fillMaxWidth().padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(13.dp)) {
+        Box(Modifier.size(94.dp).clip(CircleShape).background(if (recording) colors.error.copy(alpha = .13f) else colors.primary.copy(alpha = .12f)), contentAlignment = Alignment.Center) {
+          Text(if (recording) "●" else "🎙", color = if (recording) colors.error else colors.primary, fontSize = 35.sp)
         }
-        if (listening) OutlinedButton(onClick = { recognizer?.stopListening(); listening = false }, modifier = Modifier.fillMaxWidth()) { Text("إنهاء الاستماع") }
-      }
-    }
-    if (transcript.isNotBlank()) {
-      Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
-        Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          Text("نتيجة المقارنة الأولية", fontSize = 19.sp, fontWeight = FontWeight.Bold)
-          Text("كلمات متطابقة في مواضعها: " + toArabic(matching) + " من " + toArabic(expectedWords.size))
-          Text("النص الذي التقطه الهاتف:", fontWeight = FontWeight.Bold)
-          Text(transcript)
-          HorizontalDivider()
-          Text("مراجعة الكلمات:", fontWeight = FontWeight.Bold)
-          alignment.forEach { item ->
-            val line = when (item.kind) {
-              "match" -> "✓ ${item.expected}"
-              "missing" -> "لم يلتقط الهاتف: ${item.expected}"
-              "extra" -> "كلمة إضافية التقطها الهاتف: ${item.heard}"
-              else -> "المتوقع: ${item.expected} • الملتقط: ${item.heard}"
-            }
-            Text(line, color = if (item.kind == "match") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error, fontSize = 13.sp)
+        Text(if (recording) "جارٍ الاستماع لصوتك" else "جاهز لبدء التلاوة", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text("%02d:%02d".format(elapsed / 60, elapsed % 60), fontSize = 27.sp, fontWeight = FontWeight.ExtraBold, color = colors.primary)
+        Row(Modifier.fillMaxWidth().height(54.dp), horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
+          repeat(24) { i ->
+            val wave = if (recording) ((amplitude * 18f + ((i * 7) % 9) + 3f) / 30f).coerceIn(.12f, 1f) else .12f
+            Box(Modifier.weight(1f).fillMaxHeight(wave).clip(RoundedCornerShape(5.dp)).background(if (recording) colors.primary else colors.outlineVariant))
           }
-          OutlinedButton(onClick = { transcript = ""; status = "جاهز لمحاولة جديدة." }, modifier = Modifier.fillMaxWidth()) { Text("إعادة التسميع") }
         }
+        Text(status, fontSize = 12.sp, color = colors.onSurfaceVariant)
+        if (!hasPermission) {
+          Button(onClick = { permissionLauncher.launch(Manifest.permission.RECORD_AUDIO) }, modifier = Modifier.fillMaxWidth()) { Text("السماح باستخدام الميكروفون") }
+        } else if (!recording) {
+          Button(onClick = { startCapture() }, modifier = Modifier.fillMaxWidth()) { Text("●  ابدأ جلسة التسميع") }
+        } else {
+          Button(onClick = { stopCapture() }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = colors.error)) { Text("إيقاف وحفظ التسجيل") }
+        }
+        OutlinedButton(onClick = {
+          val file = savedFile
+          if (file != null && file.exists()) {
+            try {
+              player?.release()
+              player = MediaPlayer().apply {
+                setDataSource(file.absolutePath)
+                setOnCompletionListener { it.release(); player = null }
+                prepare()
+                start()
+              }
+              status = "تشغيل تسجيل جلسة المراجعة."
+            } catch (_: Exception) { status = "تعذر تشغيل التسجيل." }
+          }
+        }, enabled = !recording && savedFile?.exists() == true, modifier = Modifier.fillMaxWidth()) { Text("▶ استمع إلى تلاوتك") }
       }
     }
-    Text("تنبيه: هذه مقارنة مبدئية لتحويل الكلام إلى نص؛ قد يخطئ الهاتف في ألفاظ القرآن أو ترتيب الكلمات. لا تفحص التجويد أو الحركات أو مخارج الحروف، ولا تعتمد عليها حكمًا نهائيًا على التلاوة. راجع مواضع الاختلاف مع معلّم متقن.", color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
+    Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
+      Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text("ما الذي تفعله هذه الجلسة؟", fontWeight = FontWeight.Bold, color = colors.primary)
+        Text("• تلتقط صوتك مباشرة من الميكروفون وتعرض مستوى الصوت أثناء القراءة.", fontSize = 12.sp)
+        Text("• تحفظ التسجيل داخل ملفات التطبيق بدل الحفظ المؤقت، ويمكنك الاستماع إليه.", fontSize = 12.sp)
+        Text("• لا تحوّل تلاوتك إلى نص ولا تصدر درجة تجويد وهمية. التصحيح الدقيق للمخارج والمدود والغنة يحتاج نموذجًا قرآنيًا متخصصًا لم يُدمج بعد.", fontSize = 12.sp, color = colors.error)
+      }
+    }
   }
 }
