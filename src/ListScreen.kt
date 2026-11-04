@@ -27,11 +27,13 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
  val colors = MaterialTheme.colorScheme
  LazyColumn(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding(), contentPadding=PaddingValues(horizontal=17.dp,vertical=14.dp), verticalArrangement=Arrangement.spacedBy(16.dp)) {
   item {
-   Row(verticalAlignment=Alignment.CenterVertically) {
-    Box(Modifier.size(52.dp).clip(RoundedCornerShape(18.dp)).background(Brush.linearGradient(listOf(colors.primary,colors.secondary))),contentAlignment=Alignment.Center){Text("مُ",color=colors.onPrimary,fontSize=25.sp,fontWeight=FontWeight.Black)}
-    Spacer(Modifier.width(12.dp))
-    Column(Modifier.weight(1f)){Text("مُتقن",fontSize=29.sp,fontWeight=FontWeight.Black,color=colors.onBackground);Text("منصتك المتكاملة لرحلة القرآن",fontSize=11.sp,color=colors.onSurfaceVariant)}
-    FilledTonalIconButton(onClick={onDark(!dark)}){Text(if(dark)"☀" else "☾",fontSize=21.sp)}
+   Card(shape=RoundedCornerShape(28.dp),colors=CardDefaults.cardColors(containerColor=colors.surface),modifier=Modifier.fillMaxWidth()) {
+    Row(Modifier.fillMaxWidth().padding(16.dp),verticalAlignment=Alignment.CenterVertically) {
+     Box(Modifier.size(58.dp).clip(RoundedCornerShape(20.dp)).background(Brush.linearGradient(listOf(colors.primary,colors.secondary))),contentAlignment=Alignment.Center){Text("مُ",color=colors.onPrimary,fontSize=29.sp,fontWeight=FontWeight.Black)}
+     Spacer(Modifier.width(13.dp))
+     Column(Modifier.weight(1f)){Text("مُتقن",fontSize=27.sp,fontWeight=FontWeight.Black,color=colors.onBackground);Text("رفيق رحلتك مع القرآن الكريم",fontSize=11.sp,color=colors.onSurfaceVariant)}
+     FilledTonalIconButton(onClick={onDark(!dark)}){Text(if(dark)"☀" else "☾",fontSize=21.sp)}
+    }
    }
   }
   item {
@@ -119,6 +121,34 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
     Row(Modifier.fillMaxWidth().padding(15.dp),verticalAlignment=Alignment.CenterVertically){
      Column(Modifier.weight(1f)){Text("لوحة إدارة يومك",fontSize=15.sp,fontWeight=FontWeight.ExtraBold,color=colors.onPrimaryContainer);Text("افتح جميع العدادات والأهداف والمتابعات",fontSize=10.sp,color=colors.onPrimaryContainer)}
      Text("←",fontSize=23.sp,color=colors.onPrimaryContainer)
+    }
+   }
+  }
+  item {
+   Card(shape=RoundedCornerShape(25.dp),colors=CardDefaults.cardColors(containerColor=colors.primaryContainer),modifier=Modifier.fillMaxWidth()) {
+    Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(5.dp)) {
+     Text("مركز الأدوات المتقدمة",fontSize=20.sp,fontWeight=FontWeight.Black,color=colors.onPrimaryContainer)
+     Text("20 أداة إضافية للحفظ والمراجعة والتجويد والمتابعة",fontSize=11.sp,color=colors.onPrimaryContainer)
+     Text("كل أداة تفتح صفحة مستقلة وتحفظ تقدمك على الجهاز",fontSize=10.sp,color=colors.onPrimaryContainer.copy(alpha=.8f))
+    }
+   }
+   val extraTools=listOf(
+    Triple("repeat","🔂","تكرار الآية"),Triple("pages","📄","عداد الصفحات"),
+    Triple("juz","📚","متابعة الأجزاء"),Triple("surahfinish","🏁","إنجاز السور"),
+    Triple("revisionrounds","🔁","جولات المراجعة"),Triple("listenminutes","🎧","دقائق الاستماع"),
+    Triple("makharij","🗣","تدريب المخارج"),Triple("noonrules","نّ","أحكام النون"),
+    Triple("meemrules","مّ","أحكام الميم"),Triple("maddpractice","〰","تدريب المدود"),
+    Triple("waqf","⏸","علامات الوقف"),Triple("mistakes","✍","دفتر الأخطاء"),
+    Triple("questions","❓","أسئلة للمعلم"),Triple("dua","🤲","دفتر الدعاء"),
+    Triple("weeklyplan","🗓","خطة الأسبوع"),Triple("dailyreview","☑","مراجعة اليوم"),
+    Triple("sessionlog","🎙","سجل الجلسات"),Triple("reflection2","💡","خواطر قرآنية"),
+    Triple("readingstreak","🔥","أيام القراءة"),Triple("memorystreak","🧠","أيام الحفظ")
+   )
+   extraTools.chunked(2).forEach { pair ->
+    Spacer(Modifier.height(8.dp))
+    Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+     pair.forEach { tool -> FeatureCard(tool.second,tool.third,"أداة مستقلة",Modifier.weight(1f),colors){onOpenTool(tool.first)} }
+     if(pair.size==1) Spacer(Modifier.weight(1f))
     }
    }
   }
