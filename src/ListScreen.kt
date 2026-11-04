@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Boolean) -> Unit, onOpenSurah: (Int) -> Unit, onResume: (Int, Int, Int) -> Unit, onOpenRecorder: () -> Unit, onOpenCheck: () -> Unit, onOpenTajweed: () -> Unit, onOpenStories: () -> Unit, onOpenReciters: () -> Unit, onOpenDailyTools: () -> Unit) {
+fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Boolean) -> Unit, onOpenSurah: (Int) -> Unit, onResume: (Int, Int, Int) -> Unit, onOpenRecorder: () -> Unit, onOpenCheck: () -> Unit, onOpenTajweed: () -> Unit, onOpenStories: () -> Unit, onOpenReciters: () -> Unit, onOpenDailyTools: () -> Unit, onOpenTool: (String) -> Unit) {
  var query by remember { mutableStateOf("") }
  val last = remember { prefs.lastPosition() }
  val q = normalizeAr(query.trim())
@@ -71,35 +71,50 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
    HomeSectionHeading("كل أداة في مكان مستقل","اختر الأداة التي تريدها مباشرة")
    Spacer(Modifier.height(9.dp))
    Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
-    FeatureCard("سُبْحَانَ","التسبيح","عداد وهدف",Modifier.weight(1f),colors,onOpenDailyTools)
-    FeatureCard("الْحَمْدُ","التحميد","عداد وهدف",Modifier.weight(1f),colors,onOpenDailyTools)
+    FeatureCard("سُبْحَانَ","التسبيح","عداد وهدف",Modifier.weight(1f),colors){onOpenTool("tasbih")}
+    FeatureCard("الْحَمْدُ","التحميد","عداد وهدف",Modifier.weight(1f),colors){onOpenTool("tahmid")}
    }
    Spacer(Modifier.height(8.dp))
    Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
-    FeatureCard("الله أكبر","التكبير","عداد وهدف",Modifier.weight(1f),colors,onOpenDailyTools)
-    FeatureCard("أستغفر","الاستغفار","عداد وهدف",Modifier.weight(1f),colors,onOpenDailyTools)
+    FeatureCard("الله أكبر","التكبير","عداد وهدف",Modifier.weight(1f),colors){onOpenTool("takbir")}
+    FeatureCard("أستغفر","الاستغفار","عداد وهدف",Modifier.weight(1f),colors){onOpenTool("istighfar")}
    }
    Spacer(Modifier.height(8.dp))
    Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
-    FeatureCard("ﷺ","الصلاة على النبي","عداد وهدف",Modifier.weight(1f),colors,onOpenDailyTools)
-    FeatureCard("📊","إنجاز اليوم","ملخص الأهداف",Modifier.weight(1f),colors,onOpenDailyTools)
+    FeatureCard("ﷺ","الصلاة على النبي","عداد وهدف",Modifier.weight(1f),colors){onOpenTool("salawat")}
+    FeatureCard("📊","إنجاز اليوم","ملخص الأهداف",Modifier.weight(1f),colors){onOpenTool("achievement")}
    }
    Spacer(Modifier.height(8.dp))
    Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
-    FeatureCard("📗","عداد القراءة","متابعة الآيات",Modifier.weight(1f),colors,onOpenDailyTools)
-    FeatureCard("🧠","الحفظ الجديد","هدف الحفظ",Modifier.weight(1f),colors,onOpenDailyTools)
+    FeatureCard("📗","عداد القراءة","متابعة الآيات",Modifier.weight(1f),colors){onOpenTool("reading")}
+    FeatureCard("🧠","الحفظ الجديد","هدف الحفظ",Modifier.weight(1f),colors){onOpenTool("memorization")}
    }
    Spacer(Modifier.height(8.dp))
    Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
-    FeatureCard("🔁","مراجعة الحفظ","ثبّت محفوظك",Modifier.weight(1f),colors,onOpenDailyTools)
-    FeatureCard("🕌","متابعة الصلاة","سجل صلواتك",Modifier.weight(1f),colors,onOpenDailyTools)
+    FeatureCard("🔁","مراجعة الحفظ","ثبّت محفوظك",Modifier.weight(1f),colors){onOpenTool("review")}
+    FeatureCard("🕌","متابعة الصلاة","سجل صلواتك",Modifier.weight(1f),colors){onOpenTool("prayers")}
    }
    Spacer(Modifier.height(8.dp))
    Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
-    FeatureCard("✓","مهام قرآنية","قائمة يومية",Modifier.weight(1f),colors,onOpenDailyTools)
-    FeatureCard("📝","دفتر التدبر","ملاحظاتك",Modifier.weight(1f),colors,onOpenDailyTools)
+    FeatureCard("✓","مهام قرآنية","قائمة يومية",Modifier.weight(1f),colors){onOpenTool("tasks")}
+    FeatureCard("📝","دفتر التدبر","ملاحظاتك",Modifier.weight(1f),colors){onOpenTool("notes")}
    }
    Spacer(Modifier.height(8.dp))
+   Spacer(Modifier.height(8.dp))
+   Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
+    FeatureCard("🌅","أذكار الصباح","قائمة متابعة",Modifier.weight(1f),colors){onOpenTool("morning")}
+    FeatureCard("🌙","أذكار المساء","قائمة متابعة",Modifier.weight(1f),colors){onOpenTool("evening")}
+   }
+   Spacer(Modifier.height(8.dp))
+   Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
+    FeatureCard("📚","متابعة الختمة","الأجزاء المقروءة",Modifier.weight(1f),colors){onOpenTool("khatmah")}
+    FeatureCard("🎧","ورد الاستماع","دقائق الاستماع",Modifier.weight(1f),colors){onOpenTool("listening")}
+   }
+   Spacer(Modifier.height(8.dp))
+   Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
+    FeatureCard("💡","فوائد اليوم","دفتر الفوائد",Modifier.weight(1f),colors){onOpenTool("reflection")}
+    FeatureCard("🎯","أهداف الأسبوع","مهام أسبوعية",Modifier.weight(1f),colors){onOpenTool("goals")}
+   }
    Card(onClick=onOpenDailyTools,shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=colors.primaryContainer),modifier=Modifier.fillMaxWidth()){
     Row(Modifier.fillMaxWidth().padding(15.dp),verticalAlignment=Alignment.CenterVertically){
      Column(Modifier.weight(1f)){Text("لوحة إدارة يومك",fontSize=15.sp,fontWeight=FontWeight.ExtraBold,color=colors.onPrimaryContainer);Text("افتح جميع العدادات والأهداف والمتابعات",fontSize=10.sp,color=colors.onPrimaryContainer)}
