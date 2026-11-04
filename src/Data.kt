@@ -56,6 +56,8 @@ class AppPrefs(context: Context) {
   fun setLastPosition(s: Int, f: Int, t: Int) {
     p.edit().putInt("last_s", s).putInt("last_f", f).putInt("last_t", t).apply()
   }
+  fun bookmark(s: Int): Int? = p.getInt("bookmark_$s", 0).takeIf { it > 0 }
+  fun setBookmark(s: Int, ayah: Int) { p.edit().putInt("bookmark_$s", ayah).apply() }
 }
 
 fun toArabic(n: Int): String = n.toString().map { '٠' + (it - '0') }.joinToString("")
