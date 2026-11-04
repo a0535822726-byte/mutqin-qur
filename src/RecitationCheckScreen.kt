@@ -4,6 +4,9 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.media.MediaRecorder
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,12 +41,25 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   var elapsed by remember { mutableIntStateOf(0) }
   var amplitude by remember { mutableFloatStateOf(0f) }
   var status by remember { mutableStateOf("اختر موضع المراجعة، ثم ابدأ التلاوة.") }
+  var recognizedText by remember { mutableStateOf("") }
+  var matchPercent by remember { mutableIntStateOf(-1) }
   var savedFile by remember { mutableStateOf<File?>(null) }
   var player by remember { mutableStateOf<MediaPlayer?>(null) }
   var recorder by remember { mutableStateOf<MediaRecorder?>(null) }
   val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
     hasPermission = granted
     status = if (granted) "تم السماح بالميكروفون. ابدأ التلاوة." else "يلزم السماح بالميكروفون لاستخدام جلسة الصوت."
+  }
+
+  val speechLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    if (result.resultCode == Activity.RESULT_OK) {
+      val heard = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull().orEmpty()
+      recognizedText = heard
+      matchPercent = approximateWordMatch(repo.ayah(surah, ayah), heard)
+      status = if (heard.isBlank()) "لم ألتقط كلمات واضحة. حاول في مكان هادئ." else "انتهى فحص الكلمات التقريبي. راجع النتيجة بنفسك."
+    } else {
+      status = "لم يكتمل فحص الكلمات. يمكنك المحاولة مرة أخرى."
+    }
   }
 
   fun startCapture() {
@@ -163,6 +179,29 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
           Button(onClick = { stopCapture() }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = colors.error)) { Text("إيقاف وحفظ التسجيل") }
         }
         OutlinedButton(onClick = {
+          val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA")
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "أعد تلاوة الآية المحددة بوضوح")
+            putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
+          }
+          try { speechLauncher.launch(intent) } catch (_: Exception) {
+            status = "ميزة التعرف الصوتي غير متاحة على هذا الجهاز."
+          }
+        }, enabled = !recording, modifier = Modifier.fillMaxWidth()) {
+          Text("اختبار كلمات الآية بالميكروفون")
+        }
+        if (recognizedText.isNotBlank()) {
+          Card(shape=RoundedCornerShape(16.dp),colors=CardDefaults.cardColors(containerColor=colors.surface)) {
+            Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
+              Text("النص الذي التقطه التعرف الصوتي",fontWeight=FontWeight.Bold,color=colors.primary,fontSize=13.sp)
+              Text(recognizedText,fontSize=15.sp,lineHeight=25.sp)
+              Text("تطابق الكلمات التقريبي: $matchPercent٪",fontWeight=FontWeight.Bold,color=colors.primary)
+              Text("هذه مقارنة آلية تقريبية للكلمات فقط؛ قد يخطئ التعرف في ألفاظ القرآن، ولا تقيس المخارج أو الغنة أو المدود أو أحكام التجويد.",fontSize=11.sp,color=colors.error)
+            }
+          }
+        }
+        OutlinedButton(onClick = {
           val file = savedFile
           if (file != null && file.exists()) {
             try {
@@ -188,4 +227,28 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
       }
     }
   }
+}
+
+private fun normalizeRecitationWords(value: String): List<String> {
+  val withoutMarks = value.replace(Regex("[\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]"), "")
+  return withoutMarks.replace(Regex("[^\\u0621-\\u064A\\s]"), " ")
+    .replace('أ','ا').replace('إ','ا').replace('آ','ا').replace('ى','ي')
+    .trim().split(Regex("\\s+")).filter { it.isNotBlank() }
+}
+
+private fun approximateWordMatch(reference: String, heard: String): Int {
+  val a = normalizeRecitationWords(reference)
+  val b = normalizeRecitationWords(heard)
+  if (a.isEmpty()) return 0
+  val previous = IntArray(b.size + 1)
+  val current = IntArray(b.size + 1)
+  for (i in 1..a.size) {
+    for (j in 1..b.size) {
+      current[j] = if (a[i - 1] == b[j - 1]) previous[j - 1] + 1
+        else maxOf(previous[j], current[j - 1])
+    }
+    for (j in previous.indices) previous[j] = current[j]
+    current.fill(0)
+  }
+  return ((previous[b.size] * 100f) / a.size).toInt().coerceIn(0,100)
 }
