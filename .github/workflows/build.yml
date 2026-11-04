@@ -15,7 +15,7 @@ jobs:
       - name: Check sources
         id: check
         run: |
-          if [ -f src/Data.kt ] && [ -f src/MainActivity.kt ] && [ -f src/ListScreen.kt ] && [ -f src/ReaderScreens.kt ] && [ -f src/RecorderScreen.kt ] && [ -f src/TajweedScreen.kt ] && [ -f src/StoriesScreen.kt ]; then
+          if [ -f src/Data.kt ] && [ -f src/MainActivity.kt ] && [ -f src/ListScreen.kt ] && [ -f src/ReaderScreens.kt ] && [ -f src/RecorderScreen.kt ] && [ -f src/TajweedScreen.kt ] && [ -f src/StoriesScreen.kt ] && [ -f src/RecitationCheckScreen.kt ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
@@ -79,8 +79,8 @@ jobs:
                   applicationId = "com.mutqin.app"
                   minSdk = 26
                   targetSdk = 35
-                  versionCode = 4
-                  versionName = "0.4.0"
+                  versionCode = 5
+                  versionName = "0.5.0"
               }
               compileOptions {
                   sourceCompatibility = JavaVersion.VERSION_17
@@ -105,6 +105,12 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <uses-permission android:name="android.permission.RECORD_AUDIO" />
+              <uses-permission android:name="android.permission.INTERNET" />
+              <queries>
+                  <intent>
+                      <action android:name="android.speech.RecognitionService" />
+                  </intent>
+              </queries>
               <application
                   android:allowBackup="true"
                   android:icon="@drawable/ic_launcher"
