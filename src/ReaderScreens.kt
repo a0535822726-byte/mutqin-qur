@@ -103,7 +103,7 @@ fun ReaderScreen(
   var pageStart by remember { mutableIntStateOf(from) }
   val pageSize = 10
   val pageEnd = minOf(to, pageStart + pageSize - 1)
-  val bookmarked = prefs.bookmark(surah)
+  var bookmarked by remember { mutableStateOf(prefs.bookmark(surah)) }
   val visibleAyahs = (pageStart..pageEnd).filter { n ->
     search.isBlank() || normalizeAr(repo.ayah(surah, n)).contains(normalizeAr(search.trim()))
   }
@@ -122,9 +122,10 @@ fun ReaderScreen(
           Text("مُتقن • المصحف", fontWeight = FontWeight.ExtraBold, color = colors.primary, fontSize = 18.sp)
           Text("سورة ${SURAH_NAMES[surah - 1]}  •  الآيات ${toArabic(pageStart)}–${toArabic(pageEnd)}", fontSize = 10.sp, color = colors.onSurfaceVariant)
         }
-        TextButton(onClick = { prefs.setBookmark(surah, pageStart); }) { Text(if (bookmarked == pageStart) "★" else "☆", fontSize = 22.sp, color = colors.secondary) }
+        TextButton(onClick = { prefs.setBookmark(surah, pageStart); bookmarked = pageStart }) { Text(if (bookmarked == pageStart) "★" else "☆", fontSize = 22.sp, color = colors.secondary) }
         TextButton(onClick = { showSearch = !showSearch }) { Text("⌕", fontSize = 23.sp) }
         TextButton(onClick = { showJump = true }) { Text("انتقال") }
+        if (bookmarked != null) TextButton(onClick = { pageStart = bookmarked!!.coerceIn(from, to) }) { Text("علامتي") }
       }
       if (showSearch) {
         OutlinedTextField(search, { search = it }, Modifier.fillMaxWidth().padding(horizontal = 12.dp), singleLine = true, label = { Text("ابحث داخل السورة") })
@@ -204,6 +205,10 @@ fun ReaderScreen(
         val clip = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
         clip.setPrimaryClip(android.content.ClipData.newPlainText("مُتقن", pageText))
       }, modifier = Modifier.weight(1f)) { Text("نسخ الصفحة") }
+      OutlinedButton(onClick = {
+        val send = android.content.Intent(android.content.Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(android.content.Intent.EXTRA_TEXT, pageText) }
+        context.startActivity(android.content.Intent.createChooser(send, "مشاركة آيات من القرآن"))
+      }, modifier = Modifier.weight(1f)) { Text("مشاركة") }
       Button(onClick = { pageStart = minOf(to, pageStart + pageSize) }, enabled = pageEnd < to, modifier = Modifier.weight(1f)) { Text("التالي") }
     }
     if (bookmarked != null) {
