@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 fun SurahListScreen(
   repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Boolean) -> Unit,
   onOpenSurah: (Int) -> Unit, onResume: (Int, Int, Int) -> Unit,
-  onOpenRecorder: () -> Unit, onOpenCheck: () -> Unit, onOpenTajweed: () -> Unit, onOpenStories: () -> Unit
+  onOpenRecorder: () -> Unit, onOpenCheck: () -> Unit, onOpenTajweed: () -> Unit, onOpenStories: () -> Unit, onOpenReciters: () -> Unit
 ) {
   var query by remember { mutableStateOf("") }
   val last = remember { prefs.lastPosition() }
@@ -86,6 +86,7 @@ fun SurahListScreen(
         FeatureCard("🌿", "قصص قرآنية", "عبر وفوائد", Modifier.weight(1f), onOpenStories)
       }
       Spacer(Modifier.height(10.dp))
+      FeatureCard("🎼", "مكتبة القرّاء", "استمع لتلاوات المشايخ", Modifier.fillMaxWidth(), onOpenReciters)
       FeatureCard("🎧", "مسجل التلاوة", "تسجيل واستماع", Modifier.fillMaxWidth(), onOpenRecorder)
     }
     item {
