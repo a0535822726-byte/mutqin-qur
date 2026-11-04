@@ -127,16 +127,24 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   }
 
   val colors = MaterialTheme.colorScheme
-  Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-      TextButton(onClick = onBack) { Text("رجوع") }
-      Column(Modifier.weight(1f)) {
-        Text("جلسة التسميع", fontSize = 23.sp, fontWeight = FontWeight.ExtraBold, color = colors.primary)
-        Text("تدريب صوتي خاص بك", fontSize = 11.sp, color = colors.onSurfaceVariant)
+  Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().padding(horizontal = 15.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
+    Card(shape = RoundedCornerShape(26.dp), colors = CardDefaults.cardColors(containerColor = colors.primary)) {
+      Column(Modifier.fillMaxWidth().padding(17.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          TextButton(onClick = onBack, colors = ButtonDefaults.textButtonColors(contentColor = colors.onPrimary)) { Text("رجوع") }
+          Spacer(Modifier.weight(1f))
+          Text("مُتقن  •  مختبر التلاوة", fontSize = 11.sp, color = colors.onPrimary.copy(alpha = .85f))
+        }
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+          Box(Modifier.size(54.dp).clip(RoundedCornerShape(18.dp)).background(colors.onPrimary.copy(alpha = .14f)), contentAlignment = Alignment.Center) { Text("🎙", fontSize = 29.sp) }
+          Column {
+            Text("جلسة التسميع", fontSize = 24.sp, fontWeight = FontWeight.Black, color = colors.onPrimary)
+            Text("اختر آية • استمع • راجع تلاوتك", fontSize = 11.sp, color = colors.onPrimary.copy(alpha = .86f))
+          }
+        }
       }
-      Text("🎙", fontSize = 27.sp)
     }
-    Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
+    Card(shape = RoundedCornerShape(25.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
       Column(Modifier.fillMaxWidth().padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text("موضع المراجعة", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         OutlinedTextField(value = surahInput, onValueChange = { surahInput = it.filter(Char::isDigit).take(3); ayahInput = "1" }, modifier = Modifier.fillMaxWidth(), singleLine = true, label = { Text("رقم السورة (١–١١٤)") })
@@ -155,9 +163,9 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         }
       }
     }
-    Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=colors.surface)) {
+    Card(shape=RoundedCornerShape(25.dp),colors=CardDefaults.cardColors(containerColor=colors.surface), elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
       Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
-        Text("تدريب التجويد الموجّه",fontSize=17.sp,fontWeight=FontWeight.Bold,color=colors.primary)
+        Text("✦  مختبر أحكام التجويد",fontSize=18.sp,fontWeight=FontWeight.Black,color=colors.primary)
         Text("اختر حكمًا واحدًا تركز عليه في هذه الجلسة:",fontSize=12.sp,color=colors.onSurfaceVariant)
         Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
           listOf("الغنة","المد","القلقلة","المخارج").forEach { rule ->
@@ -184,12 +192,12 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         Text("هذا تدريب إرشادي فقط؛ الميكروفون لا يحكم على صحة الغنة أو المد أو المخرج حتى الآن.",fontSize=11.sp,color=colors.error)
       }
     }
-    Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant)) {
+    Card(shape = RoundedCornerShape(28.dp), colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant), elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)) {
       Column(Modifier.fillMaxWidth().padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(13.dp)) {
         Box(Modifier.size(94.dp).clip(CircleShape).background(if (recording) colors.error.copy(alpha = .13f) else colors.primary.copy(alpha = .12f)), contentAlignment = Alignment.Center) {
           Text(if (recording) "●" else "🎙", color = if (recording) colors.error else colors.primary, fontSize = 35.sp)
         }
-        Text(if (recording) "جارٍ الاستماع لصوتك" else "جاهز لبدء التلاوة", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(if (recording) "الميكروفون يستقبل تلاوتك" else "منطقة التسجيل الصوتي", fontSize = 19.sp, fontWeight = FontWeight.Black, color = colors.onSurface)
         Text("%02d:%02d".format(elapsed / 60, elapsed % 60), fontSize = 27.sp, fontWeight = FontWeight.ExtraBold, color = colors.primary)
         Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.SpaceBetween) {
           Text("مستوى إشارة الميكروفون",fontSize=11.sp,color=colors.onSurfaceVariant)
