@@ -35,6 +35,7 @@ sealed interface Screen {
   data class Range(val surah: Int) : Screen
   data class Reader(val surah: Int, val from: Int, val to: Int) : Screen
   data object Recorder : Screen
+  data object Tajweed : Screen
 }
 
 class MainActivity : ComponentActivity() {
@@ -71,7 +72,7 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
 
   BackHandler(enabled = screen !is Screen.SurahList) {
     val current = screen
-    screen = when (current) { is Screen.Reader -> Screen.Range(current.surah); is Screen.Range -> Screen.SurahList; Screen.Recorder -> Screen.SurahList; Screen.SurahList -> Screen.SurahList }
+    screen = when (current) { is Screen.Reader -> Screen.Range(current.surah); is Screen.Range -> Screen.SurahList; Screen.Recorder -> Screen.SurahList; Screen.Tajweed -> Screen.SurahList; Screen.SurahList -> Screen.SurahList }
   }
 
   when (val s = screen) {
@@ -79,7 +80,8 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
       repo, prefs, dark, onDark,
       onOpenSurah = { screen = Screen.Range(it) },
       onResume = { surah, from, to -> screen = Screen.Reader(surah, from, to) },
-      onOpenRecorder = { screen = Screen.Recorder }
+      onOpenRecorder = { screen = Screen.Recorder },
+      onOpenTajweed = { screen = Screen.Tajweed }
     )
     is Screen.Range -> RangeScreen(
       repo, s.surah,
@@ -94,5 +96,6 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
       onBack = { screen = Screen.Range(s.surah) }
     )
     Screen.Recorder -> RecorderScreen(onBack = { screen = Screen.SurahList })
+    Screen.Tajweed -> TajweedScreen(onBack = { screen = Screen.SurahList })
   }
 }
