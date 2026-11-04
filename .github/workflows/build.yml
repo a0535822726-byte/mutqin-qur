@@ -15,7 +15,7 @@ jobs:
       - name: Check sources
         id: check
         run: |
-          if [ -f src/Data.kt ] && [ -f src/MainActivity.kt ] && [ -f src/ListScreen.kt ] && [ -f src/ReaderScreens.kt ] && [ -f src/RecorderScreen.kt ] && [ -f src/TajweedScreen.kt ]; then
+          if [ -f src/Data.kt ] && [ -f src/MainActivity.kt ] && [ -f src/ListScreen.kt ] && [ -f src/ReaderScreens.kt ] && [ -f src/RecorderScreen.kt ] && [ -f src/TajweedScreen.kt ] && [ -f src/StoriesScreen.kt ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
@@ -79,8 +79,8 @@ jobs:
                   applicationId = "com.mutqin.app"
                   minSdk = 26
                   targetSdk = 35
-                  versionCode = 3
-                  versionName = "0.3.0"
+                  versionCode = 4
+                  versionName = "0.4.0"
               }
               compileOptions {
                   sourceCompatibility = JavaVersion.VERSION_17
