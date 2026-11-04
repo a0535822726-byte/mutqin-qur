@@ -30,6 +30,36 @@ private fun mutqinWords(s: String): List<String> = s
   .replace('ى', 'ي').replace('ة', 'ه')
   .trim().split(Regex("\\s+")).filter { it.isNotBlank() }
 
+private data class WordAlignment(val expected: String?, val heard: String?, val kind: String)
+
+private fun alignRecitationWords(expected: List<String>, heard: List<String>): List<WordAlignment> {
+  val rows = expected.size
+  val cols = heard.size
+  val dp = Array(rows + 1) { IntArray(cols + 1) }
+  for (i in 0..rows) dp[i][0] = i
+  for (j in 0..cols) dp[0][j] = j
+  for (i in 1..rows) {
+    for (j in 1..cols) {
+      val cost = if (expected[i - 1] == heard[j - 1]) 0 else 1
+      dp[i][j] = minOf(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost)
+    }
+  }
+  val result = mutableListOf<WordAlignment>()
+  var i = rows
+  var j = cols
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && expected[i - 1] == heard[j - 1] && dp[i][j] == dp[i - 1][j - 1]) {
+      result.add(WordAlignment(expected[i - 1], heard[j - 1], "match")); i--; j--
+    } else if (i > 0 && j > 0 && dp[i][j] == dp[i - 1][j - 1] + 1) {
+      result.add(WordAlignment(expected[i - 1], heard[j - 1], "different")); i--; j--
+    } else if (i > 0 && dp[i][j] == dp[i - 1][j] + 1) {
+      result.add(WordAlignment(expected[i - 1], null, "missing")); i--
+    } else {
+      result.add(WordAlignment(null, heard[j - 1], "extra")); j--
+    }
+  }
+  return result.asReversed()
+}
 @Composable
 fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   val context = LocalContext.current
@@ -47,8 +77,8 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   val expected = (from..to).joinToString(" ") { repo.ayah(surah, it) }
   val expectedWords = remember(expected) { mutqinWords(expected) }
   val heardWords = remember(transcript) { mutqinWords(transcript) }
-  val matching = expectedWords.indices.count { i -> i < heardWords.size && expectedWords[i] == heardWords[i] }
-  val reviewCount = maxOf(expectedWords.size, heardWords.size) - matching
+  val alignment = remember(expectedWords, heardWords) { alignRecitationWords(expectedWords, heardWords) }
+  val matching = alignment.count { it.kind == "match" }
   val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
     status = if (granted) "تم السماح بالميكروفون. اضغط بدء التسميع." else "لم يتم السماح بالميكروفون."
   }
@@ -123,13 +153,15 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
           Text(transcript)
           HorizontalDivider()
           Text("مراجعة الكلمات:", fontWeight = FontWeight.Bold)
-          expectedWords.forEachIndexed { i, word ->
-            val heard = heardWords.getOrNull(i)
-            val good = heard == word
-            Text((if (good) "✓ " else "• ") + word + (if (heard != null && !good) " — سُمِع: " + heard else if (heard == null) " — لم يلتقطها" else ""),
-              color = if (good) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error, fontSize = 13.sp)
+          alignment.forEach { item ->
+            val line = when (item.kind) {
+              "match" -> "✓ ${item.expected}"
+              "missing" -> "لم يلتقط الهاتف: ${item.expected}"
+              "extra" -> "كلمة إضافية التقطها الهاتف: ${item.heard}"
+              else -> "المتوقع: ${item.expected} • الملتقط: ${item.heard}"
+            }
+            Text(line, color = if (item.kind == "match") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error, fontSize = 13.sp)
           }
-          if (heardWords.size > expectedWords.size) Text("كلمات إضافية التقطها الهاتف: " + heardWords.drop(expectedWords.size).joinToString("، "), color = MaterialTheme.colorScheme.error)
           OutlinedButton(onClick = { transcript = ""; status = "جاهز لمحاولة جديدة." }, modifier = Modifier.fillMaxWidth()) { Text("إعادة التسميع") }
         }
       }
