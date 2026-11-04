@@ -37,8 +37,8 @@ fun SurahListScreen(
     item {
       Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-          Text("مُتقن", fontSize = 32.sp, fontWeight = FontWeight.ExtraBold, color = colors.primary)
-          Text("رفيق رحلتك مع كتاب الله", fontSize = 13.sp, color = colors.onBackground.copy(alpha = .65f))
+          Text("مُتقن", fontSize = 34.sp, fontWeight = FontWeight.ExtraBold, color = colors.primary)
+          Text("رحلتك اليومية مع القرآن الكريم", fontSize = 13.sp, color = colors.onBackground.copy(alpha = .65f))
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
           Text("الوضع الليلي", fontSize = 10.sp, color = colors.onBackground.copy(alpha = .7f))
@@ -58,9 +58,9 @@ fun SurahListScreen(
           ).padding(22.dp)
         ) {
           Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", color = colors.onPrimary.copy(alpha = .9f), fontSize = 14.sp)
-            Text("وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا", color = colors.onPrimary, fontSize = 25.sp, fontWeight = FontWeight.Bold)
-            Text("اقرأ بتدبّر، اختبر حفظك، وتعلّم أحكام التلاوة.", color = colors.onPrimary.copy(alpha = .88f), fontSize = 13.sp)
+            Text("السَّلَامُ عَلَيْكَ يَا صَاحِبَ الْقُرْآنِ", color = colors.onPrimary.copy(alpha = .9f), fontSize = 13.sp)
+            Text("وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا", color = colors.onPrimary, fontSize = 27.sp, fontWeight = FontWeight.Bold)
+            Text("خطوة صغيرة كل يوم تصنع أثرًا عظيمًا.", color = colors.onPrimary.copy(alpha = .9f), fontSize = 13.sp)
             if (last != null) {
               Button(
                 onClick = { onResume(last.first, last.second, last.third) },
@@ -74,23 +74,23 @@ fun SurahListScreen(
       }
     }
     item {
-      Text("ابدأ رحلتك", fontSize = 19.sp, fontWeight = FontWeight.Bold, color = colors.onBackground)
+      Text("ماذا تريد أن تفعل؟", fontSize = 19.sp, fontWeight = FontWeight.Bold, color = colors.onBackground)
       Spacer(Modifier.height(10.dp))
       Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        FeatureCard("🎙", "اختبار التسميع", "مقارنة الكلمات", Modifier.weight(1f), onOpenCheck)
+        FeatureCard("🎙", "التسميع", "مقارنة مبدئية", Modifier.weight(1f), onOpenCheck)
         FeatureCard("📖", "المصحف", "قراءة السور", Modifier.weight(1f)) { onOpenSurah(1) }
       }
       Spacer(Modifier.height(10.dp))
       Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        FeatureCard("۞", "دروس التجويد", "تعلّم واختبر", Modifier.weight(1f), onOpenTajweed)
-        FeatureCard("🌿", "قصص قرآنية", "عبر وفوائد", Modifier.weight(1f), onOpenStories)
+        FeatureCard("۞", "التجويد", "دروس واختبار", Modifier.weight(1f), onOpenTajweed)
+        FeatureCard("🌿", "القصص", "قصص قرآنية", Modifier.weight(1f), onOpenStories)
       }
       Spacer(Modifier.height(10.dp))
-      FeatureCard("🎼", "مكتبة القرّاء", "استمع لتلاوات المشايخ", Modifier.fillMaxWidth(), onOpenReciters)
-      FeatureCard("🎧", "مسجل التلاوة", "تسجيل واستماع", Modifier.fillMaxWidth(), onOpenRecorder)
+      FeatureCard("🎼", "القرّاء", "تلاوات حقيقية", Modifier.weight(1f), onOpenReciters)
+      FeatureCard("🎧", "التسجيل", "استمع لصوتك", Modifier.weight(1f), onOpenRecorder)
     }
     item {
-      Text("سور القرآن الكريم", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = colors.onBackground)
+      Text("سور القرآن الكريم", fontSize = 21.sp, fontWeight = FontWeight.Bold, color = colors.onBackground)
       Text("١١٤ سورة بين يديك", fontSize = 12.sp, color = colors.onBackground.copy(alpha = .6f))
       Spacer(Modifier.height(8.dp))
       OutlinedTextField(
@@ -138,7 +138,7 @@ private fun FeatureCard(
 ) {
   Card(
     onClick = onClick,
-    shape = RoundedCornerShape(20.dp),
+    shape = RoundedCornerShape(22.dp),
     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     modifier = modifier
   ) {
