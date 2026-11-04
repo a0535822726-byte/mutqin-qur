@@ -90,86 +90,124 @@ fun RangeScreen(
 fun ReaderScreen(
   repo: QuranRepository, prefs: AppPrefs, surah: Int, from: Int, to: Int, onBack: () -> Unit
 ) {
-  var hide by remember { mutableStateOf(false) }
-  var size by remember { mutableStateOf(prefs.fontSize().coerceIn(22f, 38f)) }
-  val revealed = remember { mutableStateListOf<Int>() }
-  val showBasmala = surah != 1 && surah != 9 && from == 1
-  val listState = rememberLazyListState()
-  val paper = androidx.compose.ui.graphics.Color(0xFFFFFCF2)
-  val ink = androidx.compose.ui.graphics.Color(0xFF263D32)
-  val gold = androidx.compose.ui.graphics.Color(0xFFB38A3E)
-
-  LaunchedEffect(listState, surah, from, to, showBasmala) {
-    snapshotFlow { listState.firstVisibleItemIndex }.collect { index ->
-      val ayahNumber = from + index - if (showBasmala) 1 else 0
-      if (ayahNumber in from..to) prefs.setLastPosition(surah, ayahNumber, to)
-    }
+  val context = androidx.compose.ui.platform.LocalContext.current
+  val colors = MaterialTheme.colorScheme
+  var fontSize by remember { mutableStateOf(prefs.fontSize().coerceIn(20f, 42f)) }
+  var reviewMode by remember { mutableStateOf(false) }
+  var revealAll by remember { mutableStateOf(true) }
+  var focusMode by remember { mutableStateOf(false) }
+  var search by remember { mutableStateOf("") }
+  var jumpText by remember { mutableStateOf("") }
+  var showJump by remember { mutableStateOf(false) }
+  var showSearch by remember { mutableStateOf(false) }
+  var pageStart by remember { mutableIntStateOf(from) }
+  val pageSize = 10
+  val pageEnd = minOf(to, pageStart + pageSize - 1)
+  val bookmarked = prefs.bookmark(surah)
+  val visibleAyahs = (pageStart..pageEnd).filter { n ->
+    search.isBlank() || normalizeAr(repo.ayah(surah, n)).contains(normalizeAr(search.trim()))
+  }
+  val pageText = visibleAyahs.joinToString("  ") { n ->
+    val verse = if (reviewMode && !revealAll) "ــــــــــــ" else repo.ayah(surah, n)
+    "$verse ۞${toArabic(n)}"
   }
 
-  Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding()) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-      TextButton(onClick = onBack) { Text("رجوع") }
-      Column(Modifier.weight(1f)) {
-        Text("المصحف الشريف", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 17.sp)
-        Text("سورة ${SURAH_NAMES[surah - 1]} • ${toArabic(from)}–${toArabic(to)}", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .65f))
-      }
-      Text("۞", fontSize = 25.sp, color = gold)
-    }
-    Card(Modifier.fillMaxWidth().padding(horizontal = 12.dp), shape = RoundedCornerShape(17.dp),
-      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
-      Column(Modifier.padding(horizontal = 13.dp, vertical = 5.dp)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-          Text("وضع المراجعة", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-          Switch(checked = hide, onCheckedChange = { hide = it; revealed.clear() })
+  LaunchedEffect(surah, pageStart, pageEnd) { prefs.setLastPosition(surah, pageStart, to) }
+
+  Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding()) {
+    if (!focusMode) {
+      Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
+        TextButton(onClick = onBack) { Text("رجوع") }
+        Column(Modifier.weight(1f)) {
+          Text("مُتقن • المصحف", fontWeight = FontWeight.ExtraBold, color = colors.primary, fontSize = 18.sp)
+          Text("سورة ${SURAH_NAMES[surah - 1]}  •  الآيات ${toArabic(pageStart)}–${toArabic(pageEnd)}", fontSize = 10.sp, color = colors.onSurfaceVariant)
         }
-        if (hide) {
-          Text("اضغط على الآية لإظهارها. يمكنك كشف الكل أو إخفاؤه.", fontSize = 10.sp)
-          Row {
-            TextButton(onClick = { revealed.clear(); revealed.addAll(from..to) }) { Text("إظهار الكل") }
-            TextButton(onClick = { revealed.clear() }) { Text("إخفاء الكل") }
+        TextButton(onClick = { prefs.setBookmark(surah, pageStart); }) { Text(if (bookmarked == pageStart) "★" else "☆", fontSize = 22.sp, color = colors.secondary) }
+        TextButton(onClick = { showSearch = !showSearch }) { Text("⌕", fontSize = 23.sp) }
+        TextButton(onClick = { showJump = true }) { Text("انتقال") }
+      }
+      if (showSearch) {
+        OutlinedTextField(search, { search = it }, Modifier.fillMaxWidth().padding(horizontal = 12.dp), singleLine = true, label = { Text("ابحث داخل السورة") })
+      }
+      Card(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant), shape = RoundedCornerShape(18.dp)) {
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("المراجعة", Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            Switch(checked = reviewMode, onCheckedChange = { reviewMode = it; revealAll = !it })
+            Text("تركيز", fontSize = 11.sp)
+            Switch(checked = focusMode, onCheckedChange = { focusMode = it })
+          }
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("حجم الخط", fontSize = 11.sp)
+            TextButton(onClick = { fontSize = (fontSize - 2f).coerceAtLeast(20f); prefs.setFontSize(fontSize) }) { Text("أ−") }
+            Text("${fontSize.toInt()}", fontSize = 11.sp)
+            TextButton(onClick = { fontSize = (fontSize + 2f).coerceAtMost(42f); prefs.setFontSize(fontSize) }) { Text("أ+") }
+            TextButton(onClick = { fontSize = 28f; prefs.setFontSize(fontSize) }) { Text("إعادة") }
+          }
+          if (reviewMode) {
+            Row {
+              TextButton(onClick = { revealAll = true }) { Text("إظهار الآيات") }
+              TextButton(onClick = { revealAll = false }) { Text("إخفاء الآيات") }
+            }
           }
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          Text("حجم الخط", fontSize = 11.sp)
-          Slider(value = size, onValueChange = { size = it }, onValueChangeFinished = { prefs.setFontSize(size) },
-            valueRange = 22f..38f, modifier = Modifier.weight(1f))
-        }
+      }
+    } else {
+      Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
+        TextButton(onClick = { focusMode = false }) { Text("إنهاء وضع التركيز") }
       }
     }
-    Spacer(Modifier.height(8.dp))
-    LazyColumn(state = listState, modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 5.dp)) {
-      item {
-        Column(Modifier.fillMaxWidth().padding(bottom = 8.dp)
-          .border(1.dp, gold.copy(alpha = .8f), RoundedCornerShape(8.dp))
-          .background(paper, RoundedCornerShape(8.dp)).padding(13.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-          Text("۞  بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ  ۞", color = ink, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
-          Spacer(Modifier.height(5.dp))
-          Text("سُورَةُ ${SURAH_NAMES[surah - 1]}", color = ink, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-          Text("❖ ─────────────── ❖", color = gold, fontSize = 13.sp)
-        }
+
+    if (showJump) {
+      AlertDialog(
+        onDismissRequest = { showJump = false },
+        title = { Text("الانتقال إلى آية") },
+        text = { OutlinedTextField(jumpText, { jumpText = it }, label = { Text("رقم الآية") }, singleLine = true) },
+        confirmButton = {
+          TextButton(onClick = {
+            val n = jumpText.trim().toIntOrNull()
+            if (n != null && n in from..to) pageStart = n
+            showJump = false
+          }) { Text("انتقال") }
+        },
+        dismissButton = { TextButton(onClick = { showJump = false }) { Text("إلغاء") } }
+      )
+    }
+
+    Column(Modifier.weight(1f).fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp)
+      .background(colors.surface, RoundedCornerShape(22.dp)).padding(horizontal = 17.dp, vertical = 18.dp)) {
+      if (pageStart == from && from == 1) {
+        Text("۞  بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ  ۞", Modifier.fillMaxWidth(), color = colors.primary, fontSize = (fontSize * .72f).sp, textAlign = TextAlign.Center, fontWeight = FontWeight.SemiBold)
+        Spacer(Modifier.height(12.dp))
+        Text("سُورَةُ ${SURAH_NAMES[surah - 1]}", Modifier.fillMaxWidth(), color = colors.primary, fontSize = (fontSize * .78f).sp, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(14.dp))
       }
-      if (showBasmala) {
-        item {
-          Text("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-            fontSize = size.sp, lineHeight = (size * 1.9f).sp, textAlign = TextAlign.Center, color = ink)
-        }
+      if (search.isNotBlank() && visibleAyahs.isEmpty()) {
+        Text("لا توجد آيات مطابقة في هذا المدى.", color = colors.onSurfaceVariant)
+      } else {
+        Text(
+          pageText,
+          Modifier.fillMaxWidth().weight(1f),
+          color = colors.onSurface,
+          fontSize = fontSize.sp,
+          lineHeight = (fontSize * 2.05f).sp,
+          textAlign = TextAlign.Justify
+        )
       }
-      items((from..to).toList()) { n ->
-        val text = repo.ayah(surah, n)
-        val shown = !hide || n in revealed
-        val body = if (shown) text else text.substringBefore(' ') + " …"
-        Row(Modifier.fillMaxWidth().padding(horizontal = 7.dp, vertical = 1.dp).background(paper), verticalAlignment = Alignment.CenterVertically) {
-          Text(body, modifier = Modifier.weight(1f).clickable(enabled = hide) {
-            if (n in revealed) revealed.remove(n) else revealed.add(n)
-          }.padding(vertical = 5.dp), fontSize = size.sp, lineHeight = (size * 1.85f).sp,
-            textAlign = TextAlign.Center, color = ink)
-          Text("۞${toArabic(n)}", color = gold, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-        }
-      }
-      item {
-        Text("صَدَقَ اللَّهُ الْعَظِيمُ", color = ink, fontSize = 15.sp, textAlign = TextAlign.Center,
-          modifier = Modifier.fillMaxWidth().background(paper).border(1.dp, gold, RoundedCornerShape(8.dp)).padding(12.dp))
-      }
+      Spacer(Modifier.height(10.dp))
+      Text("مُتقن  •  ${SURAH_NAMES[surah - 1]}  •  ${toArabic(pageStart)}–${toArabic(pageEnd)}", Modifier.fillMaxWidth(), color = colors.secondary, fontSize = 10.sp, textAlign = TextAlign.Center)
+    }
+
+    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      OutlinedButton(onClick = { pageStart = maxOf(from, pageStart - pageSize) }, enabled = pageStart > from, modifier = Modifier.weight(1f)) { Text("السابق") }
+      OutlinedButton(onClick = {
+        val clip = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        clip.setPrimaryClip(android.content.ClipData.newPlainText("مُتقن", pageText))
+      }, modifier = Modifier.weight(1f)) { Text("نسخ الصفحة") }
+      Button(onClick = { pageStart = minOf(to, pageStart + pageSize) }, enabled = pageEnd < to, modifier = Modifier.weight(1f)) { Text("التالي") }
+    }
+    if (bookmarked != null) {
+      Text("علامتك المرجعية: الآية ${toArabic(bookmarked)}", Modifier.fillMaxWidth().padding(bottom = 5.dp), color = colors.secondary, fontSize = 10.sp, textAlign = TextAlign.Center)
     }
   }
 }
