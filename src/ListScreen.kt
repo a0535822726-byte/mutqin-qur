@@ -21,7 +21,8 @@ fun SurahListScreen(
   onDark: (Boolean) -> Unit,
   onOpenSurah: (Int) -> Unit,
   onResume: (Int, Int, Int) -> Unit,
-  onOpenRecorder: () -> Unit
+  onOpenRecorder: () -> Unit,
+  onOpenTajweed: () -> Unit
 ) {
   var query by remember { mutableStateOf("") }
   val last = remember { prefs.lastPosition() }
@@ -48,8 +49,13 @@ fun SurahListScreen(
         Switch(checked = dark, onCheckedChange = onDark)
       }
     }
-    Button(onClick = onOpenRecorder, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-      Text("🎙 تسجيل التلاوة والاستماع")
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+      Button(onClick = onOpenRecorder, modifier = Modifier.fillMaxWidth()) {
+        Text("🎙 تسجيل التلاوة والاستماع")
+      }
+      OutlinedButton(onClick = onOpenTajweed, modifier = Modifier.fillMaxWidth()) {
+        Text("📖 دروس التجويد والاختبار")
+      }
     }
     OutlinedTextField(
       value = query,
