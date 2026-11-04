@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private data class QuranStory(val title: String, val group: String, val summary: String, val lesson: String, val source: String)
+private data class QuranStory(val title: String, val group: String, val summary: String, val lesson: String, val source: String, val pages: List<String> = emptyList())
 
 @Composable
 fun StoriesScreen(onBack: () -> Unit) {
@@ -51,6 +51,7 @@ fun StoriesScreen(onBack: () -> Unit) {
   }
   var query by remember { mutableStateOf("") }
   var expanded by remember { mutableIntStateOf(-1) }
+  var pageIndex by remember { mutableIntStateOf(0) }
   val filtered = remember(query) { stories.withIndex().filter { it.value.title.contains(query.trim(), true) || it.value.group.contains(query.trim(), true) } }
   val colors = MaterialTheme.colorScheme
   Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding()) {
@@ -73,7 +74,7 @@ fun StoriesScreen(onBack: () -> Unit) {
       items(filtered, key = { it.index }) { indexed ->
         val i = indexed.index
         val story = indexed.value
-        Card(Modifier.fillMaxWidth().clickable { expanded = if (expanded == i) -1 else i }, shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
+        Card(Modifier.fillMaxWidth().clickable { expanded = if (expanded == i) -1 else i; pageIndex = 0 }, shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
           Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
               Column(Modifier.weight(1f)) { Text(story.title, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.primary); Text(story.group, fontSize = 10.sp, color = colors.onSurfaceVariant) }
@@ -82,6 +83,19 @@ fun StoriesScreen(onBack: () -> Unit) {
             if (expanded == i) {
               HorizontalDivider()
               Text(story.summary, fontSize = 13.sp, lineHeight = 22.sp)
+              if (story.pages.isNotEmpty()) {
+                Card(colors = CardDefaults.cardColors(containerColor = colors.primaryContainer), shape = RoundedCornerShape(14.dp)) {
+                  Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("قصة طويلة • الصفحة ${pageIndex + 1} من ${story.pages.size}", fontWeight = FontWeight.Bold, color = colors.onPrimaryContainer)
+                    LinearProgressIndicator(progress = { (pageIndex + 1).toFloat() / story.pages.size }, modifier = Modifier.fillMaxWidth())
+                    Text(story.pages[pageIndex], fontSize = 14.sp, lineHeight = 25.sp, color = colors.onPrimaryContainer)
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                      OutlinedButton(onClick = { pageIndex = (pageIndex - 1).coerceAtLeast(0) }, enabled = pageIndex > 0) { Text("السابقة") }
+                      Button(onClick = { pageIndex = (pageIndex + 1).coerceAtMost(story.pages.lastIndex) }, enabled = pageIndex < story.pages.lastIndex) { Text(if (pageIndex == story.pages.lastIndex) "اكتملت القصة" else "الصفحة التالية") }
+                    }
+                  }
+                }
+              }
               Text("🌱 العبرة", fontWeight = FontWeight.Bold, color = colors.primary, fontSize = 12.sp)
               Text(story.lesson, fontSize = 12.sp, lineHeight = 20.sp)
               Text("مواضع القصة في القرآن", fontWeight = FontWeight.Bold, fontSize = 11.sp)
