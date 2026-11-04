@@ -86,8 +86,8 @@ fun SurahListScreen(
         FeatureCard("🌿", "القصص", "قصص قرآنية", Modifier.weight(1f), onOpenStories)
       }
       Spacer(Modifier.height(10.dp))
-      FeatureCard("🎼", "القرّاء", "تلاوات حقيقية", Modifier.weight(1f), onOpenReciters)
-      FeatureCard("🎧", "التسجيل", "استمع لصوتك", Modifier.weight(1f), onOpenRecorder)
+      FeatureCard("🎼", "القرّاء", "تلاوات حقيقية", Modifier.fillMaxWidth(), onOpenReciters)
+      FeatureCard("🎧", "التسجيل", "استمع لصوتك", Modifier.fillMaxWidth(), onOpenRecorder)
     }
     item {
       Text("سور القرآن الكريم", fontSize = 21.sp, fontWeight = FontWeight.Bold, color = colors.onBackground)
