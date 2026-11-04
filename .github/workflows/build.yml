@@ -155,7 +155,7 @@ jobs:
         if: steps.check.outputs.ready == 'true'
         run: |
           python3 - <<'PY'
-          import json, urllib.request, unicodedata, time, sys
+          import json, urllib.request, time, sys
           url = "https://api.alquran.cloud/v1/quran/quran-uthmani"
           data = None
           for attempt in range(4):
@@ -169,8 +169,6 @@ jobs:
           if data is None:
               sys.exit("تعذر تحميل نص القرآن من alquran.cloud")
           surahs = data["data"]["surahs"]
-          def strip_marks(s):
-              return "".join(c for c in s if not unicodedata.category(c).startswith("M") and c != "\u0640")
           lines = []
           counts = []
           for s in surahs:
@@ -180,10 +178,6 @@ jobs:
                   t = a["text"].strip()
                   if a["numberInSurah"] != k:
                       sys.exit("ترتيب الآيات غير متوقع في سورة %d" % n)
-                  if n != 1 and k == 1:
-                      toks = t.split()
-                      if strip_marks(toks[0]) == "بسم" and len(toks) > 4:
-                          t = " ".join(toks[4:])
                   lines.append("%d|%d|%s" % (n, k, t))
           if len(surahs) != 114 or len(lines) != 6236:
               sys.exit("عدد السور أو الآيات غير صحيح: %d / %d" % (len(surahs), len(lines)))
