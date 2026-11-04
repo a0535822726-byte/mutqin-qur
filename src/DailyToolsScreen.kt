@@ -165,7 +165,7 @@ fun DailyToolsScreen(prefs: AppPrefs, onBack: () -> Unit) {
       if (goalInput.contains(",")) {
         val p=goalInput.split(",").mapNotNull{it.toIntOrNull()?.coerceIn(1,9999)}
         if(p.size==3){verseGoal=p[0];memorGoal=p[1];reviewGoal=p[2];prefs.setToolInt("vgoal_$today",verseGoal);prefs.setToolInt("mgoal_$today",memorGoal);prefs.setToolInt("rgoal_$today",reviewGoal)}
-      } else goalInput.toIntOrNull()?.coerceIn(1,9999)?.let{prefs.setToolInt("dhgoal_${active.key}",it)}
+      } else goalInput.toIntOrNull()?.coerceIn(1,9999)?.let{prefs.setToolInt("dhgoal_${kinds[selected].key}",it)}
       showGoals=false; refresh++
     }){Text("حفظ")} }, dismissButton={TextButton(onClick={showGoals=false}){Text("إلغاء")}})
   }
