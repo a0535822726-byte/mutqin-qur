@@ -211,8 +211,8 @@ fun ReaderScreen(
       }, modifier = Modifier.weight(1f)) { Text("مشاركة") }
       Button(onClick = { pageStart = minOf(to, pageStart + pageSize) }, enabled = pageEnd < to, modifier = Modifier.weight(1f)) { Text("التالي") }
     }
-    if (bookmarked != null) {
-      Text("علامتك المرجعية: الآية ${toArabic(bookmarked)}", Modifier.fillMaxWidth().padding(bottom = 5.dp), color = colors.secondary, fontSize = 10.sp, textAlign = TextAlign.Center)
+    bookmarked?.let { mark ->
+      Text("علامتك المرجعية: الآية ${toArabic(mark)}", Modifier.fillMaxWidth().padding(bottom = 5.dp), color = colors.secondary, fontSize = 10.sp, textAlign = TextAlign.Center)
     }
   }
 }
