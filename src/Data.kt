@@ -58,6 +58,12 @@ class AppPrefs(context: Context) {
   }
   fun bookmark(s: Int): Int? = p.getInt("bookmark_$s", 0).takeIf { it > 0 }
   fun setBookmark(s: Int, ayah: Int) { p.edit().putInt("bookmark_$s", ayah).apply() }
+  fun toolInt(key: String, fallback: Int = 0): Int = p.getInt("tool_$key", fallback)
+  fun setToolInt(key: String, value: Int) { p.edit().putInt("tool_$key", value).apply() }
+  fun toolText(key: String, fallback: String = ""): String = p.getString("tool_$key", fallback) ?: fallback
+  fun setToolText(key: String, value: String) { p.edit().putString("tool_$key", value).apply() }
+  fun toolFlag(key: String): Boolean = p.getBoolean("tool_$key", false)
+  fun setToolFlag(key: String, value: Boolean) { p.edit().putBoolean("tool_$key", value).apply() }
 }
 
 fun toArabic(n: Int): String = n.toString().map { '٠' + (it - '0') }.joinToString("")
