@@ -15,26 +15,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 
-private val Green = Color(0xFF0F5132)
-private val Gold = Color(0xFFD4AF37)
-
-private val LightColors = lightColorScheme(
-  primary = Green, secondary = Gold,
-  background = Color(0xFFFAF6EC), surface = Color(0xFFFAF6EC),
-  onBackground = Color(0xFF1B1B1B), onSurface = Color(0xFF1B1B1B)
-)
-
-private val DarkColors = darkColorScheme(
-  primary = Gold, secondary = Gold,
-  background = Color(0xFF0B1F17), surface = Color(0xFF0B1F17),
-  onBackground = Color(0xFFEDE8D8), onSurface = Color(0xFFEDE8D8)
-)
+private val Green = Color(0xFF08745A)
+private val Gold = Color(0xFFE2B85B)
+private val LightColors = lightColorScheme(primary = Green, secondary = Color(0xFFB17B24), background = Color(0xFFF5F7F4), surface = Color.White, onBackground = Color(0xFF17231F), onSurface = Color(0xFF17231F), surfaceVariant = Color(0xFFE8F0EB))
+private val DarkColors = darkColorScheme(primary = Color(0xFF65C6A4), secondary = Gold, background = Color(0xFF101A17), surface = Color(0xFF192520), onBackground = Color(0xFFEAF2ED), onSurface = Color(0xFFEAF2ED), surfaceVariant = Color(0xFF24362E))
 
 sealed interface Screen {
   data object SurahList : Screen
   data class Range(val surah: Int) : Screen
   data class Reader(val surah: Int, val from: Int, val to: Int) : Screen
   data object Recorder : Screen
+  data object Check : Screen
   data object Tajweed : Screen
   data object Stories : Screen
 }
@@ -55,11 +46,8 @@ class MainActivity : ComponentActivity() {
       }
       CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         MaterialTheme(colorScheme = if (dark) DarkColors else LightColors) {
-          Surface(modifier = Modifier.fillMaxSize()) {
-            AppRoot(repo, prefs, dark) { value ->
-              dark = value
-              prefs.setDark(value)
-            }
+          Surface(Modifier.fillMaxSize()) {
+            AppRoot(repo, prefs, dark) { value -> dark = value; prefs.setDark(value) }
           }
         }
       }
@@ -70,34 +58,27 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Boolean) -> Unit) {
   var screen by remember { mutableStateOf<Screen>(Screen.SurahList) }
-
   BackHandler(enabled = screen !is Screen.SurahList) {
-    val current = screen
-    screen = when (current) { is Screen.Reader -> Screen.Range(current.surah); is Screen.Range -> Screen.SurahList; Screen.Recorder -> Screen.SurahList; Screen.Tajweed -> Screen.SurahList; Screen.Stories -> Screen.SurahList; Screen.SurahList -> Screen.SurahList }
+    screen = when (val current = screen) {
+      is Screen.Reader -> Screen.Range(current.surah)
+      is Screen.Range -> Screen.SurahList
+      Screen.Recorder, Screen.Check, Screen.Tajweed, Screen.Stories -> Screen.SurahList
+      Screen.SurahList -> Screen.SurahList
+    }
   }
-
   when (val s = screen) {
-    is Screen.SurahList -> SurahListScreen(
-      repo, prefs, dark, onDark,
+    is Screen.SurahList -> SurahListScreen(repo, prefs, dark, onDark,
       onOpenSurah = { screen = Screen.Range(it) },
-      onResume = { surah, from, to -> screen = Screen.Reader(surah, from, to) },
+      onResume = { a, b, c -> screen = Screen.Reader(a, b, c) },
       onOpenRecorder = { screen = Screen.Recorder },
+      onOpenCheck = { screen = Screen.Check },
       onOpenTajweed = { screen = Screen.Tajweed },
-      onOpenStories = { screen = Screen.Stories }
-    )
-    is Screen.Range -> RangeScreen(
-      repo, s.surah,
-      onBack = { screen = Screen.SurahList },
-      onStart = { from, to ->
-        prefs.setLastPosition(s.surah, from, to)
-        screen = Screen.Reader(s.surah, from, to)
-      }
-    )
-    is Screen.Reader -> ReaderScreen(
-      repo, prefs, s.surah, s.from, s.to,
-      onBack = { screen = Screen.Range(s.surah) }
-    )
+      onOpenStories = { screen = Screen.Stories })
+    is Screen.Range -> RangeScreen(repo, s.surah, onBack = { screen = Screen.SurahList },
+      onStart = { a, b -> prefs.setLastPosition(s.surah, a, b); screen = Screen.Reader(s.surah, a, b) })
+    is Screen.Reader -> ReaderScreen(repo, prefs, s.surah, s.from, s.to, onBack = { screen = Screen.Range(s.surah) })
     Screen.Recorder -> RecorderScreen(onBack = { screen = Screen.SurahList })
+    Screen.Check -> RecitationCheckScreen(repo, onBack = { screen = Screen.SurahList })
     Screen.Tajweed -> TajweedScreen(onBack = { screen = Screen.SurahList })
     Screen.Stories -> StoriesScreen(onBack = { screen = Screen.SurahList })
   }
