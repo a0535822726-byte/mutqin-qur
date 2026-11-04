@@ -30,6 +30,7 @@ sealed interface Screen {
   data object Stories : Screen
   data object Reciters : Screen
   data object DailyTools : Screen
+  data class Tool(val id: String) : Screen
 }
 
 class MainActivity : ComponentActivity() {
@@ -65,7 +66,7 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
       is Screen.Reader -> Screen.Range(current.surah)
       is Screen.Range -> Screen.SurahList
       Screen.Recorder, Screen.Check, Screen.Tajweed, Screen.Stories, Screen.Reciters -> Screen.SurahList
-      Screen.DailyTools -> Screen.SurahList
+      Screen.DailyTools, is Screen.Tool -> Screen.SurahList
       Screen.SurahList -> Screen.SurahList
     }
   }
@@ -78,7 +79,8 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
       onOpenTajweed = { screen = Screen.Tajweed },
       onOpenStories = { screen = Screen.Stories },
       onOpenReciters = { screen = Screen.Reciters },
-      onOpenDailyTools = { screen = Screen.DailyTools })
+      onOpenDailyTools = { screen = Screen.DailyTools },
+      onOpenTool = { screen = Screen.Tool(it) })
     is Screen.Range -> RangeScreen(repo, s.surah, onBack = { screen = Screen.SurahList },
       onStart = { a, b -> prefs.setLastPosition(s.surah, a, b); screen = Screen.Reader(s.surah, a, b) })
     is Screen.Reader -> ReaderScreen(repo, prefs, s.surah, s.from, s.to, onBack = { screen = Screen.Range(s.surah) })
@@ -88,5 +90,6 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
     Screen.Stories -> StoriesScreen(onBack = { screen = Screen.SurahList })
     Screen.Reciters -> RecitersScreen(onBack = { screen = Screen.SurahList })
     Screen.DailyTools -> DailyToolsScreen(prefs, onBack = { screen = Screen.SurahList })
+    is Screen.Tool -> DailyToolDetailScreen(prefs, s.id, onBack = { screen = Screen.SurahList })
   }
 }
