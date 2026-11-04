@@ -43,6 +43,9 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   var status by remember { mutableStateOf("اختر موضع المراجعة، ثم ابدأ التلاوة.") }
   var recognizedText by remember { mutableStateOf("") }
   var matchPercent by remember { mutableIntStateOf(-1) }
+  var focusRule by remember { mutableStateOf("الغنة") }
+  var reviewedRecording by remember { mutableStateOf(false) }
+  var checkedRule by remember { mutableStateOf(false) }
   var savedFile by remember { mutableStateOf<File?>(null) }
   var player by remember { mutableStateOf<MediaPlayer?>(null) }
   var recorder by remember { mutableStateOf<MediaRecorder?>(null) }
@@ -150,6 +153,35 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
             }
           }
         }
+      }
+    }
+    Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=colors.surface)) {
+      Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+        Text("تدريب التجويد الموجّه",fontSize=17.sp,fontWeight=FontWeight.Bold,color=colors.primary)
+        Text("اختر حكمًا واحدًا تركز عليه في هذه الجلسة:",fontSize=12.sp,color=colors.onSurfaceVariant)
+        Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+          listOf("الغنة","المد","القلقلة","المخارج").forEach { rule ->
+            FilterChip(selected=focusRule==rule,onClick={focusRule=rule},label={Text(rule,fontSize=11.sp)})
+          }
+        }
+        val tip = when(focusRule) {
+          "الغنة" -> "انتبه لغنة النون والميم المشددتين، ومقدارها حركتان في رواية حفص. لا تجعلها صوتًا متكلفًا."
+          "المد" -> "ابدأ بالمد الطبيعي: حركتان. لا تمده أكثر إلا إذا وُجد سبب معتبر للمد."
+          "القلقلة" -> "حروفها قطب جد عند السكون. أظهر صوت الحرف دون إضافة حركة بعده."
+          else -> "ركّز على وضوح الحروف المتقاربة، واستمع لنفسك ثم اعرض الموضع على معلّم متقن."
+        }
+        Surface(shape=RoundedCornerShape(14.dp),color=colors.primary.copy(alpha=.08f)) {
+          Text(tip,Modifier.fillMaxWidth().padding(12.dp),fontSize=13.sp,lineHeight=22.sp,color=colors.onSurface)
+        }
+        Row(verticalAlignment=Alignment.CenterVertically) {
+          Checkbox(checked=reviewedRecording,onCheckedChange={reviewedRecording=it})
+          Text("استمعت إلى تسجيلي بعد التلاوة",fontSize=12.sp)
+        }
+        Row(verticalAlignment=Alignment.CenterVertically) {
+          Checkbox(checked=checkedRule,onCheckedChange={checkedRule=it})
+          Text("راجعت الحكم مع معلّم أو مصدر موثوق",fontSize=12.sp)
+        }
+        Text("هذا تدريب إرشادي فقط؛ الميكروفون لا يحكم على صحة الغنة أو المد أو المخرج حتى الآن.",fontSize=11.sp,color=colors.error)
       }
     }
     Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant)) {
