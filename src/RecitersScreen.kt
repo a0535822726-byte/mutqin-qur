@@ -105,7 +105,7 @@ fun RecitersScreen(onBack: () -> Unit) {
             }.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
               Column(Modifier.weight(1f)) {
                 Text(read.title, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
-                Text("\${read.surahs.size} سورة متاحة", fontSize = 10.sp, color = colors.onSurface.copy(alpha = .65f))
+                Text("${read.surahs.size} سورة متاحة", fontSize = 10.sp, color = colors.onSurface.copy(alpha = .65f))
               }
               RadioButton(selected = selectedRead?.id == read.id, onClick = {
                 selectedRead = read
@@ -116,7 +116,7 @@ fun RecitersScreen(onBack: () -> Unit) {
           if (selectedRead != null) {
             var expanded by remember { mutableStateOf(false) }
             Box {
-              OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) { Text("السورة: \${SURAH_NAMES[surah - 1]}") }
+              OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) { Text("السورة: ${SURAH_NAMES[surah - 1]}") }
               DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }, modifier = Modifier.heightIn(max = 360.dp)) {
                 (1..114).filter { it in availableSurahs }.forEach { n ->
                   DropdownMenuItem(text = { Text(SURAH_NAMES[n - 1]) }, onClick = { surah = n; expanded = false })
@@ -131,7 +131,7 @@ fun RecitersScreen(onBack: () -> Unit) {
                 player = MediaPlayer().also { mp ->
                   playing = false
                   playerMessage = "جارٍ تحميل التلاوة..."
-                  mp.setOnPreparedListener { it.start(); playing = true; playerMessage = "يعمل الآن: \${SURAH_NAMES[surah - 1]}" }
+                  mp.setOnPreparedListener { it.start(); playing = true; playerMessage = "يعمل الآن: ${SURAH_NAMES[surah - 1]}" }
                   mp.setOnCompletionListener { playing = false; playerMessage = "انتهت السورة" }
                   mp.setOnErrorListener { _, _, _ -> playing = false; playerMessage = "تعذر تشغيل هذا التسجيل"; true }
                   mp.setDataSource(url)
@@ -166,7 +166,7 @@ fun RecitersScreen(onBack: () -> Unit) {
           }
         }
         else -> {
-          Text("عدد القراء المتاحين: \${reciters.size}", fontSize = 12.sp, color = colors.onSurface.copy(alpha = .65f))
+          Text("عدد القراء المتاحين: ${reciters.size}", fontSize = 12.sp, color = colors.onSurface.copy(alpha = .65f))
           LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(7.dp), contentPadding = PaddingValues(bottom = 18.dp)) {
             items(filtered) { reciter ->
               Card(modifier = Modifier.fillMaxWidth().clickable {
@@ -180,7 +180,7 @@ fun RecitersScreen(onBack: () -> Unit) {
                   Spacer(Modifier.width(12.dp))
                   Column(Modifier.weight(1f)) {
                     Text(reciter.name, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Text("\${reciter.moshaf.size} مصحف/رواية متاحة", fontSize = 10.sp, color = colors.onSurface.copy(alpha = .6f))
+                    Text("${reciter.moshaf.size} مصحف/رواية متاحة", fontSize = 10.sp, color = colors.onSurface.copy(alpha = .6f))
                   }
                   Text("‹", fontSize = 25.sp, color = colors.primary)
                 }
