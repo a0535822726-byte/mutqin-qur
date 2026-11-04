@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -94,6 +95,17 @@ fun ReaderScreen(
   var size by remember { mutableStateOf(prefs.fontSize()) }
   val revealed = remember { mutableStateListOf<Int>() }
   val showBasmala = surah != 1 && surah != 9 && from == 1
+  val listState = rememberLazyListState()
+
+  // احفظ موضع القراءة الفعلي أثناء التمرير حتى تعود المتابعة إلى آخر آية وصلت إليها.
+  LaunchedEffect(listState, surah, from, to, showBasmala) {
+    snapshotFlow { listState.firstVisibleItemIndex }.collect { index ->
+      val ayahNumber = from + index - if (showBasmala) 1 else 0
+      if (ayahNumber in from..to) {
+        prefs.setLastPosition(surah, ayahNumber, to)
+      }
+    }
+  }
 
   Column(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
     Row(
@@ -138,6 +150,7 @@ fun ReaderScreen(
     }
     HorizontalDivider()
     LazyColumn(
+      state = listState,
       contentPadding = PaddingValues(16.dp),
       verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
