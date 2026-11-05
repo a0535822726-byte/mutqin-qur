@@ -142,6 +142,20 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
             }
         }
         item {
+            HomeSectionHeading("مركز الإتقان المتقدم", "20 أداة إضافية للتحليل والتخطيط والمتابعة")
+            Spacer(Modifier.height(9.dp))
+            Card(onClick = { onOpenTool("unique_master_tools") }, shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = colors.primaryContainer), modifier = Modifier.fillMaxWidth()) {
+                Row(Modifier.fillMaxWidth().padding(17.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text("🏅", fontSize = 30.sp)
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text("افتح مركز الإتقان المتقدم", fontSize = 15.sp, fontWeight = FontWeight.ExtraBold, color = colors.onPrimaryContainer)
+                        Text("إنجاز السور والأجزاء، البحث والإحصاء، اختبار الحفظ، وخطط القراءة", fontSize = 11.sp, color = colors.onPrimaryContainer)
+                    }
+                    Text("←", fontSize = 23.sp, color = colors.onPrimaryContainer)
+                }
+            }
+        }
+        item {
             HomeSectionHeading("مختبر الدراسة القرآنية", "20 أداة جديدة ومتنوعة للتعلم والتنظيم")
             Spacer(Modifier.height(8.dp))
             Card(onClick = { onOpenTool("unique_study_lab") }, shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = colors.primaryContainer), modifier = Modifier.fillMaxWidth()) {
