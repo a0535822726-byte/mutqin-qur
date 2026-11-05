@@ -104,7 +104,7 @@ private fun LabToolDetail(id:String,repo:QuranRepository,prefs:AppPrefs,onClose:
     "vocabulary","personal_glossary","hard_verses","teacher_questions","lesson_journal" -> {
      OutlinedTextField(a,{a=it;prefs.setToolText("lab_${id}_a",a)},label={Text(when(id){"vocabulary"->"الكلمة القرآنية";"personal_glossary"->"المصطلح";"hard_verses"->"السورة ورقم الآية";"teacher_questions"->"سؤالك للمعلم";else->"عنوان الدرس أو ملخصه"})},modifier=Modifier.fillMaxWidth(),minLines=2)
      OutlinedTextField(b,{b=it;prefs.setToolText("lab_${id}_b",b)},label={Text(when(id){"vocabulary"->"المعنى الذي تعلمته";"personal_glossary"->"شرح المصطلح";"hard_verses"->"ما الذي تريد تثبيته؟";"teacher_questions"->"تفاصيل إضافية (اختياري)";else->"ملاحظات الدرس"})},modifier=Modifier.fillMaxWidth(),minLines=2)
-     Button(onClick={if(a.isNotBlank()){val old=prefs.toolText("lab_${id}_list");prefs.setToolText("lab_${id}_list",(old+"\\n• "+a+(if(b.isNotBlank())" — "+b else "")).takeLast(8000));result="تمت الإضافة إلى سجلك."}},modifier=Modifier.fillMaxWidth()){Text("حفظ في السجل")}
+     Button(onClick={if(a.isNotBlank()){val old=prefs.toolText("lab_${id}_list");prefs.setToolText("lab_${id}_list",(old+"\n• "+a+(if(b.isNotBlank())" — "+b else "")).takeLast(8000));result="تمت الإضافة إلى سجلك."}},modifier=Modifier.fillMaxWidth()){Text("حفظ في السجل")}
      Text(prefs.toolText("lab_${id}_list").ifBlank{"لا توجد مدخلات محفوظة بعد."},fontSize=12.sp)
     }
     "similar_verses" -> {
@@ -160,7 +160,7 @@ private fun LabToolDetail(id:String,repo:QuranRepository,prefs:AppPrefs,onClose:
     "session_log","listening_log" -> {
      OutlinedTextField(a,{a=it;prefs.setToolText("lab_${id}_a",a)},label={Text(if(id=="session_log")"مدة الجلسة بالدقائق" else "اسم القارئ")},modifier=Modifier.fillMaxWidth())
      OutlinedTextField(b,{b=it;prefs.setToolText("lab_${id}_b",b)},label={Text(if(id=="session_log")"ماذا أنجزت؟" else "مدة الاستماع بالدقائق")},modifier=Modifier.fillMaxWidth())
-     Button(onClick={if(a.isNotBlank()){val old=prefs.toolText("lab_${id}_list");prefs.setToolText("lab_${id}_list",(old+"\\n• "+a+" — "+b).takeLast(8000));result="حُفظت الجلسة."}},modifier=Modifier.fillMaxWidth()){Text("حفظ الجلسة")}
+     Button(onClick={if(a.isNotBlank()){val old=prefs.toolText("lab_${id}_list");prefs.setToolText("lab_${id}_list",(old+"\n• "+a+" — "+b).takeLast(8000));result="حُفظت الجلسة."}},modifier=Modifier.fillMaxWidth()){Text("حفظ الجلسة")}
      Text(prefs.toolText("lab_${id}_list").ifBlank{"لا توجد جلسات مسجلة."},fontSize=11.sp)
     }
     "focus_planner" -> {
