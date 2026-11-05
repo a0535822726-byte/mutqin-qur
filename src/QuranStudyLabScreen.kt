@@ -160,8 +160,7 @@ private fun LabToolDetail(id:String,repo:QuranRepository,prefs:AppPrefs,onClose:
     "session_log","listening_log" -> {
      OutlinedTextField(a,{a=it;prefs.setToolText("lab_${id}_a",a)},label={Text(if(id=="session_log")"مدة الجلسة بالدقائق" else "اسم القارئ")},modifier=Modifier.fillMaxWidth())
      OutlinedTextField(b,{b=it;prefs.setToolText("lab_${id}_b",b)},label={Text(if(id=="session_log")"ماذا أنجزت؟" else "مدة الاستماع بالدقائق")},modifier=Modifier.fillMaxWidth())
-     Button(onClick={if(a.isNotBlank()){val old=prefs.toolText("lab_${id}_list");prefs.setToolText("lab_${id}_list",(old+"
-• "+a+" — "+b).takeLast(8000));result="حُفظت الجلسة."}},modifier=Modifier.fillMaxWidth()){Text("حفظ الجلسة")}
+     Button(onClick={if(a.isNotBlank()){val old=prefs.toolText("lab_${id}_list");prefs.setToolText("lab_${id}_list",(old+"\\n• "+a+" — "+b).takeLast(8000));result="حُفظت الجلسة."}},modifier=Modifier.fillMaxWidth()){Text("حفظ الجلسة")}
      Text(prefs.toolText("lab_${id}_list").ifBlank{"لا توجد جلسات مسجلة."},fontSize=11.sp)
     }
     "focus_planner" -> {
