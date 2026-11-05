@@ -11,6 +11,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,8 +48,15 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   var reviewedRecording by remember { mutableStateOf(false) }
   var checkedRule by remember { mutableStateOf(false) }
   var savedFile by remember { mutableStateOf<File?>(null) }
+  var sessionFiles by remember { mutableStateOf(emptyList<File>()) }
   var player by remember { mutableStateOf<MediaPlayer?>(null) }
   var recorder by remember { mutableStateOf<MediaRecorder?>(null) }
+  LaunchedEffect(Unit) {
+    val folder = File(context.filesDir, "mutqin_sessions")
+    sessionFiles = folder.listFiles()?.filter { it.isFile && it.extension == "m4a" }?.sortedByDescending { it.lastModified() } ?: emptyList()
+    savedFile = sessionFiles.firstOrNull()
+  }
+
   val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
     hasPermission = granted
     status = if (granted) "تم السماح بالميكروفون. ابدأ التلاوة." else "يلزم السماح بالميكروفون لاستخدام جلسة الصوت."
@@ -96,6 +104,9 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
     try {
       recorder?.stop()
       status = "انتهت الجلسة وحُفظ التسجيل على الجهاز."
+      val folder = File(context.filesDir, "mutqin_sessions")
+      sessionFiles = folder.listFiles()?.filter { it.isFile && it.extension == "m4a" }?.sortedByDescending { it.lastModified() } ?: emptyList()
+      savedFile = sessionFiles.firstOrNull()
     } catch (_: Exception) {
       savedFile = null
       status = "لم يكتمل التسجيل. أعد المحاولة."
@@ -276,6 +287,55 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         }, enabled = !recording && savedFile?.exists() == true, modifier = Modifier.fillMaxWidth()) { Text("▶ استمع إلى تلاوتك") }
       }
     }
+
+    Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
+      Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+        Text("سجل جلساتك السابقة", fontWeight = FontWeight.Bold, color = colors.primary, fontSize = 16.sp)
+        if (sessionFiles.isEmpty()) {
+          Text("ستظهر تسجيلاتك المحفوظة هنا بعد أول جلسة.", color = colors.onSurfaceVariant, fontSize = 12.sp)
+        } else {
+          sessionFiles.take(8).forEach { file ->
+            Row(
+              Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
+                .background(if (savedFile == file) colors.primaryContainer else colors.surfaceVariant)
+                .clickable { savedFile = file }.padding(10.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+              Column(Modifier.weight(1f)) {
+                Text(if (savedFile == file) "التسجيل المحدد" else "جلسة محفوظة", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                Text(file.nameWithoutExtension, color = colors.onSurfaceVariant, fontSize = 9.sp)
+              }
+              TextButton(onClick = {
+                try {
+                  player?.release()
+                  player = MediaPlayer().apply {
+                    setDataSource(file.absolutePath)
+                    setOnCompletionListener { it.release(); player = null }
+                    prepare()
+                    start()
+                  }
+                  savedFile = file
+                  status = "تشغيل التسجيل المحدد."
+                } catch (_: Exception) { status = "تعذر تشغيل هذا التسجيل." }
+              }) { Text("استماع") }
+              TextButton(onClick = {
+                if (file == savedFile) {
+                  try { player?.release() } catch (_: Exception) {}
+                  player = null
+                }
+                file.delete()
+                sessionFiles = sessionFiles.filterNot { it == file }
+                if (savedFile == file) savedFile = sessionFiles.firstOrNull()
+                status = "تم حذف التسجيل من الجهاز."
+              }) { Text("حذف", color = colors.error) }
+            }
+          }
+          Text("تُحفظ التسجيلات داخل التطبيق على جهازك، ولا تُرفع تلقائيًا.", fontSize = 10.sp, color = colors.onSurfaceVariant)
+        }
+      }
+    }
+
     Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
       Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text("ما الذي تفعله هذه الجلسة؟", fontWeight = FontWeight.Bold, color = colors.primary)
