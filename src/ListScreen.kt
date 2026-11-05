@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Boolean) -> Unit, onOpenSurah: (Int) -> Unit, onResume: (Int, Int, Int) -> Unit, onOpenRecorder: () -> Unit, onOpenCheck: () -> Unit, onOpenTajweed: () -> Unit, onOpenStories: () -> Unit, onOpenReciters: () -> Unit, onOpenDailyTools: () -> Unit, onOpenTool: (String) -> Unit) {
  var query by remember { mutableStateOf("") }
- val last = remember { prefs.lastPosition() }
+ val last = prefs.lastPosition()
  val q = normalizeAr(query.trim())
  val filtered = remember(q) { (1..repo.surahCount()).filter { n -> q.isEmpty() || n.toString() == q || normalizeAr(SURAH_NAMES[n - 1]).contains(q) } }
  val colors = MaterialTheme.colorScheme
@@ -176,11 +176,15 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
 @Composable private fun HeroPill(label:String,color:androidx.compose.ui.graphics.Color){Surface(color=color.copy(alpha=.15f),shape=CircleShape){Text(label,color=color,fontSize=10.sp,modifier=Modifier.padding(horizontal=10.dp,vertical=7.dp))}}
 
 @Composable private fun FeatureCard(icon:String,title:String,subtitle:String,modifier:Modifier=Modifier,colors:ColorScheme=MaterialTheme.colorScheme,onClick:()->Unit){
- Card(onClick=onClick,shape=RoundedCornerShape(21.dp),colors=CardDefaults.cardColors(containerColor=colors.surface),modifier=modifier.heightIn(min=112.dp)){
+ Card(onClick=onClick,shape=RoundedCornerShape(23.dp),colors=CardDefaults.cardColors(containerColor=colors.surface),elevation=CardDefaults.cardElevation(defaultElevation=3.dp),modifier=modifier.heightIn(min=128.dp)){
   Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
    Box(Modifier.size(39.dp).clip(RoundedCornerShape(13.dp)).background(colors.primary.copy(alpha=.12f)),contentAlignment=Alignment.Center){Text(icon,fontSize=20.sp,color=colors.primary)}
    Text(title,fontWeight=FontWeight.ExtraBold,fontSize=13.sp,color=colors.onSurface)
    Text(subtitle,fontSize=10.sp,color=colors.onSurfaceVariant)
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.End,verticalAlignment=Alignment.CenterVertically) {
+    Text("افتح الأداة",fontSize=10.sp,fontWeight=FontWeight.Bold,color=colors.primary)
+    Text("  ←",fontSize=13.sp,fontWeight=FontWeight.Bold,color=colors.primary)
+   }
   }
  }
 }
