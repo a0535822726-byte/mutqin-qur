@@ -55,7 +55,7 @@ fun LiveRecitationScreen(repo: QuranRepository, onBack: () -> Unit) {
         status = if (it) "تم تفعيل الميكروفون. اضغط ابدأ." else "يلزم السماح بالميكروفون."
     }
     val comparison = remember(verse, heard) { if (heard.isBlank()) null else compareRecitation(verse, heard) }
-    val errorIndices = comparison?.unmatchedReferenceIndices?.filter { it < (comparison.heardWords.size) }?.toSet().orEmpty()
+    val errorIndices = comparison?.suspectedErrorReferenceIndices?.toSet().orEmpty()
     val displayWords = verse.trim().split(Regex("\\s+"))
 
     DisposableEffect(Unit) {
