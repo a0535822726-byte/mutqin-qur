@@ -208,8 +208,8 @@ jobs:
             gh release edit "$TAG" --title "$TITLE" --notes "نسخة بناء آلية. هذه نسخة تجريبية من فرع التطوير."
           else
             if [ "$TAG" = "latest" ]; then
-              gh release create "$TAG" Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "$TITLE" --notes "أحدث نسخة مبنية آليًا"
+              gh release create "$TAG" Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "$TITLE" --notes "أحدث نسخة مبنية آليًا" --target "$GITHUB_SHA"
             else
-              gh release create "$TAG" Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "$TITLE" --notes "نسخة تجريبية من فرع التطوير." --prerelease
+              gh release create "$TAG" Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "$TITLE" --notes "نسخة تجريبية من فرع التطوير." --target "$GITHUB_SHA" --prerelease
             fi
           fi
