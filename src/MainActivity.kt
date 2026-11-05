@@ -127,6 +127,7 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
       "unique_ayah_context" -> AyahContextScreen(repo, onBack = { screen = Screen.SurahList })
       "unique_surah_stats" -> SurahStatisticsScreen(repo, onBack = { screen = Screen.SurahList })
       "unique_spaced_review" -> SpacedReviewScreen(repo, prefs, onBack = { screen = Screen.SurahList })
+      "unique_study_lab" -> QuranStudyLabScreen(repo, prefs, onBack = { screen = Screen.SurahList })
       else -> DailyToolDetailScreen(prefs, s.id, onBack = { screen = Screen.SurahList })
     }
   }
