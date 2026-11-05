@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Boolean) -> Unit, onOpenSurah: (Int) -> Unit, onResume: (Int, Int, Int) -> Unit, onOpenRecorder: () -> Unit, onOpenCheck: () -> Unit, onOpenTajweed: () -> Unit, onOpenStories: () -> Unit, onOpenReciters: () -> Unit, onOpenDailyTools: () -> Unit, onOpenTool: (String) -> Unit) {
+fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Boolean) -> Unit, onOpenSurah: (Int) -> Unit, onResume: (Int, Int, Int) -> Unit, onOpenRecorder: () -> Unit, onOpenCheck: () -> Unit, onOpenTajweed: () -> Unit, onOpenStories: () -> Unit, onOpenCircle: () -> Unit, onOpenReciters: () -> Unit, onOpenDailyTools: () -> Unit, onOpenTool: (String) -> Unit) {
  var query by remember { mutableStateOf("") }
  val last = prefs.lastPosition()
  val q = normalizeAr(query.trim())
@@ -65,7 +65,12 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
    }
    Spacer(Modifier.height(9.dp))
    Row(horizontalArrangement=Arrangement.spacedBy(9.dp)){
+    FeatureCard("🏫","حلقة القرآن","طلاب وحضور وواجبات",Modifier.weight(1f),colors,onOpenCircle)
     FeatureCard("🎧","مكتبة القرّاء","استمع للتلاوات",Modifier.weight(1f),colors,onOpenReciters)
+   }
+   Spacer(Modifier.height(9.dp))
+   Row(horizontalArrangement=Arrangement.spacedBy(9.dp)){
+    FeatureCard("🎚","استديو التسجيل","سجّل واستمع",Modifier.weight(1f),colors,onOpenRecorder)
     FeatureCard("🎚","استديو التسجيل","سجّل واستمع",Modifier.weight(1f),colors,onOpenRecorder)
    }
   }
