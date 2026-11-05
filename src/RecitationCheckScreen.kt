@@ -42,7 +42,7 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   var amplitude by remember { mutableFloatStateOf(0f) }
   var status by remember { mutableStateOf("اختر موضع المراجعة، ثم ابدأ التلاوة.") }
   var recognizedText by remember { mutableStateOf("") }
-  var matchPercent by remember { mutableIntStateOf(-1) }
+  var comparison by remember { mutableStateOf<RecitationComparison?>(null) }
   var focusRule by remember { mutableStateOf("الغنة") }
   var reviewedRecording by remember { mutableStateOf(false) }
   var checkedRule by remember { mutableStateOf(false) }
@@ -58,8 +58,8 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
     if (result.resultCode == Activity.RESULT_OK) {
       val heard = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull().orEmpty()
       recognizedText = heard
-      matchPercent = approximateWordMatch(repo.ayah(surah, ayah), heard)
-      status = if (heard.isBlank()) "لم ألتقط كلمات واضحة. حاول في مكان هادئ." else "انتهى فحص الكلمات التقريبي. راجع النتيجة بنفسك."
+      comparison = compareRecitation(repo.ayah(surah, ayah), heard)
+      status = if (heard.isBlank()) "لم ألتقط كلمات واضحة. حاول في مكان هادئ." else "انتهى فحص الكلمات التقريبي. راجع مواضع الاختلاف بنفسك."
     } else {
       status = "لم يكتمل فحص الكلمات. يمكنك المحاولة مرة أخرى."
     }
@@ -236,8 +236,26 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
             Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
               Text("النص الذي التقطه التعرف الصوتي",fontWeight=FontWeight.Bold,color=colors.primary,fontSize=13.sp)
               Text(recognizedText,fontSize=15.sp,lineHeight=25.sp)
-              Text("تطابق الكلمات التقريبي: $matchPercent٪",fontWeight=FontWeight.Bold,color=colors.primary)
-              Text("هذه مقارنة آلية تقريبية للكلمات فقط؛ قد يخطئ التعرف في ألفاظ القرآن، ولا تقيس المخارج أو الغنة أو المدود أو أحكام التجويد.",fontSize=11.sp,color=colors.error)
+              val result = comparison
+              if (result != null) {
+                Text(
+                  result.percentage?.let { "تطابق الكلمات التقريبي: $it٪" } ?: "لم تُلتقط كلمات كافية لحساب نسبة",
+                  fontWeight=FontWeight.Bold,
+                  color=colors.primary
+                )
+                Text("الكلمات التي تحتاج مراجعة:",fontWeight=FontWeight.Bold,fontSize=12.sp)
+                Text(
+                  result.unmatchedReferenceIndices.joinToString(" • ") { result.referenceWords[it] }.ifBlank { "لم يظهر اختلاف نصي في الكلمات الملتقطة." },
+                  fontSize=14.sp,
+                  lineHeight=24.sp,
+                  color=colors.error
+                )
+                Text("النص الملتقط:",fontWeight=FontWeight.Bold,fontSize=12.sp)
+                Text(result.heardWords.mapIndexed { index, word ->
+                  if (index in result.unmatchedHeardIndices) "【$word】" else word
+                }.joinToString(" "),fontSize=14.sp,lineHeight=24.sp)
+              }
+              Text("هذه مقارنة نصية تقريبية فقط؛ قد تخطئ خدمة التعرف في ألفاظ القرآن. لا تقيس المخارج أو الغنة أو المدود أو أحكام التجويد.",fontSize=11.sp,color=colors.error)
             }
           }
         }
@@ -269,26 +287,3 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   }
 }
 
-private fun normalizeRecitationWords(value: String): List<String> {
-  val withoutMarks = value.replace(Regex("[\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]"), "")
-  return withoutMarks.replace(Regex("[^\\u0621-\\u064A\\s]"), " ")
-    .replace('أ','ا').replace('إ','ا').replace('آ','ا').replace('ى','ي')
-    .trim().split(Regex("\\s+")).filter { it.isNotBlank() }
-}
-
-private fun approximateWordMatch(reference: String, heard: String): Int {
-  val a = normalizeRecitationWords(reference)
-  val b = normalizeRecitationWords(heard)
-  if (a.isEmpty()) return 0
-  val previous = IntArray(b.size + 1)
-  val current = IntArray(b.size + 1)
-  for (i in 1..a.size) {
-    for (j in 1..b.size) {
-      current[j] = if (a[i - 1] == b[j - 1]) previous[j - 1] + 1
-        else maxOf(previous[j], current[j - 1])
-    }
-    for (j in previous.indices) previous[j] = current[j]
-    current.fill(0)
-  }
-  return ((previous[b.size] * 100f) / a.size).toInt().coerceIn(0,100)
-}
