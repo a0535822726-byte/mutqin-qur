@@ -135,7 +135,7 @@ private fun MasterToolDetail(id:String,repo:QuranRepository,prefs:AppPrefs,onClo
         val match=if(id=="word_frequency") normalizeAr(text).split(Regex("\\s+")).any{it.trim('،','؛','.',':','!','؟')==normalizeAr(a.trim())} else normalizeAr(text).contains(normalizeAr(a.trim()))
         if(match){hits++;if(found.size<30)found.add("${SURAH_NAMES[s-1]} • الآية ${toArabic(v)}: $text")}
        }
-       result="عدد المواضع: $hits\\n"+found.joinToString("\\n")
+       result="عدد المواضع: $hits\n"+found.joinToString("\n")
       }
      },modifier=Modifier.fillMaxWidth()){Text("ابدأ البحث في النص المتاح")}
      if(result.isNotBlank())Text(result,fontSize=12.sp)
