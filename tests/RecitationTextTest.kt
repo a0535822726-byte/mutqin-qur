@@ -33,6 +33,21 @@ class RecitationTextTest {
         assertEquals(listOf(0, 1), result.unmatchedReferenceIndices)
     }
 
+    @Test fun partialSpeechDoesNotMarkUnreadWordsAsErrors() {
+        val result = compareRecitation("بسم الله الرحمن الرحيم", "بسم الله")
+        assertEquals(emptyList<Int>(), result.suspectedErrorReferenceIndices)
+    }
+
+    @Test fun recognizedWrongWordHighlightsOnlyItsExpectedPosition() {
+        val result = compareRecitation("بسم الله الرحمن الرحيم", "بسم الملك")
+        assertEquals(listOf(1), result.suspectedErrorReferenceIndices)
+    }
+
+    @Test fun skippedWordBetweenMatchedWordsIsFlagged() {
+        val result = compareRecitation("بسم الله الرحمن الرحيم", "بسم الرحمن الرحيم")
+        assertEquals(listOf(1), result.suspectedErrorReferenceIndices)
+    }
+
     @Test fun punctuationAndTatweelAreIgnored() {
         val result = compareRecitation("الرَّحْمَٰنُ", "الرَّحْمَانُ،")
         assertEquals(100, result.percentage)
