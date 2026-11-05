@@ -6,6 +6,8 @@ import android.content.Intent
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -42,6 +44,7 @@ fun LiveRecitationScreen(repo: QuranRepository, onBack: () -> Unit) {
     val verse = repo.ayah(surah, ayah)
     var allowed by remember { mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) }
     var listening by remember { mutableStateOf(false) }
+    val sessionActive = remember { mutableStateOf(false) }
     var heard by remember { mutableStateOf("") }
     var status by remember { mutableStateOf("اختر الآية ثم ابدأ التسميع المباشر.") }
     var lastAlertCount by remember { mutableIntStateOf(0) }
@@ -76,6 +79,7 @@ fun LiveRecitationScreen(repo: QuranRepository, onBack: () -> Unit) {
         heard = ""
         lastAlertCount = 0
         listening = true
+        sessionActive.value = true
         status = "أقرأ الآن… ستظهر الكلمات التي تحتاج مراجعة بالأحمر."
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
@@ -105,9 +109,19 @@ fun LiveRecitationScreen(repo: QuranRepository, onBack: () -> Unit) {
             override fun onBufferReceived(buffer: ByteArray?) {}
             override fun onEndOfSpeech() { status = "أحلّل المقطع الصوتي…" }
             override fun onError(error: Int) {
-                if (listening) status = "توقف التعرف مؤقتًا. اضغط متابعة لإكمال التسميع."
+                if (sessionActive.value) {
+                    status = "أعيد تشغيل الاستماع بعد توقف قصير…"
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        if (sessionActive.value) try { sr.startListening(intent) } catch (_: Exception) { listening = false; sessionActive.value = false }
+                    }, 450)
+                }
             }
-            override fun onResults(results: Bundle?) { update(results) }
+            override fun onResults(results: Bundle?) {
+                update(results)
+                if (sessionActive.value) Handler(Looper.getMainLooper()).postDelayed({
+                    if (sessionActive.value) try { sr.startListening(intent) } catch (_: Exception) { listening = false; sessionActive.value = false }
+                }, 250)
+            }
             override fun onPartialResults(partialResults: Bundle?) { update(partialResults) }
             override fun onEvent(eventType: Int, params: Bundle?) {}
         })
@@ -124,7 +138,7 @@ fun LiveRecitationScreen(repo: QuranRepository, onBack: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = { try { recognizer?.cancel() } catch (_: Exception) {}; listening = false; onBack() }) { Text("رجوع") }
+            TextButton(onClick = { try { recognizer?.cancel() } catch (_: Exception) {}; listening = false; sessionActive.value = false; onBack() }) { Text("رجوع") }
             Spacer(Modifier.weight(1f))
             Text("مُتقن  /  التسميع المباشر", color = colors.onSurfaceVariant, fontSize = 12.sp)
         }
@@ -167,7 +181,7 @@ fun LiveRecitationScreen(repo: QuranRepository, onBack: () -> Unit) {
                 Text(if (listening) "التسميع يعمل" else "جاهز للتسميع", fontSize = 19.sp, fontWeight = FontWeight.Black)
                 Text(status, color = colors.onSurfaceVariant, fontSize = 12.sp)
                 if (listening) {
-                    Button(onClick = { try { recognizer?.stopListening() } catch (_: Exception) {}; listening = false; status = "تم إيقاف التسميع." }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = colors.error)) { Text("إيقاف التسميع") }
+                    Button(onClick = { try { recognizer?.stopListening() } catch (_: Exception) {}; listening = false; sessionActive.value = false; status = "تم إيقاف التسميع." }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = colors.error)) { Text("إيقاف التسميع") }
                 } else {
                     Button(onClick = { beginListening() }, modifier = Modifier.fillMaxWidth()) { Text(if (heard.isBlank()) "ابدأ التسميع المباشر" else "متابعة التسميع") }
                 }
