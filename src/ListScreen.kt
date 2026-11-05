@@ -142,6 +142,21 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
             }
         }
         item {
+            HomeSectionHeading("مختبر الدراسة القرآنية", "20 أداة جديدة ومتنوعة للتعلم والتنظيم")
+            Spacer(Modifier.height(8.dp))
+            Card(onClick = { onOpenTool("unique_study_lab") }, shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = colors.primaryContainer), modifier = Modifier.fillMaxWidth()) {
+                Row(Modifier.fillMaxWidth().padding(17.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text("🧰", fontSize = 30.sp)
+                    Spacer(Modifier.width(12.dp))
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text("افتح مختبر الدراسة", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = colors.onPrimaryContainer)
+                        Text("قاموس • مقارنة متشابهات • تخطيط • تقارير • بطاقات تجويد", fontSize = 11.sp, color = colors.onPrimaryContainer)
+                    }
+                    Text("←", fontSize = 24.sp, color = colors.onPrimaryContainer)
+                }
+            }
+        }
+        item {
             HomeSectionHeading("فهرس المصحف", "ابحث باسم السورة أو رقمها")
             OutlinedTextField(
                 value = query, onValueChange = { query = it },
