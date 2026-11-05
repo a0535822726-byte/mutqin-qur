@@ -135,7 +135,7 @@ private fun MasterToolDetail(id:String,repo:QuranRepository,prefs:AppPrefs,onClo
         val match=if(id=="word_frequency") normalizeAr(text).split(Regex("\\s+")).any{it.trim('،','؛','.',':','!','؟')==normalizeAr(a.trim())} else normalizeAr(text).contains(normalizeAr(a.trim()))
         if(match){hits++;if(found.size<30)found.add("${SURAH_NAMES[s-1]} • الآية ${toArabic(v)}: $text")}
        }
-       result="عدد المواضع: $hits\\n"+found.joinToString("\\n")
+       result="عدد المواضع: $hits\\n"+found.joinToString("\n)
       }
      },modifier=Modifier.fillMaxWidth()){Text("ابدأ البحث في النص المتاح")}
      if(result.isNotBlank())Text(result,fontSize=12.sp)
@@ -145,7 +145,7 @@ private fun MasterToolDetail(id:String,repo:QuranRepository,prefs:AppPrefs,onClo
      Field(a,{a=it;prefs.setToolText("master_${id}_a",a)},"رقم السورة (1–114)")
      Field(b,{b=it;prefs.setToolText("master_${id}_b",b)},"الحرف المراد عده")
      val s=(a.toIntOrNull()?:0)
-     if(s in 1..114&&b.isNotBlank())Text("تكرر الحرف «${b.first()}» ${repo.ayah((s),1).let { (1..repo.ayahCount(s)).sumOf { n -> repo.ayah(s,n).count { ch -> ch==b.first() } }} } مرة في ${SURAH_NAMES[s-1]}.")
+     if(s in 1..114&&b.isNotBlank())Text("تكرر الحرف «${b.first()}» ${(1..repo.ayahCount(s)).sumOf { n -> repo.ayah(s,n).count { ch -> ch==b.first() } } } مرة في ${SURAH_NAMES[s-1]}.")
      else Text("أدخل رقم سورة وحرفاً واحداً.")
     }
     "ayah_stats" -> {
@@ -201,7 +201,7 @@ private fun MasterToolDetail(id:String,repo:QuranRepository,prefs:AppPrefs,onClo
     "reading_log","revision_backlog","personal_goals" -> {
      Field(a,{a=it;prefs.setToolText("master_${id}_a",a)},when(id){"reading_log"->"عدد الصفحات أو موضع القراءة";"revision_backlog"->"الموضع الذي يحتاج مراجعة";else->"اكتب هدفك"}) 
      Field(b,{b=it;prefs.setToolText("master_${id}_b",b)},when(id){"reading_log"->"مدة الجلسة بالدقائق";"revision_backlog"->"سبب أو ملاحظة";else->"تفاصيل الهدف (اختياري)"})
-     Button(onClick={if(a.isNotBlank()){val old=prefs.toolText("master_${id}_list");prefs.setToolText("master_${id}_list",(old+"\\n• "+a+(if(b.isNotBlank())" — "+b else "")).takeLast(8000));result="تم الحفظ في سجل هذه الأداة."}},modifier=Modifier.fillMaxWidth()){Text("حفظ الإدخال")}
+     Button(onClick={if(a.isNotBlank()){val old=prefs.toolText("master_${id}_list");prefs.setToolText("master_${id}_list",(old+"\n• "+a+(if(b.isNotBlank())" — "+b else "")).takeLast(8000));result="تم الحفظ في سجل هذه الأداة."}},modifier=Modifier.fillMaxWidth()){Text("حفظ الإدخال")}
      Text(prefs.toolText("master_${id}_list").ifBlank{"لا توجد إدخالات محفوظة."},fontSize=12.sp)
     }
    }
