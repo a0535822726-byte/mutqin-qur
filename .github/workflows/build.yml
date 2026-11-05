@@ -192,13 +192,24 @@ jobs:
           cd Mutqin
           gradle testDebugUnitTest assembleDebug --no-daemon
       - name: Publish
-        if: steps.check.outputs.ready == 'true' && github.ref == 'refs/heads/mutqin-10000-dev'
+        if: steps.check.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view latest >/dev/null 2>&1; then
-            gh release upload latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --clobber
-            gh release edit latest --title "مُتقن" --notes "أحدث نسخة مبنية آليًا"
+          if [ "${GITHUB_REF_NAME}" = "mutqin-10000-dev" ]; then
+            TAG=latest
+            TITLE="مُتقن"
           else
-            gh release create latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "مُتقن" --notes "أحدث نسخة مبنية آليًا"
+            TAG=mutqin-overhaul-preview
+            TITLE="مُتقن - نسخة تجريبية"
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" Mutqin/app/build/outputs/apk/debug/app-debug.apk --clobber
+            gh release edit "$TAG" --title "$TITLE" --notes "نسخة بناء آلية. هذه نسخة تجريبية من فرع التطوير."
+          else
+            if [ "$TAG" = "latest" ]; then
+              gh release create "$TAG" Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "$TITLE" --notes "أحدث نسخة مبنية آليًا"
+            else
+              gh release create "$TAG" Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "$TITLE" --notes "نسخة تجريبية من فرع التطوير." --prerelease
+            fi
           fi
