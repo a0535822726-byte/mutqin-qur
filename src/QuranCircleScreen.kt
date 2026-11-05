@@ -119,7 +119,14 @@ fun QuranCircleScreen(prefs: AppPrefs, onBack: () -> Unit) {
             append("\nالحضور: ").append(presentCount)
             append("\nالغياب: ").append((students.size-presentCount).coerceAtLeast(0))
             append("\n\nالطلاب:\n")
-            students.forEach { append("- ").append(it).append(if(prefs.toolFlag("circle_att_${today}_${it.hashCode()}")) " (حاضر)" else " (غائب/غير مسجل)").append("\n") }
+            students.forEach {
+              val id=it.hashCode()
+              append("- ").append(it).append(if(prefs.toolFlag("circle_att_${today}_${id}")) " (حاضر)" else " (غائب/غير مسجل)")
+              append(" | الموضع: ").append(prefs.toolText("circle_surah_${id}").ifBlank{"غير محدد"})
+              append(" | المقدار: ").append(prefs.toolText("circle_portion_${id}").ifBlank{"غير محدد"})
+              append(" | ملاحظة: ").append(prefs.toolText("circle_student_note_${id}").ifBlank{"لا توجد"})
+              append("\n")
+            }
             append("\nواجب اليوم:\n").append(assignment.ifBlank{"لم يحدد"})
             append("\n\nملاحظات:\n").append(generalNote.ifBlank{"لا توجد"})
           }
