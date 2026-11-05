@@ -24,7 +24,7 @@ private val TOOL_INFO = mapOf(
  "takbir" to ToolInfo("التكبير","عداد مستقل لذكر الله أكبر","الله أكبر","الله أكبر","counter",34),
  "istighfar" to ToolInfo("الاستغفار","استغفر الله وداوم على الذكر","أستغفر","أستغفر الله","counter",100),
  "salawat" to ToolInfo("الصلاة على النبي ﷺ","عداد مستقل للصلاة والسلام عليه","ﷺ","اللهم صل وسلم على نبينا محمد","counter",100),
- "achievement" to ToolInfo("إنجاز اليوم","سجل إنجازاتك اليومية","🏆","إنجاز اليوم","check"),
+ "achievement" to ToolInfo("إنجاز اليوم","قائمة إنجازات يومية قابلة للتحديد","🏆","إنجاز اليوم","tasks"),
  "reading" to ToolInfo("عداد القراءة","تابع عدد الآيات التي قرأتها","📖","آيات القراءة","counter"),
  "memorization" to ToolInfo("الحفظ الجديد","تابع الآيات الجديدة التي حفظتها","🧠","آيات الحفظ","counter"),
  "review" to ToolInfo("مراجعة الحفظ","ثبّت محفوظك بالمراجعة","🔁","آيات المراجعة","counter"),
@@ -33,14 +33,14 @@ private val TOOL_INFO = mapOf(
  "notes" to ToolInfo("دفتر التدبر","احفظ خواطرك وفوائدك","📝","دفتر التدبر","notes"),
  "morning" to ToolInfo("أذكار الصباح","قائمة متابعة أذكار الصباح","🌅","أذكار الصباح","adhkar"),
  "evening" to ToolInfo("أذكار المساء","قائمة متابعة أذكار المساء","🌙","أذكار المساء","adhkar"),
- "khatmah" to ToolInfo("متابعة الختمة","سجل تقدمك في أجزاء القرآن","📚","الأجزاء المقروءة","counter"),
+ "khatmah" to ToolInfo("متابعة الختمة","علّم الأجزاء التي أتممت قراءتها","📚","ختمة القرآن","tasks"),
  "listening" to ToolInfo("ورد الاستماع","تابع جلسات الاستماع للتلاوات","🎧","دقائق الاستماع","counter"),
  "reflection" to ToolInfo("فوائد اليوم","دوّن فائدة قرآنية واحدة","💡","فائدة اليوم","notes"),
  "goals" to ToolInfo("أهداف الأسبوع","حدد إنجازاتك للأسبوع","🎯","إنجازات الأسبوع","tasks"),
  "repeat" to ToolInfo("تكرار الآية","سجل مرات تكرار الآية","🔂","مرات التكرار","counter",10),
  "pages" to ToolInfo("عداد الصفحات","تابع صفحات وردك","📄","الصفحات المقروءة","counter"),
- "juz" to ToolInfo("متابعة الأجزاء","سجل الأجزاء التي أنهيتها","📚","الأجزاء المنجزة","counter",1),
- "surahfinish" to ToolInfo("إنجاز السور","سجل السور التي أتممتها","🏁","السور المكتملة","counter",1),
+ "juz" to ToolInfo("متابعة الأجزاء","قائمة الأجزاء الثلاثين","📚","أجزاء القرآن","tasks"),
+ "surahfinish" to ToolInfo("إنجاز السور","حدد السور التي أتممت قراءتها","🏁","السور المكتملة","tasks"),
  "revisionrounds" to ToolInfo("جولات المراجعة","احسب جولات تثبيت الحفظ","🔁","جولات المراجعة","counter"),
  "listenminutes" to ToolInfo("دقائق الاستماع","سجل وقت الاستماع للتلاوة","🎧","دقائق الاستماع","counter"),
  "makharij" to ToolInfo("تدريب المخارج","قائمة متابعة مخارج الحروف","🗣","تدريب المخارج","tasks"),
@@ -82,6 +82,9 @@ fun DailyToolDetailScreen(prefs:AppPrefs, toolId:String, onBack:()->Unit) {
   "waqf" -> listOf("مراجعة علامة الوقف اللازم","مراجعة الوقف الجائز","تحديد موضع استئناف مناسب","عرض المواضع على معلم")
   "weeklyplan" -> listOf("تحديد ورد القراءة","تحديد مقدار الحفظ","تحديد وقت المراجعة","جلسة استماع")
   "dailyreview" -> listOf("قرأت وردي","راجعت محفوظي","استمعت لتلاوة متقنة","دوّنت فائدة اليوم")
+  "achievement" -> listOf("أتممت ورد القراءة","راجعت محفوظًا سابقًا","حفظت آيات جديدة","استمعت لتلاوة متقنة","دوّنت فائدة قرآنية","أنجزت أذكار اليوم")
+  "khatmah", "juz" -> (1..30).map { "الجزء ${toArabic(it)}" }
+  "surahfinish" -> SURAH_NAMES
   else -> emptyList()
  }
  var checks by remember(toolId,today) { mutableStateOf(items.associateWith { prefs.toolFlag("${key}_${it}") }) }
@@ -109,13 +112,32 @@ fun DailyToolDetailScreen(prefs:AppPrefs, toolId:String, onBack:()->Unit) {
      }
     } else {
      Text("ضع علامة عند إتمام كل بند",fontSize=12.sp,color=colors.onPrimary.copy(alpha=.9f))
+     if (items.isNotEmpty()) {
+      LinearProgressIndicator(
+       progress={(checks.values.count { it }.toFloat()/items.size).coerceIn(0f,1f)},
+       modifier=Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
+       color=colors.onPrimary,
+       trackColor=colors.onPrimary.copy(alpha=.2f)
+      )
+      Text("أنجزت ${checks.values.count { it }} من ${items.size}",fontSize=11.sp,color=colors.onPrimary)
+     }
     }
    }
   }
   if(items.isNotEmpty()) {
+   if (toolId == "khatmah" || toolId == "juz" || toolId == "surahfinish") {
+    OutlinedTextField(
+     value=note,
+     onValueChange={note=it;prefs.setToolText(key+"_note",it)},
+     modifier=Modifier.fillMaxWidth(),
+     singleLine=true,
+     label={Text(if(toolId=="surahfinish") "ابحث عن سورة" else "ملاحظة للختمة")}
+    )
+   }
    Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=colors.surface)) {
     Column(Modifier.fillMaxWidth().padding(12.dp)) {
-     items.forEach { item ->
+     val visibleItems = if (toolId == "surahfinish" && note.isNotBlank()) items.filter { normalizeAr(it).contains(normalizeAr(note.trim())) } else items
+     visibleItems.forEach { item ->
       Row(verticalAlignment=Alignment.CenterVertically) {
        Checkbox(checked=checks[item]==true,onCheckedChange={v->checks=checks.toMutableMap().apply{put(item,v)};prefs.setToolFlag("${key}_${item}",v)})
        Text(item,Modifier.weight(1f),fontWeight=FontWeight.SemiBold)
@@ -123,7 +145,10 @@ fun DailyToolDetailScreen(prefs:AppPrefs, toolId:String, onBack:()->Unit) {
       }
       HorizontalDivider(color=colors.outlineVariant.copy(alpha=.5f))
      }
-     TextButton(onClick={items.forEach{prefs.setToolFlag("${key}_${it}",false)};checks=items.associateWith{false}},modifier=Modifier.align(Alignment.End)){Text("إعادة ضبط القائمة")}
+     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
+      Text("${checks.values.count { it }} / ${items.size}",fontSize=11.sp,color=colors.primary,fontWeight=FontWeight.Bold)
+      TextButton(onClick={items.forEach{prefs.setToolFlag("${key}_${it}",false)};checks=items.associateWith{false}}){Text("إعادة ضبط")}
+     }
     }
    }
   }
