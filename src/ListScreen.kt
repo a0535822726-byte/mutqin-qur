@@ -130,6 +130,14 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
                     FeatureCard("🧠", "اختبر حفظك", "اكشف الآية وقيّم حفظك", Modifier.weight(1f), colors) { onOpenTool("unique_memorization") }
                     FeatureCard("🗓", "مخطط الختمة", "احسب وردك وموعد الإكمال", Modifier.weight(1f), colors) { onOpenTool("unique_khatmah") }
                 }
+                Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                    FeatureCard("🔎", "باحث ألفاظ القرآن", "ابحث عن كلمة في الآيات", Modifier.weight(1f), colors) { onOpenTool("unique_word_search") }
+                    FeatureCard("🪟", "سياق الآية", "اعرض الآية وما حولها", Modifier.weight(1f), colors) { onOpenTool("unique_ayah_context") }
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                    FeatureCard("📊", "إحصاءات السورة", "آيات وكلمات وحروف", Modifier.weight(1f), colors) { onOpenTool("unique_surah_stats") }
+                    FeatureCard("📖", "فهرس السور", "انتقل مباشرة إلى سورة", Modifier.weight(1f), colors) { onOpenSurah(1) }
+                }
             }
         }
         item {
