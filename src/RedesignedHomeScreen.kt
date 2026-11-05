@@ -63,6 +63,7 @@ fun RedesignedHomeScreen(
     HomeMetric("٤", "مسارات رئيسية", Modifier.weight(1f))
    }
   }
+  item { HomeDailyRoutine(prefs) }
   item {
    HomeHeading("المسارات الرئيسية", "كل مسار له وظيفة واضحة")
    Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
@@ -119,3 +120,57 @@ fun RedesignedHomeScreen(
 @Composable private fun HomeLargeAction(icon:String,title:String,detail:String,bg:Color,fg:Color,onClick:()->Unit) { Card(onClick=onClick,shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=bg)) { Row(Modifier.fillMaxWidth().padding(17.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) { Text(icon,fontSize=29.sp,color=fg); Column(Modifier.weight(1f)) { Text(title,fontSize=15.sp,fontWeight=FontWeight.Black,color=fg); Text(detail,fontSize=10.sp,color=fg.copy(alpha=.8f)) }; Text("←",fontSize=20.sp,color=fg) } } }
 @Composable private fun HomeSmallAction(icon:String,title:String,detail:String,modifier:Modifier=Modifier,onClick:()->Unit) { Card(onClick=onClick,modifier=modifier.heightIn(min=105.dp),shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)) { Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) { Text(icon,fontSize=23.sp,color=MaterialTheme.colorScheme.secondary); Text(title,fontWeight=FontWeight.Bold,fontSize=12.sp); Text(detail,fontSize=10.sp,color=MaterialTheme.colorScheme.onSurfaceVariant) } } }
 @Composable private fun HomeWideAction(icon:String,title:String,detail:String,onClick:()->Unit) { Card(onClick=onClick,modifier=Modifier.fillMaxWidth(),shape=RoundedCornerShape(17.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)) { Row(Modifier.fillMaxWidth().padding(13.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(11.dp)) { Surface(shape=RoundedCornerShape(12.dp),color=MaterialTheme.colorScheme.primaryContainer) { Text(icon,Modifier.padding(10.dp),fontSize=18.sp,color=MaterialTheme.colorScheme.primary) }; Column(Modifier.weight(1f)) { Text(title,fontWeight=FontWeight.Bold,fontSize=13.sp); Text(detail,fontSize=10.sp,color=MaterialTheme.colorScheme.onSurfaceVariant) }; Text("←",color=MaterialTheme.colorScheme.primary,fontSize=19.sp) } } }
+
+
+@Composable
+private fun HomeDailyRoutine(prefs: AppPrefs) {
+ val day = java.time.LocalDate.now().toString()
+ val tasks = listOf("قراءة الورد اليومي", "حفظ آيات جديدة", "مراجعة المحفوظ", "تعلّم حكم تجويدي")
+ val completed = remember(day) {
+  mutableStateListOf<Boolean>().apply {
+   repeat(tasks.size) { index -> add(prefs.toolFlag("routine_${day}_${index}")) }
+  }
+ }
+ val doneCount = completed.count { it }
+ val colors = MaterialTheme.colorScheme
+ Card(
+  modifier = Modifier.fillMaxWidth(),
+  shape = RoundedCornerShape(22.dp),
+  colors = CardDefaults.cardColors(containerColor = colors.surface)
+ ) {
+  Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+   Row(verticalAlignment = Alignment.CenterVertically) {
+    Column(Modifier.weight(1f)) {
+     Text("وردك اليومي", fontSize = 18.sp, fontWeight = FontWeight.Black)
+     Text("قائمة متابعة تتجدد تلقائيًا كل يوم", fontSize = 10.sp, color = colors.onSurfaceVariant)
+    }
+    Text("${toArabic(doneCount)}/٤", color = colors.primary, fontWeight = FontWeight.Black, fontSize = 16.sp)
+   }
+   LinearProgressIndicator(
+    progress = { doneCount / 4f },
+    modifier = Modifier.fillMaxWidth(),
+    color = colors.primary,
+    trackColor = colors.surfaceVariant
+   )
+   tasks.forEachIndexed { index, task ->
+    Row(
+     Modifier.fillMaxWidth(),
+     verticalAlignment = Alignment.CenterVertically
+    ) {
+     Checkbox(
+      checked = completed[index],
+      onCheckedChange = { checked ->
+       completed[index] = checked
+       prefs.setToolFlag("routine_${day}_${index}", checked)
+      }
+     )
+     Text(task, Modifier.weight(1f), fontSize = 13.sp, color = colors.onSurface)
+     if (completed[index]) Text("تم", color = colors.primary, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+    }
+   }
+   if (doneCount == tasks.size) {
+    Text("أحسنت! أكملت وردك المخطط لهذا اليوم.", color = colors.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+   }
+  }
+ }
+}
