@@ -26,7 +26,7 @@ fun QuranCircleScreen(prefs: AppPrefs, onBack: () -> Unit) {
   var assignment by remember { mutableStateOf(prefs.toolText("circle_assignment_$today")) }
   var generalNote by remember { mutableStateOf(prefs.toolText("circle_note_$today")) }
   var refresh by remember { mutableIntStateOf(0) }
-  val presentCount = students.count { prefs.toolFlag("circle_att_${today}_${it.hashCode()}") }
+  val presentCount = remember(refresh, students) { students.count { prefs.toolFlag("circle_att_${today}_${it.hashCode()}") } }
 
   Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement=Arrangement.spacedBy(13.dp)) {
     Row(verticalAlignment=Alignment.CenterVertically) {
