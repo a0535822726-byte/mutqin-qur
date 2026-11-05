@@ -11,6 +11,30 @@ data class RecitationComparison(
         get() = referenceWords.indices.filterNot(matchedReferenceIndices.toSet()::contains)
     val unmatchedHeardIndices: List<Int>
         get() = heardWords.indices.filterNot(matchedHeardIndices.toSet()::contains)
+
+    // Only flag a word when the recognizer has produced evidence around its position.
+    // Unread words at the end of a partial speech result must remain neutral.
+    val suspectedErrorReferenceIndices: List<Int>
+        get() {
+            val errors = linkedSetOf<Int>()
+            val anchors = matchedReferenceIndices.zip(matchedHeardIndices)
+            var previousReference = -1
+            var previousHeard = -1
+            for ((nextReference, nextHeard) in anchors + listOf(referenceWords.size to heardWords.size)) {
+                val referenceGap = (previousReference + 1 until nextReference).toList()
+                val heardGap = (previousHeard + 1 until nextHeard).toList()
+                if (heardGap.isNotEmpty()) {
+                    // Pair recognized but unmatched words with the corresponding expected position.
+                    referenceGap.take(heardGap.size).forEach(errors::add)
+                } else if (nextReference != referenceWords.size && referenceGap.isNotEmpty()) {
+                    // A skipped word between two matched anchors is likely an omission.
+                    referenceGap.forEach(errors::add)
+                }
+                previousReference = nextReference
+                previousHeard = nextHeard
+            }
+            return errors.toList()
+        }
 }
 
 fun normalizeRecitationWords(value: String): List<String> {

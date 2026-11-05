@@ -1,5 +1,24 @@
 package com.mutqin.app
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.media.AudioManager
+import android.media.ToneGenerator
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.background
@@ -100,6 +119,14 @@ fun ReaderScreen(
   var jumpText by remember { mutableStateOf("") }
   var showJump by remember { mutableStateOf(false) }
   var showSearch by remember { mutableStateOf(false) }
+  var micListening by remember { mutableStateOf(false) }
+  var micHeard by remember { mutableStateOf("") }
+  var micStatus by remember { mutableStateOf("اضغط الميكروفون وابدأ القراءة") }
+  var micErrors by remember { mutableIntStateOf(0) }
+  var micAllowed by remember { mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) }
+  var speechRecognizer by remember { mutableStateOf<SpeechRecognizer?>(null) }
+  val micTone = remember { ToneGenerator(AudioManager.STREAM_NOTIFICATION, 75) }
+  val micPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted -> micAllowed = granted; micStatus = if (granted) "تم السماح بالميكروفون، اضغط مرة أخرى للبدء" else "يلزم السماح بالميكروفون" }
   var pageStart by remember { mutableIntStateOf(from) }
   val pageSize = 10
   val pageEnd = minOf(to, pageStart + pageSize - 1)
@@ -111,8 +138,44 @@ fun ReaderScreen(
     val verse = if (reviewMode && !revealAll) "ــــــــــــ" else repo.ayah(surah, n)
     "$verse ۞${toArabic(n)}"
   }
-
-  LaunchedEffect(surah, pageStart, pageEnd) { prefs.setLastPosition(surah, pageStart, to) }
+  val recitationReference = visibleAyahs.joinToString(" ") { repo.ayah(surah, it) }
+  val recitationComparison = remember(recitationReference, micHeard) { if (micHeard.isBlank()) null else compareRecitation(recitationReference, micHeard) }
+  val recitationErrorIndices = recitationComparison?.suspectedErrorReferenceIndices?.toSet().orEmpty()
+  val readerWords = remember(visibleAyahs, reviewMode, revealAll) { visibleAyahs.flatMap { n ->
+    val verse = if (reviewMode && !revealAll) "ــــــــــــ" else repo.ayah(surah, n)
+    verse.trim().split(Regex("\\s+"))
+  } }
+  DisposableEffect(Unit) {
+    if (SpeechRecognizer.isRecognitionAvailable(context)) speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
+    onDispose { try { speechRecognizer?.destroy() } catch (_: Exception) {}; micTone.release() }
+  }
+  fun stopMushafMic() { micListening = false; try { speechRecognizer?.stopListening() } catch (_: Exception) {}; micStatus = "تم إيقاف التسميع داخل المصحف" }
+  fun startMushafMic() {
+    if (!micAllowed) { micPermission.launch(Manifest.permission.RECORD_AUDIO); return }
+    val sr = speechRecognizer ?: run { micStatus = "خدمة التعرف الصوتي غير متاحة"; return }
+    micHeard = ""; micErrors = 0; micListening = true; micStatus = "أقرأ الآن… أتابع الكلمات داخل المصحف"
+    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply { putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM); putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA"); putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true); putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1); putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, context.packageName) }
+    sr.setRecognitionListener(object : RecognitionListener {
+      private fun accept(bundle: Bundle?) {
+        val words = bundle?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull().orEmpty()
+        if (words.isBlank()) return
+        micHeard = words
+        val errors = compareRecitation(recitationReference, words).suspectedErrorReferenceIndices.size
+        if (errors > micErrors) { micTone.startTone(ToneGenerator.TONE_PROP_BEEP, 120); micErrors = errors; micStatus = "تنبيه: كلمة محتملة الخطأ مميزة بالأحمر" } else micStatus = "التسميع مباشر داخل المصحف"
+      }
+      override fun onReadyForSpeech(params: Bundle?) { micStatus = "الميكروفون جاهز، ابدأ التلاوة" }
+      override fun onBeginningOfSpeech() { micStatus = "أستمع إلى تلاوتك…" }
+      override fun onRmsChanged(rmsdB: Float) {}
+      override fun onBufferReceived(buffer: ByteArray?) {}
+      override fun onEndOfSpeech() { micStatus = "أحلّل ما التقطه الميكروفون…" }
+      override fun onError(error: Int) { if (micListening) Handler(Looper.getMainLooper()).postDelayed({ if (micListening) try { sr.startListening(intent) } catch (_: Exception) { micListening = false; micStatus = "توقف الاستماع، اضغط للبدء مجددًا" } }, 400) }
+      override fun onResults(results: Bundle?) { accept(results); if (micListening) Handler(Looper.getMainLooper()).postDelayed({ if (micListening) try { sr.startListening(intent) } catch (_: Exception) { micListening = false } }, 250) }
+      override fun onPartialResults(partialResults: Bundle?) { accept(partialResults) }
+      override fun onEvent(eventType: Int, params: Bundle?) {}
+    })
+    try { sr.startListening(intent) } catch (_: Exception) { micListening = false; micStatus = "تعذر تشغيل الميكروفون" }
+  }
+  LaunchedEffect(surah, pageStart, pageEnd) { prefs.setLastPosition(surah, pageStart, to); micHeard = ""; if (micListening) stopMushafMic() }
 
   Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding()) {
     if (!focusMode) {
@@ -187,9 +250,8 @@ fun ReaderScreen(
         Text("لا توجد آيات مطابقة في هذا المدى.", color = colors.onSurfaceVariant)
       } else {
         Text(
-          pageText,
+          buildAnnotatedString { readerWords.forEachIndexed { index, word -> if (index > 0) append(" "); if (index in recitationErrorIndices) withStyle(SpanStyle(color = Color(0xFFD62828), fontWeight = FontWeight.ExtraBold)) { append(word) } else withStyle(SpanStyle(color = colors.onSurface, fontWeight = FontWeight.Medium)) { append(word) } } },
           Modifier.fillMaxWidth().weight(1f),
-          color = colors.onSurface,
           fontSize = fontSize.sp,
           lineHeight = (fontSize * 2.05f).sp,
           textAlign = TextAlign.Justify
@@ -199,7 +261,9 @@ fun ReaderScreen(
       Text("مُتقن  •  ${SURAH_NAMES[surah - 1]}  •  ${toArabic(pageStart)}–${toArabic(pageEnd)}", Modifier.fillMaxWidth(), color = colors.secondary, fontSize = 10.sp, textAlign = TextAlign.Center)
     }
 
+    if (micHeard.isNotBlank() || micListening) Text(micStatus, Modifier.fillMaxWidth().padding(horizontal = 16.dp), color = if (micListening) colors.primary else colors.onSurfaceVariant, fontSize = 11.sp, textAlign = TextAlign.Center)
     Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      FilledTonalButton(onClick = { if (micListening) stopMushafMic() else startMushafMic() }, modifier = Modifier.size(58.dp), shape = RoundedCornerShape(19.dp), colors = ButtonDefaults.filledTonalButtonColors(containerColor = if (micListening) colors.errorContainer else colors.primaryContainer)) { Text(if (micListening) "■" else "🎙", fontSize = 22.sp, color = if (micListening) colors.error else colors.primary) }
       OutlinedButton(onClick = { pageStart = maxOf(from, pageStart - pageSize) }, enabled = pageStart > from, modifier = Modifier.weight(1f)) { Text("السابق") }
       OutlinedButton(onClick = {
         val clip = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
