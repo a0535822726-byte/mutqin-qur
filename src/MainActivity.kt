@@ -89,7 +89,7 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
     }
   }
   when (val s = screen) {
-    is Screen.SurahList -> SurahListScreen(repo, prefs, dark, onDark,
+    is Screen.SurahList -> RedesignedHomeScreen(repo, prefs, dark, onDark,
       onOpenSurah = { screen = Screen.Range(it) },
       onResume = { a, b, c -> screen = Screen.Reader(a, b, c) },
       onOpenRecorder = { screen = Screen.Recorder },
