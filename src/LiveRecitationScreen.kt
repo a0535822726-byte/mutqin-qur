@@ -145,7 +145,7 @@ fun LiveRecitationScreen(repo: QuranRepository, onBack: () -> Unit) {
                     OutlinedTextField(surahInput, { surahInput = it.filter(Char::isDigit).take(3); ayahInput = "1"; heard = "" }, Modifier.weight(1f), label = { Text("رقم السورة") }, singleLine = true)
                     OutlinedTextField(ayahInput, { ayahInput = it.filter(Char::isDigit).take(4); heard = "" }, Modifier.weight(1f), label = { Text("رقم الآية") }, singleLine = true)
                 }
-                Text("سورة \${SURAH_NAMES[surah - 1]} • الآية \${toArabic(ayah)}", color = colors.primary, fontWeight = FontWeight.Bold)
+                Text("سورة ${SURAH_NAMES[surah - 1]} • الآية ${toArabic(ayah)}", color = colors.primary, fontWeight = FontWeight.Bold)
                 Text(buildAnnotatedString {
                     displayWords.forEachIndexed { index, word ->
                         if (index > 0) append(" ")
