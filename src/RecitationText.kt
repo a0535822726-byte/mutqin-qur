@@ -18,7 +18,7 @@ fun normalizeRecitationWords(value: String): List<String> {
         .replace('ٱ', 'ا')
         .replace('\u0640'.toString(), "")
         .replace(Regex("[\\u064B-\\u065F\\u06D6-\\u06ED]"), "")
-        .replace("\\u0670", "ا")
+        .replace('ٰ', 'ا')
     return withoutMarks
         .replace(Regex("[^\\u0621-\\u064A\\s]"), " ")
         .replace('أ', 'ا')
