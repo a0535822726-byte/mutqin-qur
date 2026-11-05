@@ -119,6 +119,9 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
       "unique_random_ayah" -> RandomAyahScreen(repo, onBack = { screen = Screen.SurahList })
       "unique_memorization" -> MemorizationChallengeScreen(repo, prefs, onBack = { screen = Screen.SurahList })
       "unique_khatmah" -> KhatmahPlannerScreen(prefs, onBack = { screen = Screen.SurahList })
+      "unique_word_search" -> QuranWordSearchScreen(repo, onBack = { screen = Screen.SurahList })
+      "unique_ayah_context" -> AyahContextScreen(repo, onBack = { screen = Screen.SurahList })
+      "unique_surah_stats" -> SurahStatisticsScreen(repo, onBack = { screen = Screen.SurahList })
       else -> DailyToolDetailScreen(prefs, s.id, onBack = { screen = Screen.SurahList })
     }
   }
