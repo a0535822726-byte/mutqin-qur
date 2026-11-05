@@ -119,7 +119,7 @@ jobs:
               <application
                   android:allowBackup="true"
                   android:icon="@drawable/ic_launcher"
-                  android:label="ديني"
+                  android:label="مُتقن"
                   android:supportsRtl="true"
                   android:theme="@style/Theme.Mutqin">
                   <activity
@@ -206,4 +206,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete latest --cleanup-tag -y || true
-          gh release create latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "ديني" --notes "نسخة ديني للأندرويد"
+          gh release create latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "مُتقن" --notes "أحدث نسخة من تطبيق متقن"
