@@ -14,10 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import java.io.File
 
 @Composable
-fun RecorderScreen(onBack: () -> Unit) {
+fun RecorderScreen(prefs: AppPrefs, onBack: () -> Unit) {
   val context = LocalContext.current
   var hasPermission by remember {
     mutableStateOf(
@@ -27,7 +28,7 @@ fun RecorderScreen(onBack: () -> Unit) {
     )
   }
   var recording by remember { mutableStateOf(false) }
-  var savedFile by remember { mutableStateOf<File?>(null) }
+  var savedFile by remember { mutableStateOf(prefs.toolText("last_recorder_file").takeIf { it.isNotBlank() }?.let(::File)?.takeIf { it.exists() }) }
   var status by remember { mutableStateOf("اضغط السماح للميكروفون ثم ابدأ التسجيل") }
   var recorder by remember { mutableStateOf<MediaRecorder?>(null) }
   var player by remember { mutableStateOf<MediaPlayer?>(null) }
@@ -41,7 +42,7 @@ fun RecorderScreen(onBack: () -> Unit) {
 
   fun startRecording() {
     try {
-      val file = File(context.cacheDir, "mutqin_recitation_${System.currentTimeMillis()}.m4a")
+      val file = File(context.filesDir, "mutqin_recitation_${System.currentTimeMillis()}.m4a")
       val r = if (Build.VERSION.SDK_INT >= 31) MediaRecorder(context) else MediaRecorder()
       r.setAudioSource(MediaRecorder.AudioSource.MIC)
       r.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
@@ -53,6 +54,7 @@ fun RecorderScreen(onBack: () -> Unit) {
       r.start()
       recorder = r
       savedFile = file
+      prefs.setToolText("last_recorder_file", file.absolutePath)
       recording = true
       status = "جارٍ التسجيل… اقرأ بهدوء، ثم اضغط إيقاف."
     } catch (e: Exception) {
@@ -92,10 +94,16 @@ fun RecorderScreen(onBack: () -> Unit) {
   ) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
       TextButton(onClick = onBack) { Text("رجوع") }
-      Text("تسجيل التلاوة", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+      Text("استديو مُتقن", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
     }
     Spacer(Modifier.height(12.dp))
-    Text("سجّل تلاوتك واستمع إليها لمراجعة الحفظ.", style = MaterialTheme.typography.bodyLarge)
+    Card(modifier=Modifier.fillMaxWidth(),shape=androidx.compose.foundation.shape.RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) {
+      Column(Modifier.fillMaxWidth().padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(8.dp)) {
+        Text("🎙",fontSize=38.sp)
+        Text("مساحة تسجيلك الصوتي",style=MaterialTheme.typography.titleLarge,fontWeight=androidx.compose.ui.text.font.FontWeight.Bold,color=MaterialTheme.colorScheme.onPrimaryContainer)
+        Text("سجّل تلاوتك، أوقف التسجيل، ثم استمع إليه للمراجعة.",style=MaterialTheme.typography.bodyMedium,color=MaterialTheme.colorScheme.onPrimaryContainer)
+      }
+    }
     Text(status, style = MaterialTheme.typography.bodyMedium)
     if (!hasPermission) {
       Button(onClick = { permissionLauncher.launch(Manifest.permission.RECORD_AUDIO) }) {
