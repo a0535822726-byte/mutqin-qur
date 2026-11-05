@@ -79,6 +79,23 @@ fun QuranCircleScreen(prefs: AppPrefs, onBack: () -> Unit) {
       }
     }
     Card(shape=RoundedCornerShape(20.dp),colors=CardDefaults.cardColors(containerColor=colors.surface)) {
+      Column(Modifier.fillMaxWidth().padding(14.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
+        Text("ملخص الحضور خلال ٧ أيام",fontSize=17.sp,fontWeight=FontWeight.Bold,color=colors.primary)
+        if(students.isEmpty()) Text("أضف الطلاب لعرض سجل الحضور.",fontSize=11.sp,color=colors.onSurfaceVariant)
+        students.forEach { student ->
+          val days=(0..6).count { offset ->
+            val date=LocalDate.now().minusDays(offset.toLong()).toString()
+            prefs.toolFlag("circle_att_${date}_${student.hashCode()}")
+          }
+          Row(verticalAlignment=Alignment.CenterVertically) {
+            Text(student,Modifier.weight(1f),fontSize=12.sp)
+            Text("$days / 7 أيام",fontSize=11.sp,fontWeight=FontWeight.Bold,color=colors.primary)
+          }
+          LinearProgressIndicator(progress={days/7f},modifier=Modifier.fillMaxWidth().height(5.dp))
+        }
+      }
+    }
+    Card(shape=RoundedCornerShape(20.dp),colors=CardDefaults.cardColors(containerColor=colors.surface)) {
       Column(Modifier.fillMaxWidth().padding(14.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
         Text("واجب الحفظ والمراجعة",fontSize=17.sp,fontWeight=FontWeight.Bold,color=colors.primary)
         OutlinedTextField(value=assignment,onValueChange={assignment=it;prefs.setToolText("circle_assignment_$today",it)},modifier=Modifier.fillMaxWidth(),minLines=2,label={Text("مثال: حفظ سورة الملك من ١ إلى ٥ ومراجعة سورة النبأ")})
