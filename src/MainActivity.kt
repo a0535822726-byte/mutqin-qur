@@ -47,6 +47,7 @@ sealed interface Screen {
   data object SurahStatistics : Screen
   data object SpacedReview : Screen
   data object StudyLab : Screen
+  data object MasterTools : Screen
   data class Tool(val id: String) : Screen
 }
 
@@ -83,7 +84,7 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
       is Screen.Reader -> Screen.Range(current.surah)
       is Screen.Range -> Screen.SurahList
       Screen.Recorder, Screen.Check, Screen.Tajweed, Screen.Stories, Screen.Reciters, Screen.Circle -> Screen.SurahList
-      Screen.DailyTools, Screen.Quiz, Screen.RandomAyah, Screen.MemorizationChallenge, Screen.KhatmahPlanner, Screen.WordSearch, Screen.AyahContext, Screen.SurahStatistics, Screen.SpacedReview, Screen.StudyLab, is Screen.Tool -> Screen.SurahList
+      Screen.DailyTools, Screen.Quiz, Screen.RandomAyah, Screen.MemorizationChallenge, Screen.KhatmahPlanner, Screen.WordSearch, Screen.AyahContext, Screen.SurahStatistics, Screen.SpacedReview, Screen.StudyLab, Screen.MasterTools, is Screen.Tool -> Screen.SurahList
       Screen.SurahList -> Screen.SurahList
     }
   }
@@ -118,6 +119,7 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
     Screen.SurahStatistics -> SurahStatisticsScreen(repo, onBack = { screen = Screen.SurahList })
     Screen.SpacedReview -> SpacedReviewScreen(repo, prefs, onBack = { screen = Screen.SurahList })
     Screen.StudyLab -> QuranStudyLabScreen(repo, prefs, onBack = { screen = Screen.SurahList })
+    Screen.MasterTools -> QuranMasterToolsScreen(repo, prefs, onBack = { screen = Screen.SurahList })
     is Screen.Tool -> when (s.id) {
       "unique_quiz" -> QuranQuizScreen(onBack = { screen = Screen.SurahList })
       "unique_random_ayah" -> RandomAyahScreen(repo, onBack = { screen = Screen.SurahList })
@@ -128,6 +130,7 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
       "unique_surah_stats" -> SurahStatisticsScreen(repo, onBack = { screen = Screen.SurahList })
       "unique_spaced_review" -> SpacedReviewScreen(repo, prefs, onBack = { screen = Screen.SurahList })
       "unique_study_lab" -> QuranStudyLabScreen(repo, prefs, onBack = { screen = Screen.SurahList })
+      "unique_master_tools" -> QuranMasterToolsScreen(repo, prefs, onBack = { screen = Screen.SurahList })
       else -> DailyToolDetailScreen(prefs, s.id, onBack = { screen = Screen.SurahList })
     }
   }
