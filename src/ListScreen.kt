@@ -37,18 +37,6 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
         Triple("📚","متابعة الختمة","khatmah"), Triple("🎧","ورد الاستماع","listening"),
         Triple("💡","فوائد اليوم","reflection"), Triple("🎯","أهداف الأسبوع","goals")
     )
-    val extraTools = listOf(
-        Triple("🔂","تكرار الآية","repeat"), Triple("📄","عداد الصفحات","pages"),
-        Triple("📚","متابعة الأجزاء","juz"), Triple("🏁","إنجاز السور","surahfinish"),
-        Triple("🔁","جولات المراجعة","revisionrounds"), Triple("🎧","دقائق الاستماع","listenminutes"),
-        Triple("🗣","تدريب المخارج","makharij"), Triple("نّ","أحكام النون","noonrules"),
-        Triple("مّ","أحكام الميم","meemrules"), Triple("〰","تدريب المدود","maddpractice"),
-        Triple("⏸","علامات الوقف","waqf"), Triple("✍","دفتر الأخطاء","mistakes"),
-        Triple("❓","أسئلة للمعلم","questions"), Triple("🤲","دفتر الدعاء","dua"),
-        Triple("🗓","خطة الأسبوع","weeklyplan"), Triple("☑","مراجعة اليوم","dailyreview"),
-        Triple("🎙","سجل الجلسات","sessionlog"), Triple("💡","خواطر قرآنية","reflection2"),
-        Triple("🔥","أيام القراءة","readingstreak"), Triple("🧠","أيام الحفظ","memorystreak")
-    )
     LazyColumn(
         Modifier.fillMaxSize().background(colors.background).safeDrawingPadding(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
@@ -131,13 +119,17 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
             }
         }
         item {
-            HomeSectionHeading("أدوات التعلّم المتقدمة", "تدريبات إضافية للحفظ والتجويد والمتابعة")
+            HomeSectionHeading("تجارب قرآنية مستقلة", "أربع أدوات مختلفة بوظائف واضحة")
             Spacer(Modifier.height(9.dp))
-            extraTools.chunked(2).forEach { pair ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(9.dp)) {
-                    pair.forEach { tool -> FeatureCard(tool.first, tool.second, "أداة مستقلة", Modifier.weight(1f), colors) { onOpenTool(tool.third) } }
+            Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                    FeatureCard("🏆", "المسابقة القرآنية", "أسئلة ونتيجة فورية", Modifier.weight(1f), colors) { onOpenTool("unique_quiz") }
+                    FeatureCard("✨", "آية للتدبر", "اختر آية عشوائية", Modifier.weight(1f), colors) { onOpenTool("unique_random_ayah") }
                 }
-                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                    FeatureCard("🧠", "اختبر حفظك", "اكشف الآية وقيّم حفظك", Modifier.weight(1f), colors) { onOpenTool("unique_memorization") }
+                    FeatureCard("🗓", "مخطط الختمة", "احسب وردك وموعد الإكمال", Modifier.weight(1f), colors) { onOpenTool("unique_khatmah") }
+                }
             }
         }
         item {
