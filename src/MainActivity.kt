@@ -38,6 +38,10 @@ sealed interface Screen {
   data object Circle : Screen
   data object Reciters : Screen
   data object DailyTools : Screen
+  data object Quiz : Screen
+  data object RandomAyah : Screen
+  data object MemorizationChallenge : Screen
+  data object KhatmahPlanner : Screen
   data class Tool(val id: String) : Screen
 }
 
@@ -74,7 +78,7 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
       is Screen.Reader -> Screen.Range(current.surah)
       is Screen.Range -> Screen.SurahList
       Screen.Recorder, Screen.Check, Screen.Tajweed, Screen.Stories, Screen.Reciters, Screen.Circle -> Screen.SurahList
-      Screen.DailyTools, is Screen.Tool -> Screen.SurahList
+      Screen.DailyTools, Screen.Quiz, Screen.RandomAyah, Screen.MemorizationChallenge, Screen.KhatmahPlanner, is Screen.Tool -> Screen.SurahList
       Screen.SurahList -> Screen.SurahList
     }
   }
@@ -100,6 +104,10 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
     Screen.Circle -> QuranCircleScreen(prefs, onBack = { screen = Screen.SurahList })
     Screen.Reciters -> RecitersScreen(onBack = { screen = Screen.SurahList })
     Screen.DailyTools -> DailyToolsScreen(prefs, onBack = { screen = Screen.SurahList })
+    Screen.Quiz -> QuranQuizScreen(onBack = { screen = Screen.SurahList })
+    Screen.RandomAyah -> RandomAyahScreen(repo, onBack = { screen = Screen.SurahList })
+    Screen.MemorizationChallenge -> MemorizationChallengeScreen(repo, prefs, onBack = { screen = Screen.SurahList })
+    Screen.KhatmahPlanner -> KhatmahPlannerScreen(prefs, onBack = { screen = Screen.SurahList })
     is Screen.Tool -> DailyToolDetailScreen(prefs, s.id, onBack = { screen = Screen.SurahList })
   }
 }
