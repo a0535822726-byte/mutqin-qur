@@ -79,6 +79,12 @@ fun TajweedScreen(onBack: () -> Unit) {
         listOf("ا، و، ي بشروطها", "قطب جد", "ء، هـ، ع"),
         0,
         "حروف المد الألف والواو والياء، ولكل حرف شرط في حركة ما قبله."
+      ),
+      TajweedQuestion(
+        "ما المقصود بالوقف في التلاوة؟",
+        listOf("قطع الصوت على كلمة زمناً يتنفس فيه القارئ عادة", "زيادة حركة على آخر الكلمة", "إسقاط حرف من الكلمة"),
+        0,
+        "الوقف هو قطع الصوت على الكلمة زمناً يتنفس فيه القارئ عادة بنية استئناف القراءة، مع مراعاة المعنى والمواضع."
       )
     )
   }
@@ -93,8 +99,8 @@ fun TajweedScreen(onBack: () -> Unit) {
     verticalArrangement = Arrangement.spacedBy(12.dp)
   ) {
     TextButton(onClick = onBack) { Text("رجوع") }
-    Text("معلّم التجويد", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
-    Text("دروس تأسيسية واختبار قصير — راجع النطق مع معلّم متقن؛ هذا القسم لا يستمع لصوتك ولا يصحح مخارج الحروف آليًا.")
+    Text("مدرسة التجويد", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+    Text("تعلّم القواعد خطوة بخطوة، ثم اختبر فهمك في 12 سؤالًا. راجع الأداء بالتلقي على يد معلّم متقن؛ هذا القسم لا يصحح مخارج الحروف آليًا.")
     HorizontalDivider()
     Text("أحكام النون الساكنة والتنوين", style = MaterialTheme.typography.titleLarge)
     Text("١) الإظهار: إخراج النون الساكنة أو التنوين واضحًا إذا جاء بعدها أحد حروف الحلق: ء هـ ع ح غ خ.")
