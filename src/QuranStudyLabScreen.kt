@@ -167,12 +167,16 @@ private fun LabToolDetail(id:String,repo:QuranRepository,prefs:AppPrefs,onClose:
      OutlinedTextField(a,{a=it.filter(Char::isDigit);prefs.setToolText("lab_${id}_a",a)},label={Text("مدة الجلسة بالدقائق")},singleLine=true)
      val mins=a.toIntOrNull()?:0
      if(mins>0) {
-      val first=(mins*60/100)
+      val prep=mins*10/100
+      val reading=mins*60/100
+      val review=mins*30/100
+      val notes=(mins-prep-reading-review).coerceAtLeast(0)
       Text("خطة مقترحة لجلسة من $mins دقيقة:")
-      Text("• ${(mins*60/100/60)} دقيقة: تهيئة ومراجعة الهدف")
-      Text("• ${mins*60/100} ثانية: قراءة بتركيز")
-      Text("• ${(mins*30/100)} دقيقة: مراجعة ما قرأت")
-      Text("• ${(mins-(mins*60/100/60)-(mins*30/100)).coerceAtLeast(0)} دقيقة: تثبيت وتدوين الملاحظات")
+      Text("• $prep دقيقة: تهيئة وتحديد هدف الجلسة")
+      Text("• $reading دقيقة: قراءة أو حفظ بتركيز")
+      Text("• $review دقيقة: مراجعة ما قرأت أو حفظت")
+      Text("• $notes دقيقة: تثبيت الملاحظات وتحديد موضع المتابعة")
+      Text("يمكنك تعديل التقسيم حسب طاقتك ووقت الحلقة.",fontSize=10.sp,color=c.onSurfaceVariant)
      } else Text("أدخل مدة الجلسة ليتم تقسيمها.")
     }
     "weekly_report" -> {
