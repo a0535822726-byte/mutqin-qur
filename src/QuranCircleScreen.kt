@@ -63,19 +63,17 @@ fun QuranCircleScreen(prefs: AppPrefs, onBack: () -> Unit) {
         },modifier=Modifier.fillMaxWidth(),enabled=newStudent.trim().isNotEmpty()) { Text("＋ إضافة طالب") }
         if(students.isEmpty()) Text("أضف أسماء طلاب الحلقة لتبدأ متابعة الحضور والتسميع.",fontSize=12.sp,color=colors.onSurfaceVariant)
         students.forEach { student ->
-          val key="circle_att_${today}_${student.hashCode()}"
-          Row(verticalAlignment=Alignment.CenterVertically) {
-            Checkbox(checked=prefs.toolFlag(key),onCheckedChange={prefs.setToolFlag(key,it);refresh++})
-            Column(Modifier.weight(1f)) {
-              Text(student,fontWeight=FontWeight.SemiBold)
-              Text(if(prefs.toolFlag(key)) "حاضر اليوم" else "لم يسجل الحضور",fontSize=10.sp,color=colors.onSurfaceVariant)
-            }
-            TextButton(onClick={
+          CircleStudentCard(
+            prefs=prefs,
+            student=student,
+            today=today,
+            onAttendance={present -> prefs.setToolFlag("circle_att_${today}_${student.hashCode()}",present);refresh++},
+            onDelete={
               students=students.filterNot{it==student}
               prefs.setToolText("circle_students",students.joinToString("\n"))
               refresh++
-            }) { Text("حذف",color=colors.error) }
-          }
+            }
+          )
           HorizontalDivider(color=colors.outlineVariant)
         }
       }
@@ -124,5 +122,35 @@ private fun CircleStat(label:String,value:String,color:androidx.compose.ui.graph
       Text(value,fontSize=20.sp,fontWeight=FontWeight.Black,color=color)
       Text(label,fontSize=10.sp,color=color)
     }
+  }
+}
+
+
+@Composable
+private fun CircleStudentCard(
+  prefs: AppPrefs,
+  student: String,
+  today: String,
+  onAttendance: (Boolean) -> Unit,
+  onDelete: () -> Unit
+) {
+  val colors=MaterialTheme.colorScheme
+  val id=student.hashCode()
+  val attendanceKey="circle_att_${today}_${id}"
+  var surah by remember(student) { mutableStateOf(prefs.toolText("circle_surah_${id}")) }
+  var portion by remember(student) { mutableStateOf(prefs.toolText("circle_portion_${id}")) }
+  var teacherNote by remember(student) { mutableStateOf(prefs.toolText("circle_student_note_${id}")) }
+  Column(Modifier.fillMaxWidth().padding(vertical=7.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
+    Row(verticalAlignment=Alignment.CenterVertically) {
+      Checkbox(checked=prefs.toolFlag(attendanceKey),onCheckedChange=onAttendance)
+      Column(Modifier.weight(1f)) {
+        Text(student,fontWeight=FontWeight.Bold)
+        Text(if(prefs.toolFlag(attendanceKey)) "حاضر اليوم" else "لم يسجل الحضور",fontSize=10.sp,color=colors.onSurfaceVariant)
+      }
+      TextButton(onClick=onDelete) { Text("حذف",color=colors.error) }
+    }
+    OutlinedTextField(value=surah,onValueChange={surah=it;prefs.setToolText("circle_surah_${id}",it)},modifier=Modifier.fillMaxWidth(),singleLine=true,label={Text("السورة أو موضع الحفظ")})
+    OutlinedTextField(value=portion,onValueChange={portion=it;prefs.setToolText("circle_portion_${id}",it)},modifier=Modifier.fillMaxWidth(),singleLine=true,label={Text("مقدار التسميع أو المراجعة")})
+    OutlinedTextField(value=teacherNote,onValueChange={teacherNote=it;prefs.setToolText("circle_student_note_${id}",it)},modifier=Modifier.fillMaxWidth(),minLines=2,label={Text("ملاحظات التصحيح للطالب")})
   }
 }
