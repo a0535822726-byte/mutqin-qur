@@ -115,11 +115,11 @@ jobs:
           EOT
           cat > app/src/main/AndroidManifest.xml <<'EOT'
           <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">\n              <uses-permission android:name="android.permission.RECORD_AUDIO" />
               <application
                   android:allowBackup="true"
                   android:icon="@drawable/ic_launcher"
-                  android:label="مُتقن"
+                  android:label="ديني"
                   android:supportsRtl="true"
                   android:theme="@style/Theme.Mutqin">
                   <activity
@@ -206,4 +206,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete latest --cleanup-tag -y || true
-          gh release create latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "مُتقن" --notes "أحدث نسخة"
+          gh release create latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "ديني" --notes "نسخة ديني للأندرويد"

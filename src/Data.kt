@@ -56,6 +56,9 @@ class AppPrefs(context: Context) {
   fun setLastPosition(s: Int, f: Int, t: Int) {
     p.edit().putInt("last_s", s).putInt("last_f", f).putInt("last_t", t).apply()
   }
+
+  fun tasbihCount(): Int = p.getInt("tasbih_count", 0)
+  fun setTasbihCount(value: Int) { p.edit().putInt("tasbih_count", value.coerceAtLeast(0)).apply() }
 }
 
 fun toArabic(n: Int): String = n.toString().map { '٠' + (it - '0') }.joinToString("")
