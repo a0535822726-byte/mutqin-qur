@@ -71,7 +71,7 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
    Spacer(Modifier.height(9.dp))
    Row(horizontalArrangement=Arrangement.spacedBy(9.dp)){
     FeatureCard("🎚","استديو التسجيل","سجّل واستمع",Modifier.weight(1f),colors,onOpenRecorder)
-    FeatureCard("🎚","استديو التسجيل","سجّل واستمع",Modifier.weight(1f),colors,onOpenRecorder)
+    FeatureCard("🧠","خطة الحفظ","حفظ ومراجعة",Modifier.weight(1f),colors){onOpenTool("memorization")}
    }
   }
   item {
