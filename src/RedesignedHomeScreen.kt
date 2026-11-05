@@ -67,7 +67,7 @@ fun RedesignedHomeScreen(
   item {
    HomeHeading("المسارات الرئيسية", "كل مسار له وظيفة واضحة")
    Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
-    HomeLargeAction("◉", "التسميع الذكي المباشر", "استمع إلى قراءتك وأظهر مواضع الاختلاف", Color(0xFFDCEBE3), Color(0xFF104D3C), onOpenCheck)
+    HomeLargeAction("◉", "المصحف + التسميع الذكي", "افتح المصحف وابدأ القراءة من زر الميكروفون داخل الصفحة", Color(0xFFDCEBE3), Color(0xFF104D3C)) { onOpenSurah(1) }
     Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
      HomeSmallAction("▤", "المصحف", "قراءة وتدبّر", Modifier.weight(1f)) { onOpenSurah(1) }
      HomeSmallAction("✧", "أكاديمية التجويد", "دروس واختبارات", Modifier.weight(1f), onOpenTajweed)
