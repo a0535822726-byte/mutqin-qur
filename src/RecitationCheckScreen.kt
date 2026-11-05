@@ -11,6 +11,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,13 +43,20 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   var amplitude by remember { mutableFloatStateOf(0f) }
   var status by remember { mutableStateOf("اختر موضع المراجعة، ثم ابدأ التلاوة.") }
   var recognizedText by remember { mutableStateOf("") }
-  var matchPercent by remember { mutableIntStateOf(-1) }
+  var comparison by remember { mutableStateOf<RecitationComparison?>(null) }
   var focusRule by remember { mutableStateOf("الغنة") }
   var reviewedRecording by remember { mutableStateOf(false) }
   var checkedRule by remember { mutableStateOf(false) }
   var savedFile by remember { mutableStateOf<File?>(null) }
+  var sessionFiles by remember { mutableStateOf(emptyList<File>()) }
   var player by remember { mutableStateOf<MediaPlayer?>(null) }
   var recorder by remember { mutableStateOf<MediaRecorder?>(null) }
+  LaunchedEffect(Unit) {
+    val folder = File(context.filesDir, "mutqin_sessions")
+    sessionFiles = folder.listFiles()?.filter { it.isFile && it.extension == "m4a" }?.sortedByDescending { it.lastModified() } ?: emptyList()
+    savedFile = sessionFiles.firstOrNull()
+  }
+
   val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
     hasPermission = granted
     status = if (granted) "تم السماح بالميكروفون. ابدأ التلاوة." else "يلزم السماح بالميكروفون لاستخدام جلسة الصوت."
@@ -58,8 +66,8 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
     if (result.resultCode == Activity.RESULT_OK) {
       val heard = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull().orEmpty()
       recognizedText = heard
-      matchPercent = approximateWordMatch(repo.ayah(surah, ayah), heard)
-      status = if (heard.isBlank()) "لم ألتقط كلمات واضحة. حاول في مكان هادئ." else "انتهى فحص الكلمات التقريبي. راجع النتيجة بنفسك."
+      comparison = compareRecitation(repo.ayah(surah, ayah), heard)
+      status = if (heard.isBlank()) "لم ألتقط كلمات واضحة. حاول في مكان هادئ." else "انتهى فحص الكلمات التقريبي. راجع مواضع الاختلاف بنفسك."
     } else {
       status = "لم يكتمل فحص الكلمات. يمكنك المحاولة مرة أخرى."
     }
@@ -96,6 +104,9 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
     try {
       recorder?.stop()
       status = "انتهت الجلسة وحُفظ التسجيل على الجهاز."
+      val folder = File(context.filesDir, "mutqin_sessions")
+      sessionFiles = folder.listFiles()?.filter { it.isFile && it.extension == "m4a" }?.sortedByDescending { it.lastModified() } ?: emptyList()
+      savedFile = sessionFiles.firstOrNull()
     } catch (_: Exception) {
       savedFile = null
       status = "لم يكتمل التسجيل. أعد المحاولة."
@@ -236,8 +247,26 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
             Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
               Text("النص الذي التقطه التعرف الصوتي",fontWeight=FontWeight.Bold,color=colors.primary,fontSize=13.sp)
               Text(recognizedText,fontSize=15.sp,lineHeight=25.sp)
-              Text("تطابق الكلمات التقريبي: $matchPercent٪",fontWeight=FontWeight.Bold,color=colors.primary)
-              Text("هذه مقارنة آلية تقريبية للكلمات فقط؛ قد يخطئ التعرف في ألفاظ القرآن، ولا تقيس المخارج أو الغنة أو المدود أو أحكام التجويد.",fontSize=11.sp,color=colors.error)
+              val result = comparison
+              if (result != null) {
+                Text(
+                  result.percentage?.let { "تطابق الكلمات التقريبي: $it٪" } ?: "لم تُلتقط كلمات كافية لحساب نسبة",
+                  fontWeight=FontWeight.Bold,
+                  color=colors.primary
+                )
+                Text("الكلمات التي تحتاج مراجعة:",fontWeight=FontWeight.Bold,fontSize=12.sp)
+                Text(
+                  result.unmatchedReferenceIndices.joinToString(" • ") { result.referenceWords[it] }.ifBlank { "لم يظهر اختلاف نصي في الكلمات الملتقطة." },
+                  fontSize=14.sp,
+                  lineHeight=24.sp,
+                  color=colors.error
+                )
+                Text("النص الملتقط:",fontWeight=FontWeight.Bold,fontSize=12.sp)
+                Text(result.heardWords.mapIndexed { index, word ->
+                  if (index in result.unmatchedHeardIndices) "【$word】" else word
+                }.joinToString(" "),fontSize=14.sp,lineHeight=24.sp)
+              }
+              Text("هذه مقارنة نصية تقريبية فقط؛ قد تخطئ خدمة التعرف في ألفاظ القرآن. لا تقيس المخارج أو الغنة أو المدود أو أحكام التجويد.",fontSize=11.sp,color=colors.error)
             }
           }
         }
@@ -258,6 +287,55 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         }, enabled = !recording && savedFile?.exists() == true, modifier = Modifier.fillMaxWidth()) { Text("▶ استمع إلى تلاوتك") }
       }
     }
+
+    Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
+      Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+        Text("سجل جلساتك السابقة", fontWeight = FontWeight.Bold, color = colors.primary, fontSize = 16.sp)
+        if (sessionFiles.isEmpty()) {
+          Text("ستظهر تسجيلاتك المحفوظة هنا بعد أول جلسة.", color = colors.onSurfaceVariant, fontSize = 12.sp)
+        } else {
+          sessionFiles.take(8).forEach { file ->
+            Row(
+              Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
+                .background(if (savedFile == file) colors.primaryContainer else colors.surfaceVariant)
+                .clickable { savedFile = file }.padding(10.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+              Column(Modifier.weight(1f)) {
+                Text(if (savedFile == file) "التسجيل المحدد" else "جلسة محفوظة", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                Text(file.nameWithoutExtension, color = colors.onSurfaceVariant, fontSize = 9.sp)
+              }
+              TextButton(onClick = {
+                try {
+                  player?.release()
+                  player = MediaPlayer().apply {
+                    setDataSource(file.absolutePath)
+                    setOnCompletionListener { it.release(); player = null }
+                    prepare()
+                    start()
+                  }
+                  savedFile = file
+                  status = "تشغيل التسجيل المحدد."
+                } catch (_: Exception) { status = "تعذر تشغيل هذا التسجيل." }
+              }) { Text("استماع") }
+              TextButton(onClick = {
+                if (file == savedFile) {
+                  try { player?.release() } catch (_: Exception) {}
+                  player = null
+                }
+                file.delete()
+                sessionFiles = sessionFiles.filterNot { it == file }
+                if (savedFile == file) savedFile = sessionFiles.firstOrNull()
+                status = "تم حذف التسجيل من الجهاز."
+              }) { Text("حذف", color = colors.error) }
+            }
+          }
+          Text("تُحفظ التسجيلات داخل التطبيق على جهازك، ولا تُرفع تلقائيًا.", fontSize = 10.sp, color = colors.onSurfaceVariant)
+        }
+      }
+    }
+
     Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
       Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text("ما الذي تفعله هذه الجلسة؟", fontWeight = FontWeight.Bold, color = colors.primary)
@@ -269,26 +347,3 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   }
 }
 
-private fun normalizeRecitationWords(value: String): List<String> {
-  val withoutMarks = value.replace(Regex("[\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]"), "")
-  return withoutMarks.replace(Regex("[^\\u0621-\\u064A\\s]"), " ")
-    .replace('أ','ا').replace('إ','ا').replace('آ','ا').replace('ى','ي')
-    .trim().split(Regex("\\s+")).filter { it.isNotBlank() }
-}
-
-private fun approximateWordMatch(reference: String, heard: String): Int {
-  val a = normalizeRecitationWords(reference)
-  val b = normalizeRecitationWords(heard)
-  if (a.isEmpty()) return 0
-  val previous = IntArray(b.size + 1)
-  val current = IntArray(b.size + 1)
-  for (i in 1..a.size) {
-    for (j in 1..b.size) {
-      current[j] = if (a[i - 1] == b[j - 1]) previous[j - 1] + 1
-        else maxOf(previous[j], current[j - 1])
-    }
-    for (j in previous.indices) previous[j] = current[j]
-    current.fill(0)
-  }
-  return ((previous[b.size] * 100f) / a.size).toInt().coerceIn(0,100)
-}
