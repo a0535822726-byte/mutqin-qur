@@ -136,6 +136,7 @@ fun SurahListScreen(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDar
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
                     FeatureCard("📊", "إحصاءات السورة", "آيات وكلمات وحروف", Modifier.weight(1f), colors) { onOpenTool("unique_surah_stats") }
+                    FeatureCard("🧠", "مراجعة متباعدة", "جدول تثبيت الحفظ", Modifier.weight(1f), colors) { onOpenTool("unique_spaced_review") }
                     FeatureCard("📖", "فهرس السور", "انتقل مباشرة إلى سورة", Modifier.weight(1f), colors) { onOpenSurah(1) }
                 }
             }
