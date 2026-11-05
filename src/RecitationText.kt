@@ -15,6 +15,7 @@ data class RecitationComparison(
 
 fun normalizeRecitationWords(value: String): List<String> {
     val withoutMarks = value
+        .replace('ٱ', 'ا')
         .replace('\u0640'.toString(), "")
         .replace(Regex("[\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]"), "")
     return withoutMarks
