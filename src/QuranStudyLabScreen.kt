@@ -1,3 +1,4 @@
+// أدوات مستقلة لحفظ ملاحظات المتعلم محلياً على الجهاز.
 package com.mutqin.app
 
 import androidx.compose.foundation.background
