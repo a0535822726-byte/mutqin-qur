@@ -118,7 +118,7 @@ private fun LabToolDetail(id:String,repo:QuranRepository,prefs:AppPrefs,onClose:
      week.forEachIndexed{index,day->
       var checked by remember(id,index){mutableStateOf(prefs.toolFlag("lab_${id}_$index"))}
       Row(verticalAlignment=Alignment.CenterVertically){
-       Checkbox(checked=checked,onCheckedChange{v->checked=v;prefs.setToolFlag("lab_${id}_$index",v)})
+       Checkbox(checked=checked,onCheckedChange={v->checked=v;prefs.setToolFlag("lab_${id}_$index",v)})
        Text(day,Modifier.weight(1f))
        if(checked)Text(if(id=="weekly_schedule")"أُنجز" else "حاضر",color=c.primary,fontSize=11.sp)
       }
@@ -145,7 +145,7 @@ private fun LabToolDetail(id:String,repo:QuranRepository,prefs:AppPrefs,onClose:
      Text("حدد الحروف التي تدربت على نطقها. لا يغني ذلك عن التلقي من معلم.")
      letters.chunked(7).forEach{row->Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){row.forEach{letter->
       var done by remember(letter){mutableStateOf(prefs.toolFlag("lab_letter_$letter"))}
-      Column(horizontalAlignment=Alignment.CenterHorizontally){Text(letter,fontSize=20.sp);Checkbox(checked=done,onCheckedChange{v->done=v;prefs.setToolFlag("lab_letter_$letter",v)})}
+      Column(horizontalAlignment=Alignment.CenterHorizontally){Text(letter,fontSize=20.sp);Checkbox(checked=done,onCheckedChange={v->done=v;prefs.setToolFlag("lab_letter_$letter",v)})}
      }}}
     }
     "waqf_guide" -> {
