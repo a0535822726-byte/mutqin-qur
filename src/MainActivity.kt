@@ -108,6 +108,12 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
     Screen.RandomAyah -> RandomAyahScreen(repo, onBack = { screen = Screen.SurahList })
     Screen.MemorizationChallenge -> MemorizationChallengeScreen(repo, prefs, onBack = { screen = Screen.SurahList })
     Screen.KhatmahPlanner -> KhatmahPlannerScreen(prefs, onBack = { screen = Screen.SurahList })
-    is Screen.Tool -> DailyToolDetailScreen(prefs, s.id, onBack = { screen = Screen.SurahList })
+    is Screen.Tool -> when (s.id) {
+      "unique_quiz" -> QuranQuizScreen(onBack = { screen = Screen.SurahList })
+      "unique_random_ayah" -> RandomAyahScreen(repo, onBack = { screen = Screen.SurahList })
+      "unique_memorization" -> MemorizationChallengeScreen(repo, prefs, onBack = { screen = Screen.SurahList })
+      "unique_khatmah" -> KhatmahPlannerScreen(prefs, onBack = { screen = Screen.SurahList })
+      else -> DailyToolDetailScreen(prefs, s.id, onBack = { screen = Screen.SurahList })
+    }
   }
 }
