@@ -84,7 +84,7 @@ fun AppRoot(repo: QuranRepository, prefs: AppPrefs, dark: Boolean, onDark: (Bool
     is Screen.Range -> RangeScreen(repo, s.surah, onBack = { screen = Screen.SurahList },
       onStart = { a, b -> prefs.setLastPosition(s.surah, a, b); screen = Screen.Reader(s.surah, a, b) })
     is Screen.Reader -> ReaderScreen(repo, prefs, s.surah, s.from, s.to, onBack = { screen = Screen.Range(s.surah) })
-    Screen.Recorder -> RecorderScreen(onBack = { screen = Screen.SurahList })
+    Screen.Recorder -> RecorderScreen(prefs, onBack = { screen = Screen.SurahList })
     Screen.Check -> RecitationCheckScreen(repo, onBack = { screen = Screen.SurahList })
     Screen.Tajweed -> TajweedScreen(onBack = { screen = Screen.SurahList })
     Screen.Stories -> StoriesScreen(onBack = { screen = Screen.SurahList })
