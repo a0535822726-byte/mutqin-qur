@@ -16,12 +16,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecitation:()->Unit,onAdhkar:()->Unit,onTasbih:()->Unit) {
+fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecitation:()->Unit,onAdhkar:()->Unit,onTasbih:()->Unit,onLearning:()->Unit) {
   val c=MaterialTheme.colorScheme
   LazyColumn(Modifier.fillMaxSize().background(c.background),contentPadding=PaddingValues(18.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
     item {
       Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
-        Column { Text("دِينِي",fontSize=32.sp,fontWeight=FontWeight.ExtraBold,color=c.primary);Text("رفيقك للقرآن والذكر",fontSize=14.sp,color=c.onSurfaceVariant) }
+        Column { Text("مُتقن",fontSize=32.sp,fontWeight=FontWeight.ExtraBold,color=c.primary);Text("منصة القرآن والتعلم والعبادات",fontSize=14.sp,color=c.onSurfaceVariant) }
         Row(verticalAlignment=Alignment.CenterVertically) { Text("ليلي",fontSize=12.sp);Switch(checked=dark,onCheckedChange=onDark) }
       }
     }
@@ -34,7 +34,8 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
         }
       }
     }
-    item { Text("أقسام ديني",fontSize=20.sp,fontWeight=FontWeight.Bold,color=c.onBackground) }
+    item { Text("أقسام متقن",fontSize=20.sp,fontWeight=FontWeight.Bold,color=c.onBackground) }
+    item { FeatureCard("📚","مكتبة العلوم الإسلامية","التجويد والتفسير والحديث والفقه والسيرة والقصص والاختبارات.",onLearning) }
     item { FeatureCard("📖","المصحف الشريف","تصفح السور وابحث بالاسم أو الرقم وحدد مقدار وردك.",onQuran) }
     item { FeatureCard("🎙","التسميع الصوتي","سجّل تلاوتك وراقب مستوى الميكروفون ثم استمع للتسجيل.",onRecitation) }
     item { FeatureCard("🤲","الأذكار","أذكار مختارة تقرؤها في أي وقت.",onAdhkar) }
@@ -86,5 +87,78 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
     Button(onClick={count++;prefs.setTasbihCount(count)},modifier=Modifier.fillMaxWidth().height(64.dp),shape=RoundedCornerShape(22.dp)) { Text("تسبيح",fontSize=22.sp) }
     OutlinedButton(onClick={count=0;prefs.setTasbihCount(0)},modifier=Modifier.fillMaxWidth()) { Text("تصفير العداد") }
     Text("يُحفظ العدد تلقائياً على جهازك.",fontSize=12.sp,color=c.onSurfaceVariant)
+  }
+}
+
+
+private data class LearningSectionInfo(
+  val title: String,
+  val subtitle: String,
+  val target: String,
+  val scope: String,
+  val status: String
+)
+
+private val learningSections = listOf(
+  LearningSectionInfo("التجويد","تعلم أحكام التلاوة خطوة بخطوة","200+ درس","الحكم والتعريف والسبب والموضع والمثال والأداء والأخطاء والتمرين والاختبار.","قيد البناء"),
+  LearningSectionInfo("التفسير","فهم معاني الآيات","القرآن كاملًا","تفسير الآيات وربط كل شرح بمصدره ومرجعه.","قيد البناء"),
+  LearningSectionInfo("الحديث","السنة النبوية مع التخريج","5,000 حديث","النص والراوي والكتاب والتخريج والدرجة والشرح، دون نسبة حكم بلا مرجع.","قيد البناء"),
+  LearningSectionInfo("الفقه","مسائل العبادات والمعاملات","5,000 مسألة","السؤال والحكم والدليل والشرح والخلاف المعتبر والمراجع.","قيد البناء"),
+  LearningSectionInfo("السيرة والصحابة","سير وتراجم موثقة","7,000–8,000 مادة","تراجم الصحابة والسيرة مع إحالات للمصادر وتمييز الروايات.","قيد البناء"),
+  LearningSectionInfo("القصص الإسلامية","قصص الأنبياء والسيرة والتاريخ","5,000 مادة","عرض القصة مع الأدلة والمراجع وبيان ما صح وما اختلف فيه.","قيد البناء"),
+  LearningSectionInfo("الاختبارات","اختبر فهمك وحفظك","5,000+ سؤال","أسئلة متدرجة بإجابات مفسرة ومصدر لكل معلومة.","قيد البناء"),
+  LearningSectionInfo("الأذكار والأدعية","أذكار موثقة حسب الوقت","مكتبة موسعة","النص والمصدر والدرجة والوقت والعدد الثابت عند ثبوته.","متاح: أذكار مختارة")
+)
+
+@Composable
+fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
+  val c=MaterialTheme.colorScheme
+  Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
+    Row(Modifier.fillMaxWidth().padding(horizontal=14.dp, vertical=8.dp),verticalAlignment=Alignment.CenterVertically) {
+      TextButton(onClick=onBack){Text("رجوع")}
+      Text("مكتبة متقن",fontSize=24.sp,fontWeight=FontWeight.Bold,color=c.primary)
+    }
+    Text("مصادر التعلم والعبادات في مكان واحد",Modifier.padding(horizontal=16.dp),fontSize=13.sp,color=c.onSurfaceVariant)
+    LazyColumn(contentPadding=PaddingValues(14.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+      items(learningSections.size) { i ->
+        val item=learningSections[i]
+        Card(Modifier.fillMaxWidth().clickable { onOpen(item.title) },shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=c.surface)) {
+          Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
+              Text(item.title,fontSize=18.sp,fontWeight=FontWeight.Bold,color=c.primary)
+              Surface(color=if(item.status.startsWith("متاح")) c.primary.copy(alpha=.12f) else c.secondary.copy(alpha=.15f),shape=RoundedCornerShape(30.dp)) {
+                Text(item.status,Modifier.padding(horizontal=10.dp,vertical=5.dp),fontSize=10.sp,color=c.onSurface)
+              }
+            }
+            Text(item.subtitle,fontSize=13.sp,color=c.onSurface)
+            Text("الهدف: ${item.target}",fontSize=12.sp,fontWeight=FontWeight.SemiBold,color=c.secondary)
+            Text(item.scope,fontSize=12.sp,color=c.onSurfaceVariant,lineHeight=18.sp)
+          }
+        }
+      }
+      item { Text("الأعداد أهداف للمحتوى النهائي وليست أعدادًا منشورة حاليًا. لن نملأ المكتبة بمواد مكررة أو غير موثقة.",Modifier.fillMaxWidth().padding(8.dp),fontSize=11.sp,color=c.error,lineHeight=17.sp) }
+    }
+  }
+}
+
+@Composable
+fun LearningSectionScreen(section:String,onBack:()->Unit) {
+  val c=MaterialTheme.colorScheme
+  val info=learningSections.firstOrNull { it.title==section }
+  Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding().padding(18.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
+    TextButton(onClick=onBack){Text("رجوع إلى المكتبة")}
+    Text(section,fontSize=28.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+    if(info!=null) {
+      Text(info.subtitle,fontSize=15.sp,color=c.onSurfaceVariant)
+      Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(20.dp)) {
+        Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+          Text("نطاق القسم",fontWeight=FontWeight.Bold,color=c.primary)
+          Text(info.scope,fontSize=14.sp,lineHeight=23.sp,color=c.onSurface)
+          Text("العدد المستهدف: ${info.target}",fontWeight=FontWeight.Bold,color=c.secondary)
+          Text("الحالة الحالية: ${info.status}",fontSize=13.sp,color=c.onSurfaceVariant)
+        }
+      }
+    }
+    Text("سيُضاف المحتوى مادةً مادة مع المصدر والتخريج أو المرجع والتحقق قبل إظهاره. لا توجد حاليًا مكتبة مكتملة بهذا العدد.",fontSize=13.sp,lineHeight=22.sp,color=c.error)
   }
 }
