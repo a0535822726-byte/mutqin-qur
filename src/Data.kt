@@ -82,6 +82,13 @@ class AppPrefs(context: Context) {
     return added
   }
 
+
+  fun recitationSessions(): List<String> = p.getString("recitation_sessions", "").orEmpty().split(";").filter { it.isNotBlank() }.take(20)
+  fun addRecitationSession(surah: Int, from: Int, to: Int, seconds: Int, fileName: String) {
+    val item = listOf(surah, from, to, seconds, fileName).joinToString(":")
+    p.edit().putString("recitation_sessions", (listOf(item) + recitationSessions()).take(20).joinToString(";")).apply()
+  }
+
   fun tasbihCount(): Int = p.getInt("tasbih_count", 0)
   fun setTasbihCount(value: Int) { p.edit().putInt("tasbih_count", value.coerceAtLeast(0)).apply() }
 }
