@@ -64,6 +64,7 @@ fun AppRoot(repo:QuranRepository,prefs:AppPrefs,dark:Boolean,onDark:(Boolean)->U
     screen=when(val current=screen) {
       is Screen.Reader->Screen.Range(current.surah)
       is Screen.Range->Screen.SurahList
+      is Screen.SectionDetail->Screen.LearningHub
       else->Screen.Home
     }
   }
