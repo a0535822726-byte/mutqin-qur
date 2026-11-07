@@ -25,6 +25,21 @@ fun SurahListScreen(
   var query by remember { mutableStateOf("") }
   val last = remember { prefs.lastPosition() }
   val q = normalizeAr(query.trim())
+  val searchText = normalizeQuranSearch(query)
+  val ayahMatches = remember(repo, searchText) {
+    if (searchText.length < 2) emptyList()
+    else buildList {
+      for (surahNumber in 1..repo.surahCount()) {
+        for (ayahNumber in 1..repo.ayahCount(surahNumber)) {
+          if (normalizeQuranSearch(repo.ayah(surahNumber, ayahNumber)).contains(searchText)) {
+            add(surahNumber to ayahNumber)
+            if (size >= 40) break
+          }
+        }
+        if (size >= 40) break
+      }
+    }
+  }
   val filtered = remember(q) {
     (1..repo.surahCount()).filter { n ->
       q.isEmpty() || n.toString() == q || normalizeAr(SURAH_NAMES[n - 1]).contains(q)
@@ -50,7 +65,7 @@ fun SurahListScreen(
     OutlinedTextField(
       value = query,
       onValueChange = { query = it },
-      label = { Text("ابحث عن سورة بالاسم أو الرقم") },
+      label = { Text("ابحث عن سورة أو آية من القرآن") },
       singleLine = true,
       modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
     )
@@ -58,6 +73,39 @@ fun SurahListScreen(
       contentPadding = PaddingValues(16.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+      if (searchText.length >= 2) {
+        item {
+          Text(
+            "نتائج البحث في نص الآيات: ${toArabic(ayahMatches.size)} — الحد الأقصى 40 نتيجة",
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+          )
+        }
+        if (ayahMatches.isEmpty()) {
+          item { Text("لم نعثر على آية تطابق عبارة البحث.") }
+        }
+        items(ayahMatches) { match ->
+          val (surahNumber, ayahNumber) = match
+          Card(
+            modifier = Modifier.fillMaxWidth().clickable { onResume(surahNumber, ayahNumber, ayahNumber) }
+          ) {
+            Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+              Text(
+                "سورة ${SURAH_NAMES[surahNumber - 1]} — الآية ${toArabic(ayahNumber)}",
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+              )
+              Text(
+                repo.ayah(surahNumber, ayahNumber),
+                fontSize = 19.sp,
+                lineHeight = 32.sp,
+                textAlign = TextAlign.Start
+              )
+              Text("اضغط لفتح الآية في المصحف", fontSize = 11.sp, color = MaterialTheme.colorScheme.secondary)
+            }
+          }
+        }
+      }
       if (last != null && q.isEmpty()) {
         item {
           Card(
@@ -75,10 +123,10 @@ fun SurahListScreen(
           }
         }
       }
-      if (filtered.isEmpty()) {
-        item { Text("لا توجد سورة بهذا الاسم") }
+      if (filtered.isEmpty() && searchText.length < 2) {
+        item { Text("لا توجد سورة بهذا الاسم أو الرقم") }
       }
-      items(filtered) { n ->
+      if (searchText.length < 2) items(filtered) { n ->
         Card(modifier = Modifier.fillMaxWidth().clickable { onOpenSurah(n) }) {
           Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
