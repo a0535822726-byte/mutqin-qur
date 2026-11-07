@@ -145,6 +145,20 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
 fun LearningSectionScreen(section:String,onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
   val info=learningSections.firstOrNull { it.title==section }
+  var searchQuery by remember(section) { mutableStateOf("") }
+  val query = normalizeAr(searchQuery.trim())
+  val filteredTajweed = tajweedLessons.filter { lesson ->
+    query.isBlank() || normalizeAr(listOf(lesson.title,lesson.objective,lesson.definition,lesson.rule,lesson.examples.joinToString(" "),lesson.practice,lesson.commonMistake,lesson.references).joinToString(" ")).contains(query)
+  }
+  val filteredHadith = hadithEntries.filter { h ->
+    query.isBlank() || normalizeAr(listOf(h.title,h.text,h.narrator,h.source,h.reference,h.grade,h.explanation).joinToString(" ")).contains(query)
+  }
+  val filteredFiqh = fiqhEntries.filter { f ->
+    query.isBlank() || normalizeAr(listOf(f.title,f.question,f.ruling,f.evidence,f.explanation,f.scope,f.references).joinToString(" ")).contains(query)
+  }
+  val filteredStories = quranStories.filter { story ->
+    query.isBlank() || normalizeAr(listOf(story.title,story.summary,story.verses,story.lessons.joinToString(" "),story.sourceNote).joinToString(" ")).contains(query)
+  }
   LazyColumn(
     Modifier.fillMaxSize().background(c.background).safeDrawingPadding(),
     contentPadding=PaddingValues(16.dp),
@@ -157,14 +171,24 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
         Text(info.subtitle,fontSize=15.sp,color=c.onSurfaceVariant)
         Text("الهدف النهائي: ${info.target}",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.secondary)
       }
+      if(section=="التجويد" || section=="الحديث" || section=="الفقه" || section=="القصص الإسلامية") {
+        OutlinedTextField(
+          value=searchQuery,
+          onValueChange={searchQuery=it},
+          modifier=Modifier.fillMaxWidth(),
+          singleLine=true,
+          label={Text("ابحث داخل ${section}")},
+          placeholder={Text("اكتب كلمة أو عنوانًا أو مصدرًا")}
+        )
+      }
     }
     if(section=="التجويد") {
       item {
         Text("دروس التجويد المتاحة: ${tajweedLessons.size} من أصل 300 درس مستهدف",fontSize=14.sp,fontWeight=FontWeight.Bold,color=c.primary)
         Text("كل درس يعرض الهدف والتعريف والقاعدة والأمثلة والتدريب والأخطاء الشائعة والمراجع. يلزم استكمال المراجعة العلمية قبل اعتماد بقية المنهج.",fontSize=12.sp,lineHeight=19.sp,color=c.onSurfaceVariant)
       }
-      items(tajweedLessons.size) { index ->
-        val lesson=tajweedLessons[index]
+      items(filteredTajweed.size) { index ->
+        val lesson=filteredTajweed[index]
         Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
             Text("الدرس ${lesson.id}: ${lesson.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
@@ -179,11 +203,17 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
           }
         }
       }
-      item { Text("المتبقي لإكمال الهدف: ${(300-tajweedLessons.size).coerceAtLeast(0)} درسًا. لن يُعلن اكتمال العدد قبل كتابة الدروس ومراجعتها.",fontSize=12.sp,color=c.error) }
+      item {
+        if(filteredTajweed.isEmpty()) Text("لا توجد دروس تطابق عبارة البحث.",fontSize=13.sp,color=c.onSurfaceVariant)
+        Text("نتائج البحث: ${filteredTajweed.size} من ${tajweedLessons.size} درسًا. المتبقي لإكمال الهدف: ${(300-tajweedLessons.size).coerceAtLeast(0)} درسًا.",fontSize=12.sp,color=c.error)
+      }
     } else if(section=="الحديث") {
-      item { Text("الأحاديث المنشورة: ${hadithEntries.size} — تُعرض المراجع وأحكام الصحة كما في مصادرها.",fontSize=13.sp,color=c.onSurfaceVariant) }
-      items(hadithEntries.size) { index ->
-        val h=hadithEntries[index]
+      item {
+        Text("الأحاديث المنشورة: ${hadithEntries.size} — نتائج البحث: ${filteredHadith.size}.",fontSize=13.sp,color=c.onSurfaceVariant)
+        if(filteredHadith.isEmpty()) Text("لا توجد أحاديث تطابق عبارة البحث.",fontSize=13.sp,color=c.onSurfaceVariant)
+      }
+      items(filteredHadith.size) { index ->
+        val h=filteredHadith[index]
         Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
             Text("الحديث ${h.id}: ${h.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
@@ -196,9 +226,12 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
         }
       }
     } else if(section=="الفقه") {
-      item { Text("المسائل المنشورة: ${fiqhEntries.size} — هذه مداخل تأسيسية وليست فتاوى شخصية.",fontSize=13.sp,color=c.onSurfaceVariant) }
-      items(fiqhEntries.size) { index ->
-        val f=fiqhEntries[index]
+      item {
+        Text("المسائل المنشورة: ${fiqhEntries.size} — نتائج البحث: ${filteredFiqh.size}. هذه مداخل تأسيسية وليست فتاوى شخصية.",fontSize=13.sp,color=c.onSurfaceVariant)
+        if(filteredFiqh.isEmpty()) Text("لا توجد مسائل تطابق عبارة البحث.",fontSize=13.sp,color=c.onSurfaceVariant)
+      }
+      items(filteredFiqh.size) { index ->
+        val f=filteredFiqh[index]
         Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
             Text("المسألة ${f.id}: ${f.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
@@ -212,9 +245,12 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
         }
       }
     } else if(section=="القصص الإسلامية") {
-      item { Text("القصص المنشورة: ${quranStories.size} — ملخصات مستندة إلى آيات القرآن الكريم.",fontSize=13.sp,color=c.onSurfaceVariant) }
-      items(quranStories.size) { index ->
-        val story=quranStories[index]
+      item {
+        Text("القصص المنشورة: ${quranStories.size} — نتائج البحث: ${filteredStories.size}. ملخصات مستندة إلى آيات القرآن الكريم.",fontSize=13.sp,color=c.onSurfaceVariant)
+        if(filteredStories.isEmpty()) Text("لا توجد قصص تطابق عبارة البحث.",fontSize=13.sp,color=c.onSurfaceVariant)
+      }
+      items(filteredStories.size) { index ->
+        val story=filteredStories[index]
         Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
             Text("القصة ${story.id}: ${story.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
