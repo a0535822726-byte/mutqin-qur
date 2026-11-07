@@ -57,6 +57,31 @@ class AppPrefs(context: Context) {
     p.edit().putInt("last_s", s).putInt("last_f", f).putInt("last_t", t).apply()
   }
 
+  fun bookmarks(): List<Pair<Int, Int>> = p.getString("bookmarks", "").orEmpty()
+    .split(",")
+    .mapNotNull { token ->
+      val parts = token.split(":")
+      if (parts.size != 2) null else {
+        val surah = parts[0].toIntOrNull()
+        val ayah = parts[1].toIntOrNull()
+        if (surah in 1..114 && ayah != null && ayah > 0) surah!! to ayah else null
+      }
+    }
+    .distinct()
+
+  fun isBookmarked(surah: Int, ayah: Int): Boolean =
+    bookmarks().contains(surah to ayah)
+
+  fun toggleBookmark(surah: Int, ayah: Int): Boolean {
+    val items = bookmarks().toMutableSet()
+    val key = surah to ayah
+    val added = if (key in items) { items.remove(key); false } else { items.add(key); true }
+    val encoded = items.sortedWith(compareBy<Pair<Int, Int>> { it.first }.thenBy { it.second })
+      .joinToString(",") { "${it.first}:${it.second}" }
+    p.edit().putString("bookmarks", encoded).apply()
+    return added
+  }
+
   fun tasbihCount(): Int = p.getInt("tasbih_count", 0)
   fun setTasbihCount(value: Int) { p.edit().putInt("tasbih_count", value.coerceAtLeast(0)).apply() }
 }
