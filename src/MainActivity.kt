@@ -72,7 +72,7 @@ fun AppRoot(repo:QuranRepository,prefs:AppPrefs,dark:Boolean,onDark:(Boolean)->U
     is Screen.Home->DeeniHomeScreen(dark,onDark,{screen=Screen.SurahList},{screen=Screen.Recitation},{screen=Screen.Adhkar},{screen=Screen.Tasbih},{screen=Screen.LearningHub})
     is Screen.SurahList->SurahListScreen(repo,prefs,dark,onDark,{screen=Screen.Range(it)},{surah,from,to->screen=Screen.Reader(surah,from,to)})
     is Screen.Range->RangeScreen(repo,s.surah,{screen=Screen.SurahList},{from,to->prefs.setLastPosition(s.surah,from,to);screen=Screen.Reader(s.surah,from,to)})
-    is Screen.Reader->ReaderScreen(repo,prefs,s.surah,s.from,s.to,{screen=Screen.Range(s.surah)})
+    is Screen.Reader->ReaderScreen(repo,prefs,s.surah,s.from,s.to,{screen=Screen.Range(s.surah)},{savedSurah,savedAyah->screen=Screen.Reader(savedSurah,savedAyah,savedAyah)})
     is Screen.Recitation->RecitationCheckScreen(repo,{screen=Screen.Home})
     is Screen.Adhkar->AdhkarScreen({screen=Screen.Home})
     is Screen.Tasbih->TasbihScreen(prefs,{screen=Screen.Home})
