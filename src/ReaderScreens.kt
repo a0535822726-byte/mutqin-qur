@@ -4,6 +4,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -93,6 +96,11 @@ fun ReaderScreen(
   var hide by remember { mutableStateOf(false) }
   var size by remember { mutableStateOf(prefs.fontSize()) }
   val revealed = remember { mutableStateListOf<Int>() }
+  var showBookmarks by remember { mutableStateOf(false) }
+  var bookmarkVersion by remember { mutableIntStateOf(0) }
+  val bookmarks = remember(bookmarkVersion) { prefs.bookmarks() }
+  val listState = rememberLazyListState()
+  val scope = rememberCoroutineScope()
   val showBasmala = surah != 1 && surah != 9 && from == 1
 
   Column(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
@@ -117,6 +125,10 @@ fun ReaderScreen(
         Text("إخفاء الآيات (اختبار الحفظ)")
         Switch(checked = hide, onCheckedChange = { hide = it; revealed.clear() })
       }
+      Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+        TextButton(onClick = { showBookmarks = true }) { Text("المحفوظات (${toArabic(bookmarks.size)})") }
+        Text("اضغط على النجمة لحفظ الآية", fontSize = 11.sp, color = MaterialTheme.colorScheme.secondary)
+      }
       if (hide) {
         Text("اضغط على أي آية لإظهارها أو إخفائها. يظهر لك أول كلمة فقط كتلميح.", fontSize = 12.sp)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -139,7 +151,8 @@ fun ReaderScreen(
     HorizontalDivider()
     LazyColumn(
       contentPadding = PaddingValues(16.dp),
-      verticalArrangement = Arrangement.spacedBy(4.dp)
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+      state = listState
     ) {
       if (showBasmala) {
         item {
@@ -157,19 +170,61 @@ fun ReaderScreen(
         val text = repo.ayah(surah, n)
         val shown = !hide || n in revealed
         val body = if (shown) text else text.substringBefore(' ') + " ..."
-        Text(
-          body + "  (" + toArabic(n) + ")",
-          fontSize = size.sp,
-          lineHeight = (size * 1.9f).sp,
-          modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = hide) {
-              if (n in revealed) revealed.remove(n) else revealed.add(n)
-            }
-            .padding(vertical = 8.dp)
-        )
+        Row(
+          Modifier.fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+          Text(
+            body + "  (" + toArabic(n) + ")",
+            fontSize = size.sp,
+            lineHeight = (size * 1.9f).sp,
+            modifier = Modifier
+              .weight(1f)
+              .clickable(enabled = hide) {
+                if (n in revealed) revealed.remove(n) else revealed.add(n)
+              }
+              .padding(vertical = 8.dp)
+          )
+          TextButton(onClick = {
+            prefs.toggleBookmark(surah, n)
+            bookmarkVersion++
+          }, contentPadding = PaddingValues(horizontal = 8.dp)) {
+            Text(if (prefs.isBookmarked(surah, n)) "★" else "☆", fontSize = 23.sp,
+              color = if (prefs.isBookmarked(surah, n)) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant)
+          }
+        }
         HorizontalDivider()
       }
     }
+  }
+  if (showBookmarks) {
+    AlertDialog(
+      onDismissRequest = { showBookmarks = false },
+      title = { Text("الآيات المحفوظة") },
+      text = {
+        if (bookmarks.isEmpty()) {
+          Text("لم تحفظ أي آية بعد. اضغط ☆ بجانب الآية لإضافتها هنا.")
+        } else {
+          LazyColumn(modifier = Modifier.heightIn(max = 360.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            items(bookmarks) { item ->
+              val (savedSurah, savedAyah) = item
+              TextButton(
+                onClick = {
+                  if (savedSurah == surah && savedAyah in from..to) {
+                    scope.launch { listState.animateScrollToItem(savedAyah - from + if (showBasmala) 1 else 0) }
+                  }
+                  showBookmarks = false
+                },
+                modifier = Modifier.fillMaxWidth()
+              ) {
+                Text("سورة ${SURAH_NAMES[savedSurah - 1]} — الآية ${toArabic(savedAyah)}", textAlign = TextAlign.Start)
+              }
+            }
+          }
+        }
+      },
+      confirmButton = { TextButton(onClick = { showBookmarks = false }) { Text("إغلاق") } }
+    )
   }
 }
