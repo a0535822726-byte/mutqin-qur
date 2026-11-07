@@ -64,7 +64,7 @@ class AppPrefs(context: Context) {
       if (parts.size != 2) null else {
         val surah = parts[0].toIntOrNull()
         val ayah = parts[1].toIntOrNull()
-        if (surah in 1..114 && ayah != null && ayah > 0) surah!! to ayah else null
+        if (surah != null && surah in 1..114 && ayah != null && ayah > 0) surah to ayah else null
       }
     }
     .distinct()
