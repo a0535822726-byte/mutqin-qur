@@ -30,9 +30,13 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   val context = LocalContext.current
   var surahInput by remember { mutableStateOf("1") }
   var ayahInput by remember { mutableStateOf("1") }
+  var endAyahInput by remember { mutableStateOf("1") }
+  var sessionHistory by remember { mutableStateOf(AppPrefs(context).recitationSessions()) }
+  val prefs = remember { AppPrefs(context) }
   val surah = (surahInput.toIntOrNull() ?: 1).coerceIn(1, 114)
   val count = repo.ayahCount(surah)
   val ayah = (ayahInput.toIntOrNull() ?: 1).coerceIn(1, count)
+  val endAyah = (endAyahInput.toIntOrNull() ?: ayah).coerceIn(ayah, count)
   var hasPermission by remember { mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) }
   var recording by remember { mutableStateOf(false) }
   var elapsed by remember { mutableIntStateOf(0) }
@@ -77,6 +81,8 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
     try {
       recorder?.stop()
       status = "انتهت الجلسة وحُفظ التسجيل على الجهاز."
+      savedFile?.let { prefs.addRecitationSession(surah, ayah, endAyah, elapsed, it.name) }
+      sessionHistory = prefs.recitationSessions()
     } catch (_: Exception) {
       savedFile = null
       status = "لم يكتمل التسجيل. أعد المحاولة."
@@ -120,14 +126,16 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
     Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
       Column(Modifier.fillMaxWidth().padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text("موضع المراجعة", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        OutlinedTextField(value = surahInput, onValueChange = { surahInput = it.filter(Char::isDigit).take(3); ayahInput = "1" }, modifier = Modifier.fillMaxWidth(), singleLine = true, label = { Text("رقم السورة (١–١١٤)") })
+        OutlinedTextField(value = surahInput, onValueChange = { surahInput = it.filter(Char::isDigit).take(3); ayahInput = "1"; endAyahInput = "1" }, modifier = Modifier.fillMaxWidth(), singleLine = true, label = { Text("رقم السورة (١–١١٤)") })
         Text("السورة: ${SURAH_NAMES[surah - 1]} • ${toArabic(count)} آية", color = colors.primary, fontWeight = FontWeight.SemiBold)
         OutlinedTextField(value = ayahInput, onValueChange = { ayahInput = it.filter(Char::isDigit).take(4) }, modifier = Modifier.fillMaxWidth(), singleLine = true, label = { Text("رقم الآية") })
-        Text("الموضع المحدد: ${SURAH_NAMES[surah - 1]} — الآية ${toArabic(ayah)}", fontSize = 12.sp, color = colors.onSurfaceVariant)
+        OutlinedTextField(value = endAyahInput, onValueChange = { endAyahInput = it.filter(Char::isDigit).take(4) }, modifier = Modifier.fillMaxWidth(), singleLine = true, label = { Text("إلى الآية (نهاية المقطع)") })
+        Text("المقطع المحدد: ${SURAH_NAMES[surah - 1]} — من ${toArabic(ayah)} إلى ${toArabic(endAyah)}", fontSize = 12.sp, color = colors.onSurfaceVariant)
+        Text("عدد الآيات: ${toArabic(endAyah - ayah + 1)}", fontSize = 12.sp, color = colors.primary)
         Surface(shape = RoundedCornerShape(16.dp), color = colors.primary.copy(alpha=.08f)) {
           Column(Modifier.fillMaxWidth().padding(13.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("الآية التي ستسمّعها",fontSize=11.sp,fontWeight=FontWeight.Bold,color=colors.primary)
-            Text(repo.ayah(surah,ayah),fontSize=21.sp,lineHeight=38.sp,color=colors.onSurface)
+            Text("آيات المقطع الذي ستسمّعه",fontSize=11.sp,fontWeight=FontWeight.Bold,color=colors.primary)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) { (ayah..endAyah).forEach { number -> Text("${toArabic(number)}. ${repo.ayah(surah,number)}",fontSize=19.sp,lineHeight=34.sp,color=colors.onSurface) } }
             Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
               OutlinedButton(onClick={ayahInput=(ayah-1).coerceAtLeast(1).toString()},enabled=ayah>1,modifier=Modifier.weight(1f)){Text("الآية السابقة")}
               OutlinedButton(onClick={ayahInput=(ayah+1).coerceAtMost(count).toString()},enabled=ayah<count,modifier=Modifier.weight(1f)){Text("الآية التالية")}
@@ -180,10 +188,18 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
       }
     }
     Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
-      Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+      Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("سجل جلسات التسميع", fontWeight = FontWeight.Bold, color = colors.primary)
+        if (sessionHistory.isEmpty()) Text("لا توجد جلسات محفوظة بعد.", fontSize = 12.sp, color = colors.onSurfaceVariant) else sessionHistory.take(8).forEach { entry ->
+          val parts = entry.split(":")
+          if (parts.size >= 5) { val s = (parts[0].toIntOrNull() ?: 1).coerceIn(1,114); val f = parts[1].toIntOrNull() ?: 1; val t = parts[2].toIntOrNull() ?: f; val sec = parts[3].toIntOrNull() ?: 0
+            Text("• ${SURAH_NAMES[s-1]}: الآيات ${toArabic(f)}–${toArabic(t)} | ${toArabic(sec/60)}:${toArabic(sec%60)}", fontSize = 12.sp, color = colors.onSurface)
+          }
+        }
         Text("ما الذي تفعله هذه الجلسة؟", fontWeight = FontWeight.Bold, color = colors.primary)
         Text("• تلتقط صوتك مباشرة من الميكروفون وتعرض مستوى الصوت أثناء القراءة.", fontSize = 12.sp)
         Text("• تحفظ التسجيل داخل ملفات التطبيق بدل الحفظ المؤقت، ويمكنك الاستماع إليه.", fontSize = 12.sp)
+        Text("• تحفظ بيانات آخر 20 جلسة: السورة ونطاق الآيات ومدة التسجيل.", fontSize = 12.sp)
         Text("• لا تحوّل تلاوتك إلى نص ولا تصدر درجة تجويد وهمية. التصحيح الدقيق للمخارج والمدود والغنة يحتاج نموذجًا قرآنيًا متخصصًا لم يُدمج بعد.", fontSize = 12.sp, color = colors.error)
       }
     }
