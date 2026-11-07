@@ -89,6 +89,15 @@ class AppPrefs(context: Context) {
     p.edit().putString("recitation_sessions", (listOf(item) + recitationSessions()).take(20).joinToString(";")).apply()
   }
 
+
+  fun completedLearningIds(section: String): Set<Int> = p.getStringSet("learning_done_" + section, emptySet())
+    .orEmpty().mapNotNull { it.toIntOrNull() }.toSet()
+  fun setLearningCompleted(section: String, id: Int, completed: Boolean) {
+    val values = completedLearningIds(section).toMutableSet()
+    if (completed) values.add(id) else values.remove(id)
+    p.edit().putStringSet("learning_done_" + section, values.map { it.toString() }.toSet()).apply()
+  }
+
   fun tasbihCount(): Int = p.getInt("tasbih_count", 0)
   fun setTasbihCount(value: Int) { p.edit().putInt("tasbih_count", value.coerceAtLeast(0)).apply() }
 }
