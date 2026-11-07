@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -144,6 +145,13 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
 @Composable
 fun LearningSectionScreen(section:String,onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
+  val context = LocalContext.current
+  val progressPrefs = remember { AppPrefs(context) }
+  var completedIds by remember(section) { mutableStateOf(progressPrefs.completedLearningIds(section)) }
+  fun toggleCompleted(id: Int, checked: Boolean) {
+    progressPrefs.setLearningCompleted(section, id, checked)
+    completedIds = if (checked) completedIds + id else completedIds - id
+  }
   val info=learningSections.firstOrNull { it.title==section }
   var searchQuery by remember(section) { mutableStateOf("") }
   val query = normalizeAr(searchQuery.trim())
@@ -181,6 +189,13 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
           placeholder={Text("اكتب كلمة أو عنوانًا أو مصدرًا")}
         )
       }
+      if(section=="التجويد" || section=="الحديث" || section=="الفقه" || section=="القصص الإسلامية") {
+        val total = when(section) { "التجويد" -> tajweedLessons.size; "الحديث" -> hadithEntries.size; "الفقه" -> fiqhEntries.size; else -> quranStories.size }
+        val done = completedIds.size
+        Text("تقدمك في هذا القسم: $done من $total",fontSize=14.sp,fontWeight=FontWeight.Bold,color=c.primary)
+        LinearProgressIndicator(progress={ if(total==0) 0f else done.toFloat()/total },modifier=Modifier.fillMaxWidth())
+        Text("ضع علامة بعد إكمال المادة؛ سيُحفظ تقدمك على هذا الجهاز.",fontSize=11.sp,color=c.onSurfaceVariant)
+      }
     }
     if(section=="التجويد") {
       item {
@@ -200,6 +215,10 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
             Text("تدريب عملي: ${lesson.practice}",fontSize=13.sp,lineHeight=20.sp,color=c.onSurface)
             Text("خطأ شائع: ${lesson.commonMistake}",fontSize=13.sp,lineHeight=20.sp,color=c.error)
             Text("المرجع: ${lesson.references}",fontSize=11.sp,lineHeight=17.sp,color=c.onSurfaceVariant)
+            Row(verticalAlignment=Alignment.CenterVertically) {
+              Checkbox(checked=lesson.id in completedIds,onCheckedChange={toggleCompleted(lesson.id,it)})
+              Text("تمت مراجعة هذا الدرس",fontSize=12.sp,color=c.primary)
+            }
           }
         }
       }
@@ -222,6 +241,10 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
             Text("المصدر: ${h.source} — ${h.reference}",fontSize=12.sp,color=c.secondary)
             Text("الدرجة: ${h.grade}",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.primary)
             Text("شرح مختصر: ${h.explanation}",fontSize=13.sp,lineHeight=21.sp,color=c.onSurface)
+            Row(verticalAlignment=Alignment.CenterVertically) {
+              Checkbox(checked=h.id in completedIds,onCheckedChange={toggleCompleted(h.id,it)})
+              Text("تمت مراجعة هذا الحديث",fontSize=12.sp,color=c.primary)
+            }
           }
         }
       }
@@ -241,6 +264,10 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
             Text("الشرح والتنبيه: ${f.explanation}",fontSize=13.sp,lineHeight=21.sp,color=c.onSurface)
             Text("النطاق: ${f.scope}",fontSize=12.sp,lineHeight=19.sp,color=c.error)
             Text("المراجع: ${f.references}",fontSize=11.sp,lineHeight=17.sp,color=c.onSurfaceVariant)
+            Row(verticalAlignment=Alignment.CenterVertically) {
+              Checkbox(checked=f.id in completedIds,onCheckedChange={toggleCompleted(f.id,it)})
+              Text("تمت مراجعة هذه المسألة",fontSize=12.sp,color=c.primary)
+            }
           }
         }
       }
@@ -259,6 +286,10 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
             Text("الدروس المستفادة:",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.primary)
             story.lessons.forEach { lesson -> Text("• $lesson",fontSize=13.sp,color=c.onSurface) }
             Text("منهج التوثيق: ${story.sourceNote}",fontSize=12.sp,lineHeight=19.sp,color=c.onSurfaceVariant)
+            Row(verticalAlignment=Alignment.CenterVertically) {
+              Checkbox(checked=story.id in completedIds,onCheckedChange={toggleCompleted(story.id,it)})
+              Text("تمت مراجعة هذه القصة",fontSize=12.sp,color=c.primary)
+            }
           }
         }
       }
