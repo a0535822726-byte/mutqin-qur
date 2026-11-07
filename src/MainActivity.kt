@@ -26,6 +26,8 @@ sealed interface Screen {
   data object Recitation:Screen
   data object Adhkar:Screen
   data object Tasbih:Screen
+  data object LearningHub:Screen
+  data class SectionDetail(val section:String):Screen
   data class Range(val surah:Int):Screen
   data class Reader(val surah:Int,val from:Int,val to:Int):Screen
 }
@@ -66,12 +68,14 @@ fun AppRoot(repo:QuranRepository,prefs:AppPrefs,dark:Boolean,onDark:(Boolean)->U
     }
   }
   when(val s=screen) {
-    is Screen.Home->DeeniHomeScreen(dark,onDark,{screen=Screen.SurahList},{screen=Screen.Recitation},{screen=Screen.Adhkar},{screen=Screen.Tasbih})
+    is Screen.Home->DeeniHomeScreen(dark,onDark,{screen=Screen.SurahList},{screen=Screen.Recitation},{screen=Screen.Adhkar},{screen=Screen.Tasbih},{screen=Screen.LearningHub})
     is Screen.SurahList->SurahListScreen(repo,prefs,dark,onDark,{screen=Screen.Range(it)},{surah,from,to->screen=Screen.Reader(surah,from,to)})
     is Screen.Range->RangeScreen(repo,s.surah,{screen=Screen.SurahList},{from,to->prefs.setLastPosition(s.surah,from,to);screen=Screen.Reader(s.surah,from,to)})
     is Screen.Reader->ReaderScreen(repo,prefs,s.surah,s.from,s.to,{screen=Screen.Range(s.surah)})
     is Screen.Recitation->RecitationCheckScreen(repo,{screen=Screen.Home})
     is Screen.Adhkar->AdhkarScreen({screen=Screen.Home})
     is Screen.Tasbih->TasbihScreen(prefs,{screen=Screen.Home})
+    is Screen.LearningHub->LearningHubScreen({screen=Screen.Home},{screen=Screen.SectionDetail(it)})
+    is Screen.SectionDetail->LearningSectionScreen(s.section,{screen=Screen.LearningHub})
   }
 }
