@@ -145,20 +145,51 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
 fun LearningSectionScreen(section:String,onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
   val info=learningSections.firstOrNull { it.title==section }
-  Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding().padding(18.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
-    TextButton(onClick=onBack){Text("رجوع إلى المكتبة")}
-    Text(section,fontSize=28.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
-    if(info!=null) {
-      Text(info.subtitle,fontSize=15.sp,color=c.onSurfaceVariant)
-      Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(20.dp)) {
-        Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
-          Text("نطاق القسم",fontWeight=FontWeight.Bold,color=c.primary)
-          Text(info.scope,fontSize=14.sp,lineHeight=23.sp,color=c.onSurface)
-          Text("العدد المستهدف: ${info.target}",fontWeight=FontWeight.Bold,color=c.secondary)
-          Text("الحالة الحالية: ${info.status}",fontSize=13.sp,color=c.onSurfaceVariant)
+  LazyColumn(
+    Modifier.fillMaxSize().background(c.background).safeDrawingPadding(),
+    contentPadding=PaddingValues(16.dp),
+    verticalArrangement=Arrangement.spacedBy(12.dp)
+  ) {
+    item {
+      TextButton(onClick=onBack){Text("رجوع إلى المكتبة")}
+      Text(section,fontSize=28.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+      if(info!=null) {
+        Text(info.subtitle,fontSize=15.sp,color=c.onSurfaceVariant)
+        Text("الهدف النهائي: ${info.target}",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+      }
+    }
+    if(section=="التجويد") {
+      item {
+        Text("دروس التجويد المتاحة: ${tajweedLessons.size} من أصل 300 درس مستهدف",fontSize=14.sp,fontWeight=FontWeight.Bold,color=c.primary)
+        Text("كل درس يعرض الهدف والتعريف والقاعدة والأمثلة والتدريب والأخطاء الشائعة والمراجع. يلزم استكمال المراجعة العلمية قبل اعتماد بقية المنهج.",fontSize=12.sp,lineHeight=19.sp,color=c.onSurfaceVariant)
+      }
+      items(tajweedLessons.size) { index ->
+        val lesson=tajweedLessons[index]
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp)) {
+          Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+            Text("الدرس ${lesson.id}: ${lesson.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
+            Text("الهدف: ${lesson.objective}",fontSize=13.sp,color=c.onSurface)
+            Text("التعريف: ${lesson.definition}",fontSize=13.sp,lineHeight=20.sp,color=c.onSurface)
+            Text("القاعدة والشرح: ${lesson.rule}",fontSize=13.sp,lineHeight=20.sp,color=c.onSurface)
+            Text("أمثلة:",fontWeight=FontWeight.Bold,fontSize=13.sp,color=c.secondary)
+            lesson.examples.forEach { example -> Text("• $example",fontSize=14.sp,color=c.onSurface) }
+            Text("تدريب عملي: ${lesson.practice}",fontSize=13.sp,lineHeight=20.sp,color=c.onSurface)
+            Text("خطأ شائع: ${lesson.commonMistake}",fontSize=13.sp,lineHeight=20.sp,color=c.error)
+            Text("المرجع: ${lesson.references}",fontSize=11.sp,lineHeight=17.sp,color=c.onSurfaceVariant)
+          }
+        }
+      }
+      item { Text("المتبقي لإكمال الهدف: ${(300-tajweedLessons.size).coerceAtLeast(0)} درسًا. لن يُعلن اكتمال العدد قبل كتابة الدروس ومراجعتها.",fontSize=12.sp,color=c.error) }
+    } else {
+      item {
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(20.dp)) {
+          Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+            Text("نطاق القسم",fontWeight=FontWeight.Bold,color=c.primary)
+            if(info!=null) Text(info.scope,fontSize=14.sp,lineHeight=23.sp,color=c.onSurface)
+            Text("المحتوى المنشور في هذا القسم لم يكتمل بعد. ستظهر كل مادة مع مصدرها ومرجعها وحالة التحقق.",fontSize=13.sp,lineHeight=21.sp,color=c.error)
+          }
         }
       }
     }
-    Text("سيُضاف المحتوى مادةً مادة مع المصدر والتخريج أو المرجع والتحقق قبل إظهاره. لا توجد حاليًا مكتبة مكتملة بهذا العدد.",fontSize=13.sp,lineHeight=22.sp,color=c.error)
   }
 }
