@@ -91,7 +91,8 @@ fun ReaderScreen(
   surah: Int,
   from: Int,
   to: Int,
-  onBack: () -> Unit
+  onBack: () -> Unit,
+  onOpenBookmark: (Int, Int) -> Unit
 ) {
   var hide by remember { mutableStateOf(false) }
   var size by remember { mutableStateOf(prefs.fontSize()) }
@@ -211,10 +212,8 @@ fun ReaderScreen(
               val (savedSurah, savedAyah) = item
               TextButton(
                 onClick = {
-                  if (savedSurah == surah && savedAyah in from..to) {
-                    scope.launch { listState.animateScrollToItem(savedAyah - from + if (showBasmala) 1 else 0) }
-                  }
                   showBookmarks = false
+                  onOpenBookmark(savedSurah, savedAyah)
                 },
                 modifier = Modifier.fillMaxWidth()
               ) {
