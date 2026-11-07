@@ -98,3 +98,10 @@ fun toArabic(n: Int): String = n.toString().map { '٠' + (it - '0') }.joinToStri
 fun normalizeAr(s: String): String = s
   .replace('أ', 'ا').replace('إ', 'ا').replace('آ', 'ا')
   .replace('ى', 'ي').replace('ة', 'ه')
+
+
+fun normalizeQuranSearch(s: String): String = normalizeAr(s)
+  .replace(Regex("[\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]"), "")
+  .replace("ـ", "")
+  .replace(Regex("\\s+"), " ")
+  .trim()
