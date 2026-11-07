@@ -205,5 +205,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete latest --cleanup-tag -y || true
-          gh release create latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "مُتقن" --notes "أحدث نسخة من تطبيق متقن"
+          if gh release view latest >/dev/null 2>&1; then
+            gh release upload latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --clobber
+          else
+            gh release create latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "مُتقن" --notes "أحدث نسخة من تطبيق متقن"
+          fi
