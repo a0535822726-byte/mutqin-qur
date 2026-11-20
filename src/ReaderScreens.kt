@@ -1,6 +1,6 @@
 package com.mutqin.app
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background\nimport androidx.compose.foundation.shape.RoundedCornerShape\nimport androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -104,7 +104,7 @@ fun ReaderScreen(
   val scope = rememberCoroutineScope()
   val showBasmala = surah != 1 && surah != 9 && from == 1
 
-  Column(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
+  Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)) {
     Row(
       modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
       verticalAlignment = Alignment.CenterVertically
@@ -117,7 +117,7 @@ fun ReaderScreen(
         color = MaterialTheme.colorScheme.primary
       )
     }
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 12.dp)) {\n      Surface(shape=RoundedCornerShape(22.dp), color=MaterialTheme.colorScheme.surface, modifier=Modifier.fillMaxWidth()) { Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
       Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
