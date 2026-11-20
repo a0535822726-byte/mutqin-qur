@@ -154,13 +154,13 @@ fun AdhkarScreen(onBack:()->Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically) {
       TextButton(onClick=onBack){Text("‹  الرئيسية")}
       Spacer(Modifier.weight(1f))
-      Text("وِرْدُ الذِّكْر",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+      Text("مَجْلِسُ الذِّكْر",fontSize=15.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
     }
     LazyColumn(contentPadding=PaddingValues(start=16.dp,end=16.dp,top=4.dp,bottom=28.dp),verticalArrangement=Arrangement.spacedBy(13.dp)) {
       item {
-        Card(shape=RoundedCornerShape(27.dp),colors=CardDefaults.cardColors(containerColor=c.primary),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
+        Card(shape=RoundedCornerShape(31.dp),colors=CardDefaults.cardColors(containerColor=c.primary),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.78f))) {
           Column(Modifier.fillMaxWidth().padding(21.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
-            Text("سَكِينَةٌ وَذِكْر",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            Text("وَرْدٌ يُنِيرُ الْيَوْم",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary,letterSpacing=1.2.sp)
             Text("اذكر الله بقلب حاضر",fontSize=24.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
             Text("مساحة هادئة لأذكارك اليومية، مع عدّاد يحفظ تقدمك على هذا الجهاز.",fontSize=12.sp,lineHeight=20.sp,color=c.onPrimary.copy(alpha=.82f))
             Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
@@ -179,7 +179,7 @@ fun AdhkarScreen(onBack:()->Unit) {
       items(itemsNow.size) { i ->
         val key="$category-$i"
         val n=counts[key] ?: 0
-        Card(shape=RoundedCornerShape(24.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.65f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
+        Card(shape=RoundedCornerShape(27.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.22f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
               Text("الذِّكر  ${toArabic(i+1)}",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary)
@@ -222,12 +222,12 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically) {
       TextButton(onClick=onBack){Text("‹  الرئيسية")}
       Spacer(Modifier.weight(1f))
-      Text("المسبحة",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+      Text("مِسْبَاحُ مُتْقِن",fontSize=15.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
     }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal=18.dp,vertical=8.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)) {
       Card(shape=RoundedCornerShape(26.dp),colors=CardDefaults.cardColors(containerColor=c.primary),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
         Column(Modifier.fillMaxWidth().padding(19.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
-          Text("وِرْدُكَ الْيَوْمِيّ",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+          Text("لَا تَغْفُلْ عَنِ الذِّكْر",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary,letterSpacing=1.1.sp)
           Text("مسبحة متقن",fontSize=23.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
           Text("اختر الذكر والهدف، ثم تابع عدّك بهدوء. يُحفظ كل عدّاد تلقائيًا.",fontSize=11.sp,lineHeight=18.sp,color=c.onPrimary.copy(alpha=.82f))
         }
@@ -250,12 +250,12 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
         Column(Modifier.fillMaxWidth().padding(20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(10.dp)) {
           Text("الذكر المختار",fontSize=10.sp,color=c.onSurfaceVariant,fontWeight=FontWeight.Bold)
           Text(phrases[phraseIndex],fontSize=21.sp,fontWeight=FontWeight.Bold,color=c.primary,textAlign=TextAlign.Center)
-          Box(Modifier.size(202.dp).background(c.primary.copy(alpha=.07f),RoundedCornerShape(100.dp)).padding(8.dp).background(c.surfaceVariant,RoundedCornerShape(100.dp)).border(2.dp,c.secondary.copy(alpha=.82f),RoundedCornerShape(100.dp)).clickable{
+          Box(Modifier.size(218.dp).background(c.primary.copy(alpha=.06f),RoundedCornerShape(120.dp)).padding(9.dp).background(c.surfaceVariant,RoundedCornerShape(120.dp)).border(2.dp,c.secondary.copy(alpha=.9f),RoundedCornerShape(120.dp)).clickable{
             count+=1;phrasePrefs.edit().putInt("phrase_$phraseIndex",count).apply();prefs.setTasbihCount(count)
           },contentAlignment=Alignment.Center) {
             Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(2.dp)) {
               Text(toArabic(count),fontSize=47.sp,fontWeight=FontWeight.Black,color=c.primary)
-              Text("اضغط للعدّ",fontSize=10.sp,color=c.onSurfaceVariant)
+              Text("لِلْعَدِّ اضْغَطْ هُنَا",fontSize=10.sp,color=c.onSurfaceVariant,fontWeight=FontWeight.Bold)
             }
           }
           Text("الهدف  ${toArabic(target)}     •     المتبقي  ${toArabic((target-count).coerceAtLeast(0))}",fontSize=12.sp,color=c.secondary,fontWeight=FontWeight.Bold)
