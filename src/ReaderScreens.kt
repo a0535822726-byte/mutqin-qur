@@ -407,7 +407,7 @@ fun ReaderScreen(
     val selectedText = repo.ayah(surah, selectedAyah)
     AlertDialog(
       onDismissRequest = { selectedAyah = 0 },
-      title = { Text("سورة \${SURAH_NAMES[surah - 1]} — الآية \${toArabic(selectedAyah)}") },
+      title = { Text("سورة ${SURAH_NAMES[surah - 1]} — الآية ${toArabic(selectedAyah)}") },
       text = { Text(selectedText, fontSize = 20.sp, lineHeight = 34.sp, textAlign = TextAlign.Center) },
       confirmButton = {
         TextButton(onClick = {
@@ -422,7 +422,7 @@ fun ReaderScreen(
           TextButton(onClick = {
             val share = Intent(Intent.ACTION_SEND).apply {
               type = "text/plain"
-              putExtra(Intent.EXTRA_TEXT, "$selectedText\n(سورة \${SURAH_NAMES[surah - 1]}، الآية \${toArabic(selectedAyah)})")
+              putExtra(Intent.EXTRA_TEXT, "$selectedText\n(سورة ${SURAH_NAMES[surah - 1]}، الآية ${toArabic(selectedAyah)})")
             }
             context.startActivity(Intent.createChooser(share, "مشاركة الآية"))
             selectedAyah = 0
