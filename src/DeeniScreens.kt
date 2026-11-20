@@ -60,18 +60,53 @@ private fun FeatureCard(emoji:String,title:String,desc:String,onClick:()->Unit) 
 @Composable
 fun AdhkarScreen(onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
+  var category by remember { mutableStateOf("عام") }
+  val categories=listOf("عام","الصباح","المساء","النوم")
+  val adhkar=mapOf(
+    "عام" to listOf(
+      "سبحان الله وبحمده، سبحان الله العظيم",
+      "أستغفر الله وأتوب إليه",
+      "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير",
+      "اللهم صل وسلم على نبينا محمد",
+      "رضيت بالله رباً، وبالإسلام ديناً، وبمحمد صلى الله عليه وسلم نبياً"
+    ),
+    "الصباح" to listOf(
+      "أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له.",
+      "اللهم بك أصبحنا، وبك أمسينا، وبك نحيا، وبك نموت، وإليك النشور.",
+      "اللهم إني أسألك العفو والعافية في الدنيا والآخرة.",
+      "سبحان الله وبحمده."
+    ),
+    "المساء" to listOf(
+      "أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له.",
+      "اللهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير.",
+      "اللهم إني أسألك العفو والعافية في الدنيا والآخرة.",
+      "أستغفر الله وأتوب إليه."
+    ),
+    "النوم" to listOf(
+      "باسمك اللهم أموت وأحيا.",
+      "اللهم قني عذابك يوم تبعث عبادك.",
+      "سبحان الله، والحمد لله، والله أكبر."
+    )
+  )
   Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding().padding(16.dp)) {
     TextButton(onClick=onBack){Text("رجوع")}
     Text("الأذكار",fontSize=27.sp,fontWeight=FontWeight.Bold,color=c.primary)
-    Text("أذكار مختارة",fontSize=13.sp,color=c.onSurfaceVariant)
-    Spacer(Modifier.height(12.dp))
-    LazyColumn(verticalArrangement=Arrangement.spacedBy(10.dp)) {
-      val items=listOf("سبحان الله وبحمده، سبحان الله العظيم","أستغفر الله وأتوب إليه","لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير","اللهم صل وسلم على نبينا محمد","رضيت بالله رباً، وبالإسلام ديناً، وبمحمد صلى الله عليه وسلم نبياً")
-      items(items.size) { i ->
+    Text("اختر القسم لعرض مجموعة من الأذكار",fontSize=13.sp,color=c.onSurfaceVariant)
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+      categories.forEach { name ->
+        FilterChip(selected=category==name,onClick={category=name},label={Text(name)})
+      }
+    }
+    LazyColumn(verticalArrangement=Arrangement.spacedBy(10.dp),modifier=Modifier.weight(1f)) {
+      items(adhkar[category]?.size ?: 0) { i ->
         Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp)) {
-          Text(items[i],Modifier.fillMaxWidth().padding(18.dp),fontSize=20.sp,lineHeight=34.sp,textAlign=TextAlign.Center,color=c.onSurface)
+          Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+            Text(toArabic(i+1),fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            Text(adhkar[category]!![i],fontSize=20.sp,lineHeight=34.sp,textAlign=TextAlign.Center,color=c.onSurface)
+          }
         }
       }
+      item { Text("هذه مجموعة مختارة؛ يُرجى الرجوع إلى مصدر موثوق للتحقق من النصوص والأعداد الخاصة بكل ذكر.",fontSize=11.sp,color=c.onSurfaceVariant,lineHeight=17.sp) }
     }
   }
 }
