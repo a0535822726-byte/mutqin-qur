@@ -258,6 +258,17 @@ fun ReaderScreen(
         Text(if (showTools) "إخفاء" else "Aa", color = androidx.compose.ui.graphics.Color.White)
       }
     }
+    Row(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF0B2C25)).padding(horizontal=8.dp, vertical=3.dp), horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+      Surface(shape=RoundedCornerShape(14.dp),color=androidx.compose.ui.graphics.Color(0xFF1B493B)) {
+        TextButton(onClick={ showTools=true; hide=true; revealed.clear() }) { Text("اختبار الحفظ",color=androidx.compose.ui.graphics.Color(0xFFFFE6A3),fontSize=12.sp) }
+      }
+      Surface(shape=RoundedCornerShape(14.dp),color=androidx.compose.ui.graphics.Color(0xFF1B493B)) {
+        TextButton(onClick={ showBookmarks=true }) { Text("علاماتي",color=androidx.compose.ui.graphics.Color.White,fontSize=12.sp) }
+      }
+      Surface(shape=RoundedCornerShape(14.dp),color=androidx.compose.ui.graphics.Color(0xFF1B493B)) {
+        TextButton(onClick={ showTools=!showTools }) { Text("أدوات الآية",color=androidx.compose.ui.graphics.Color.White,fontSize=12.sp) }
+      }
+    }
     if (showTools) {
       Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 6.dp),
