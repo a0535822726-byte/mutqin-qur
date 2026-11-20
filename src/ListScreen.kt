@@ -47,7 +47,7 @@ fun SurahListScreen(
     }
   }
 
-  Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)) {
+  Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background).padding(top=6.dp)) {
     val c = MaterialTheme.colorScheme
     Row(Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=8.dp),verticalAlignment=Alignment.CenterVertically) {
       TextButton(onClick={onResume(last?.first ?: 1,last?.second ?: 1,last?.third ?: 7)}) {
@@ -58,7 +58,7 @@ fun SurahListScreen(
       Spacer(Modifier.width(8.dp))
       Switch(checked=dark,onCheckedChange=onDark)
     }
-    Card(Modifier.fillMaxWidth().padding(horizontal=16.dp),shape=androidx.compose.foundation.shape.RoundedCornerShape(25.dp),
+    Card(Modifier.fillMaxWidth().padding(horizontal=16.dp),shape=androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
       colors=CardDefaults.cardColors(containerColor=c.primary),
       border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
       Row(Modifier.fillMaxWidth().padding(19.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
@@ -135,7 +135,7 @@ fun SurahListScreen(
         item { Text("لا توجد سورة بهذا الاسم أو الرقم") }
       }
       if (searchText.length < 2) items(filtered) { n ->
-        Card(modifier = Modifier.fillMaxWidth().clickable { onOpenSurah(n) },shape=androidx.compose.foundation.shape.RoundedCornerShape(20.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)) {
+        Card(modifier = Modifier.fillMaxWidth().clickable { onOpenSurah(n) },shape=androidx.compose.foundation.shape.RoundedCornerShape(21.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=androidx.compose.foundation.BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.28f))) {
           Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
