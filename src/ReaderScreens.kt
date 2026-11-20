@@ -210,8 +210,13 @@ fun ReaderScreen(
       .map { normalizeSpeech(it) }.filter { it.isNotBlank() }
   }
   val spokenWords = remember(transcript) { normalizeSpeech(transcript).split(Regex("\\s+")).filter { it.isNotBlank() } }
-  val matchedWords = spokenWords.zip(targetWords).takeWhile { (spoken, target) -> spoken == target }.size
-  val hasMismatch = spokenWords.size > matchedWords && matchedWords < targetWords.size
+  val matchStart = spokenWords.firstOrNull()?.let { first ->
+    targetWords.indexOfFirst { it == first }
+  }?.coerceAtLeast(0) ?: 0
+  val matchedWords = spokenWords.zip(targetWords.drop(matchStart))
+    .takeWhile { (spoken, target) -> spoken == target }.size
+  val expectedWord = targetWords.getOrNull(matchStart + matchedWords)
+  val hasMismatch = spokenWords.isNotEmpty() && matchedWords < spokenWords.size
 
   Column(
     modifier = Modifier.fillMaxSize().safeDrawingPadding().background(androidx.compose.ui.graphics.Color(0xFFECE3CF))
