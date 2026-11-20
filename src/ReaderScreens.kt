@@ -252,18 +252,18 @@ fun ReaderScreen(
   val hasMismatch = spokenWords.isNotEmpty() && matchedWords < spokenWords.size
 
   Column(
-    modifier = Modifier.fillMaxSize().safeDrawingPadding().background(androidx.compose.ui.graphics.Color(0xFF071B16))
+    modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)
   ) {
     // Premium reading header: compact navigation, surah identity and quick actions.
     Row(
-      modifier = Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF102D24)).padding(horizontal = 10.dp, vertical = 8.dp),
+      modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = 14.dp, vertical = 10.dp),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(7.dp)
     ) {
-      TextButton(onClick = onBack) { Text("رجوع", color = androidx.compose.ui.graphics.Color(0xFFE8D49A)) }
+      TextButton(onClick = onBack) { Text("رجوع", color = MaterialTheme.colorScheme.secondary) }
       Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("مُصْحَفُ مُتْقِن", fontSize = 11.sp, color = androidx.compose.ui.graphics.Color(0xFFBDA66A), fontWeight = FontWeight.Bold)
-        Text(SURAH_NAMES[surah - 1], fontSize = 19.sp, color = androidx.compose.ui.graphics.Color.White, fontWeight = FontWeight.ExtraBold)
+        Text("مُصْحَفُ مُتْقِن", fontSize = 10.sp, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
+        Text(SURAH_NAMES[surah - 1], fontSize = 19.sp, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.ExtraBold)
       }
       TextButton(onClick = {
         if (isListening) {
@@ -449,14 +449,14 @@ fun ReaderScreen(
     }
 
     // Fixed bottom page navigator with progress and direct previous/next actions.
-    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF102D24)).padding(horizontal = 14.dp, vertical = 8.dp)) {
+    Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = 14.dp, vertical = 8.dp)) {
       Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-        TextButton(onClick = { pageIndex = (pageIndex - 1).coerceAtLeast(0) }, enabled = pageIndex > 0) { Text("السابق", color = androidx.compose.ui.graphics.Color(0xFFE8D49A)) }
+        TextButton(onClick = { pageIndex = (pageIndex - 1).coerceAtLeast(0) }, enabled = pageIndex > 0) { Text("السابق", color = MaterialTheme.colorScheme.secondary) }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-          Text("${toArabic(pageIndex + 1)} / ${toArabic(mushafPages.size)}", color = androidx.compose.ui.graphics.Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-          Text("${toArabic(((pageIndex + 1f) / mushafPages.size.coerceAtLeast(1) * 100).toInt())}% من المقطع", color = androidx.compose.ui.graphics.Color(0xFFBDA66A), fontSize = 9.sp)
+          Text("${toArabic(pageIndex + 1)} / ${toArabic(mushafPages.size)}", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+          Text("${toArabic(((pageIndex + 1f) / mushafPages.size.coerceAtLeast(1) * 100).toInt())}% من المقطع", color = MaterialTheme.colorScheme.secondary, fontSize = 9.sp)
         }
-        TextButton(onClick = { pageIndex = (pageIndex + 1).coerceAtMost(mushafPages.lastIndex) }, enabled = pageIndex < mushafPages.lastIndex) { Text("التالي", color = androidx.compose.ui.graphics.Color(0xFFE8D49A)) }
+        TextButton(onClick = { pageIndex = (pageIndex + 1).coerceAtMost(mushafPages.lastIndex) }, enabled = pageIndex < mushafPages.lastIndex) { Text("التالي", color = MaterialTheme.colorScheme.secondary) }
       }
       Slider(value = pageIndex.toFloat(), onValueChange = { pageIndex = it.toInt().coerceIn(0, mushafPages.lastIndex) }, valueRange = 0f..mushafPages.lastIndex.coerceAtLeast(1).toFloat(), steps = (mushafPages.size - 2).coerceAtLeast(0), modifier = Modifier.fillMaxWidth())
     }
