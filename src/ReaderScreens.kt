@@ -453,7 +453,7 @@ fun ReaderScreen(
             steps = (mushafPages.size - 2).coerceAtLeast(0),
             modifier = Modifier.fillMaxWidth()
           )
-          Text("اسحب المؤشر للانتقال سريعًا بين صفحات المقطع", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+          Text("التقدم: ${toArabic(((pageIndex + 1f) / mushafPages.size.coerceAtLeast(1) * 100).toInt())}% • اسحب المؤشر للانتقال سريعًا", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
         }
       }
     }
