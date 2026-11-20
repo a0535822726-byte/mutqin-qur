@@ -80,17 +80,29 @@ fun AdhkarScreen(onBack:()->Unit) {
 fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
   var count by remember { mutableIntStateOf(prefs.tasbihCount()) }
-  Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding().padding(20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(18.dp)) {
+  var phraseIndex by remember { mutableIntStateOf(0) }
+  var target by remember { mutableIntStateOf(33) }
+  val phrases = listOf("سُبْحَانَ اللَّهِ","الْحَمْدُ لِلَّهِ","اللَّهُ أَكْبَرُ","أَسْتَغْفِرُ اللَّهَ","اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ")
+  val targets = listOf(33,100,500,1000)
+  Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding().padding(20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(16.dp)) {
     Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) { TextButton(onClick=onBack){Text("رجوع")};Text("المسبحة الإلكترونية",fontSize=22.sp,fontWeight=FontWeight.Bold,color=c.primary) }
-    Spacer(Modifier.height(22.dp))
-    Text("سُبْحَانَ اللَّهِ",fontSize=30.sp,fontWeight=FontWeight.Bold,color=c.primary)
-    Text(count.toString().map { '٠'+(it-'0') }.joinToString(""),fontSize=54.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
-    Button(onClick={count++;prefs.setTasbihCount(count)},modifier=Modifier.fillMaxWidth().height(64.dp),shape=RoundedCornerShape(22.dp)) { Text("تسبيح",fontSize=22.sp) }
-    OutlinedButton(onClick={count=0;prefs.setTasbihCount(0)},modifier=Modifier.fillMaxWidth()) { Text("تصفير العداد") }
+    Text("اختر الذكر",fontSize=14.sp,color=c.onSurfaceVariant)
+    Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
+      phrases.forEachIndexed { index, phrase ->
+        OutlinedButton(onClick={phraseIndex=index},modifier=Modifier.fillMaxWidth(),colors=ButtonDefaults.outlinedButtonColors(containerColor=if(phraseIndex==index)c.primary.copy(alpha=.12f) else Color.Transparent)) { Text(phrase) }
+      }
+    }
+    Text(phrases[phraseIndex],fontSize=27.sp,fontWeight=FontWeight.Bold,color=c.primary,textAlign=TextAlign.Center)
+    Text(count.toString().map { '٠'+(it-'0') }.joinToString(""),fontSize=56.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
+    Text("الهدف: \${toArabic(target)} • المتبقي: \${toArabic((target-count).coerceAtLeast(0))}",fontSize=14.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+    LinearProgressIndicator(progress={ (count.toFloat()/target).coerceIn(0f,1f) },modifier=Modifier.fillMaxWidth())
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) { targets.forEach { t-> OutlinedButton(onClick={target=t},modifier=Modifier.weight(1f)) { Text(toArabic(t)) } } }
+    Button(onClick={count++;prefs.setTasbihCount(count)},modifier=Modifier.fillMaxWidth().height(68.dp),shape=RoundedCornerShape(22.dp)) { Text("تسبيح +١",fontSize=22.sp) }
+    if(count>=target) Text("أحسنت! وصلت إلى هدفك. يمكنك مواصلة الذكر أو بدء هدف جديد.",fontSize=14.sp,color=c.primary,textAlign=TextAlign.Center)
+    OutlinedButton(onClick={count=0;prefs.setTasbihCount(0)},modifier=Modifier.fillMaxWidth()) { Text("إعادة العداد") }
     Text("يُحفظ العدد تلقائياً على جهازك.",fontSize=12.sp,color=c.onSurfaceVariant)
   }
 }
-
 
 private data class LearningSectionInfo(
   val title: String,
