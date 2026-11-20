@@ -117,7 +117,8 @@ fun ReaderScreen(
         color = MaterialTheme.colorScheme.primary
       )
     }
-    Column(modifier = Modifier.padding(horizontal = 12.dp)) {\n      Surface(shape=RoundedCornerShape(22.dp), color=MaterialTheme.colorScheme.surface, modifier=Modifier.fillMaxWidth()) { Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+      Surface(shape=RoundedCornerShape(22.dp), color=MaterialTheme.colorScheme.surface, modifier=Modifier.fillMaxWidth()) { Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
       Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
