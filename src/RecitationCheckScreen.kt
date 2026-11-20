@@ -249,5 +249,6 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         Text("• لا تحوّل تلاوتك إلى نص ولا تصدر درجة تجويد وهمية. التصحيح الدقيق للمخارج والمدود والغنة يحتاج نموذجًا قرآنيًا متخصصًا لم يُدمج بعد.", fontSize = 12.sp, color = colors.error)
       }
     }
+    }
   }
 }
