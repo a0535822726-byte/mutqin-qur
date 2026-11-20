@@ -59,11 +59,18 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
 @Composable
 private fun FeatureCard(emoji:String,title:String,desc:String,onClick:()->Unit) {
   val c=MaterialTheme.colorScheme
-  Card(Modifier.fillMaxWidth().clickable(onClick=onClick),shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.primary.copy(alpha=.16f))) {
-    Row(Modifier.fillMaxWidth().padding(horizontal=18.dp,vertical=18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(16.dp)) {
-      Surface(shape=RoundedCornerShape(16.dp),color=c.primary.copy(alpha=.12f)) { Box(Modifier.size(52.dp),contentAlignment=Alignment.Center) { Text(emoji,fontSize=25.sp,color=c.primary) } }
-      Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(5.dp)) { Text(title,fontSize=18.sp,fontWeight=FontWeight.Bold,color=c.primary);Text(desc,fontSize=12.sp,color=c.onSurfaceVariant,lineHeight=18.sp) }
-      Text("←",fontSize=22.sp,color=c.secondary)
+  Card(Modifier.fillMaxWidth().clickable(onClick=onClick),shape=RoundedCornerShape(24.dp),
+    colors=CardDefaults.cardColors(containerColor=c.surface),
+    border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.25f))) {
+    Row(Modifier.fillMaxWidth().padding(16.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)) {
+      Box(Modifier.size(60.dp).background(c.primary.copy(alpha=.12f),RoundedCornerShape(20.dp)),contentAlignment=Alignment.Center) {
+        Text(emoji,fontSize=28.sp,color=c.secondary)
+      }
+      Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(5.dp)) {
+        Text(title,fontSize=19.sp,fontWeight=FontWeight.Bold,color=c.primary)
+        Text(desc,fontSize=12.sp,color=c.onSurfaceVariant,lineHeight=18.sp)
+      }
+      Text("‹",fontSize=26.sp,color=c.secondary,fontWeight=FontWeight.Bold)
     }
   }
 }
