@@ -11,6 +11,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -373,14 +374,14 @@ fun ReaderScreen(
             Text("حِفْظٌ وَتِلَاوَة", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
           }
           androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().padding(top = 7.dp).height(2.dp)) {
-            drawLine(color = androidx.compose.ui.graphics.Color(0xFFB8954B), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(size.width, 0f), strokeWidth = 1.dp.toPx())
+            drawLine(color = androidx.compose.ui.graphics.Color(0xFFB8954B), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(this.size.width, 0f), strokeWidth = 1.dp.toPx())
           }
           Row(Modifier.fillMaxWidth().padding(vertical = 7.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text("سورة ${SURAH_NAMES[surah - 1]}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 11.sp, fontWeight = FontWeight.Bold)
             Text("صفحة ${toArabic(pageIndex + 1)} من ${toArabic(mushafPages.size)}", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 10.sp)
           }
           androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height(1.dp)) {
-            drawLine(color = androidx.compose.ui.graphics.Color(0xFFD6BD83), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(size.width, 0f), strokeWidth = 1.dp.toPx())
+            drawLine(color = androidx.compose.ui.graphics.Color(0xFFD6BD83), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(this.size.width, 0f), strokeWidth = 1.dp.toPx())
           }
           Column(
             Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 7.dp, vertical = 12.dp),
@@ -412,7 +413,7 @@ fun ReaderScreen(
             Text("۞  ❁  ۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 17.sp)
           }
           androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height(1.dp)) {
-            drawLine(color = androidx.compose.ui.graphics.Color(0xFFD6BD83), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(size.width, 0f), strokeWidth = 1.dp.toPx())
+            drawLine(color = androidx.compose.ui.graphics.Color(0xFFD6BD83), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(this.size.width, 0f), strokeWidth = 1.dp.toPx())
           }
           Row(Modifier.fillMaxWidth().padding(top = 7.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text("مُتْقِن", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontWeight = FontWeight.Bold, fontSize = 10.sp)
