@@ -123,6 +123,7 @@ private fun FeatureCard(emoji:String,title:String,desc:String,onClick:()->Unit) 
 fun AdhkarScreen(onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
   var category by remember { mutableStateOf("عام") }
+  val adhkarCounts = remember { mutableStateMapOf<String, Int>() }
   val categories=listOf("عام","الصباح","المساء","النوم")
   val adhkar=mapOf(
     "عام" to listOf(
@@ -159,12 +160,28 @@ fun AdhkarScreen(onBack:()->Unit) {
         FilterChip(selected=category==name,onClick={category=name},label={Text(name)})
       }
     }
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
+      Text("اضغط على الذكر لزيادة عدّاده",fontSize=11.sp,color=c.onSurfaceVariant)
+      TextButton(onClick={ adhkarCounts.keys.filter { it.startsWith(category + "-") }.forEach { adhkarCounts[it]=0 } }) {
+        Text("تصفير القسم")
+      }
+    }
     LazyColumn(verticalArrangement=Arrangement.spacedBy(10.dp),modifier=Modifier.weight(1f)) {
       items(adhkar[category]?.size ?: 0) { i ->
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp)) {
+        val countKey = category + "-" + i
+        val count = adhkarCounts[countKey] ?: 0
+        Card(
+          modifier = Modifier.fillMaxWidth().clickable { adhkarCounts[countKey] = count + 1 },
+          colors=CardDefaults.cardColors(containerColor=c.surface),
+          shape=RoundedCornerShape(18.dp)
+        ) {
           Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
-            Text(toArabic(i+1),fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
+              Text(toArabic(i+1),fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+              Text("العدد: " + toArabic(count),fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.primary)
+            }
             Text(adhkar[category]!![i],fontSize=20.sp,lineHeight=34.sp,textAlign=TextAlign.Center,color=c.onSurface)
+            Text("اضغط هنا للتسبيح والعد",fontSize=10.sp,color=c.secondary,textAlign=TextAlign.Center)
           }
         }
       }
