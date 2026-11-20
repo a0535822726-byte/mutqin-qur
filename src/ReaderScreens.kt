@@ -296,8 +296,8 @@ fun ReaderScreen(
     ) {
       TextButton(onClick = onBack) { Text("رجوع", color = MaterialTheme.colorScheme.secondary) }
       Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("مُصْحَفُ مُتْقِن", fontSize = 10.sp, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
-        Text(SURAH_NAMES[surah - 1], fontSize = 19.sp, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.ExtraBold)
+        Text("الْمُصْحَفُ الشَّرِيف", fontSize = 9.sp, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, letterSpacing = 1.4.sp)
+        Text(SURAH_NAMES[surah - 1], fontSize = 21.sp, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Black)
       }
       TextButton(onClick = {
         if (isListening) {
@@ -307,7 +307,7 @@ fun ReaderScreen(
         } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
           beginRecognition()
         } else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-      }) { Text(if (isListening) "إيقاف" else "🎙", color = if (isListening) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold) }
+      }) { Text(if (isListening) "إيقاف" else "تسميع", color = if (isListening) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontSize = 11.sp) }
       TextButton(onClick = {
         val current = mushafPages.getOrNull(pageIndex)
         if (!current.isNullOrEmpty()) {
@@ -418,14 +418,14 @@ fun ReaderScreen(
             }
           )
         },
-      color = androidx.compose.ui.graphics.Color(0xFFF8F1DF),
-      shape = RoundedCornerShape(9.dp),
-      border = androidx.compose.foundation.BorderStroke(2.dp, androidx.compose.ui.graphics.Color(0xFFB8954B)),
-      shadowElevation = 12.dp
+      color = androidx.compose.ui.graphics.Color(0xFFFFFCF4),
+      shape = RoundedCornerShape(22.dp),
+      border = androidx.compose.foundation.BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFFC6A765)),
+      shadowElevation = 7.dp
     ) {
-      Column(Modifier.fillMaxSize().padding(5.dp).background(androidx.compose.ui.graphics.Color(0xFFF8F1DF), RoundedCornerShape(7.dp)).padding(7.dp)) {
+      Column(Modifier.fillMaxSize().padding(7.dp).background(androidx.compose.ui.graphics.Color(0xFFFFFCF4), RoundedCornerShape(17.dp)).padding(8.dp)) {
         // Double-rule page ornament gives the reader a recognizable printed-mushaf frame.
-        Column(Modifier.fillMaxSize().border(1.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(5.dp)).padding(horizontal = 12.dp, vertical = 8.dp)) {
+        Column(Modifier.fillMaxSize().border(1.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(13.dp)).padding(horizontal = 15.dp, vertical = 11.dp)) {
           Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text("الْجُزْءُ", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
             Spacer(Modifier.weight(1f))
@@ -447,7 +447,7 @@ fun ReaderScreen(
             Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 7.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
           ) {
-            Text("۞  ❁  ۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 20.sp)
+            Text("۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 26.sp)
             Text("سُورَةُ ${SURAH_NAMES[surah - 1]}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 18.sp, fontWeight = FontWeight.Bold)
             if (from == 1 && surah != 1 && surah != 9) {
               Text("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", modifier = Modifier.padding(top = 10.dp, bottom = 8.dp), color = androidx.compose.ui.graphics.Color(0xFF30291F), fontSize = (size * 0.92f).sp, textAlign = TextAlign.Center)
@@ -477,7 +477,7 @@ fun ReaderScreen(
           }
           Row(Modifier.fillMaxWidth().padding(top = 7.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text("مُتْقِن", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontWeight = FontWeight.Bold, fontSize = 10.sp)
-            Text("اسحب يمينًا أو يسارًا لقلب الصفحة", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
+            Text("تصفّح صفحات المصحف", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
             Text(toArabic(pageIndex + 1), color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontWeight = FontWeight.Bold, fontSize = 10.sp)
           }
         }
