@@ -49,55 +49,66 @@ fun RangeScreen(
   val b = toText.trim().toIntOrNull()
   val valid = a != null && b != null && a >= 1 && b <= count && a <= b
 
+  val c = MaterialTheme.colorScheme
   Column(
-    modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(16.dp),
-    verticalArrangement = Arrangement.spacedBy(12.dp)
+    modifier = Modifier.fillMaxSize().background(c.background).safeDrawingPadding().padding(18.dp),
+    verticalArrangement = Arrangement.spacedBy(15.dp)
   ) {
-    TextButton(onClick = onBack) { Text("رجوع") }
-    Text(
-      "سورة ${SURAH_NAMES[surah - 1]}",
-      fontSize = 28.sp,
-      fontWeight = FontWeight.Bold,
-      color = MaterialTheme.colorScheme.primary
-    )
-    Text("عدد آيات السورة: ${toArabic(count)}")
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-      OutlinedTextField(
-        value = fromText,
-        onValueChange = { fromText = it },
-        label = { Text("من الآية") },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        modifier = Modifier.weight(1f)
-      )
-      OutlinedTextField(
-        value = toText,
-        onValueChange = { toText = it },
-        label = { Text("إلى الآية") },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        modifier = Modifier.weight(1f)
-      )
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+      TextButton(onClick = onBack) { Text("‹  رجوع") }
+      Spacer(Modifier.weight(1f))
+      Text("المصحف الشريف", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = c.secondary)
     }
-    OutlinedButton(
-      onClick = {
-        fromText = "1"
-        toText = count.toString()
-      },
-      modifier = Modifier.fillMaxWidth()
-    ) { Text("السورة كاملة") }
-    if (!valid) {
-      Text(
-        "أدخل أرقامًا صحيحة بين ١ و ${toArabic(count)}، وتأكد أن بداية الآيات لا تتجاوز نهايتها",
-        color = MaterialTheme.colorScheme.error,
-        fontSize = 13.sp
-      )
+    Card(
+      modifier = Modifier.fillMaxWidth(),
+      shape = RoundedCornerShape(28.dp),
+      colors = CardDefaults.cardColors(containerColor = c.primary),
+      border = androidx.compose.foundation.BorderStroke(1.dp, c.secondary.copy(alpha=.65f))
+    ) {
+      Column(Modifier.fillMaxWidth().padding(22.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+        Text("۞  تهيئة جلسة القراءة", fontSize = 11.sp, color = c.secondary, fontWeight = FontWeight.Bold)
+        Text(SURAH_NAMES[surah - 1], fontSize = 31.sp, fontWeight = FontWeight.ExtraBold, color = c.onPrimary)
+        Text("سورة رقم ${toArabic(surah)}  •  ${toArabic(count)} آية", fontSize = 12.sp, color = c.onPrimary.copy(alpha=.78f))
+        Divider(color = c.onPrimary.copy(alpha=.18f))
+        Text("اختر المقطع الذي تريد قراءته أو مراجعته", fontSize = 13.sp, color = c.onPrimary)
+      }
     }
+    Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = c.surface)) {
+      Column(Modifier.fillMaxWidth().padding(17.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
+        Text("نطاق الآيات", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = c.primary)
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+          OutlinedTextField(
+            value = fromText, onValueChange = { fromText = it.filter(Char::isDigit).take(4) },
+            label = { Text("من الآية") }, singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.weight(1f)
+          )
+          OutlinedTextField(
+            value = toText, onValueChange = { toText = it.filter(Char::isDigit).take(4) },
+            label = { Text("إلى الآية") }, singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.weight(1f)
+          )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+          OutlinedButton(onClick = { fromText = "1"; toText = count.toString() }, modifier = Modifier.weight(1f)) { Text("السورة كاملة") }
+          OutlinedButton(onClick = { fromText = "1"; toText = count.coerceAtMost(10).toString() }, modifier = Modifier.weight(1f)) { Text("أول 10 آيات") }
+        }
+        if (!valid) {
+          Text("تأكد من إدخال أرقام بين ١ و ${toArabic(count)}، وأن البداية لا تتجاوز النهاية.", color = c.error, fontSize = 12.sp)
+        } else {
+          Surface(shape = RoundedCornerShape(13.dp), color = c.primary.copy(alpha=.08f)) {
+            Text("تم تحديد ${toArabic(b!! - a!! + 1)} آية للقراءة", Modifier.fillMaxWidth().padding(12.dp), fontSize = 12.sp, color = c.primary, fontWeight = FontWeight.SemiBold)
+          }
+        }
+      }
+    }
+    Spacer(Modifier.weight(1f))
     Button(
       onClick = { if (a != null && b != null && valid) onStart(a, b) },
-      enabled = valid,
-      modifier = Modifier.fillMaxWidth()
-    ) { Text("ابدأ القراءة") }
+      enabled = valid, modifier = Modifier.fillMaxWidth().height(54.dp),
+      shape = RoundedCornerShape(17.dp)
+    ) { Text("افتح صفحات المصحف  ←", fontSize = 15.sp, fontWeight = FontWeight.Bold) }
   }
 }
 
