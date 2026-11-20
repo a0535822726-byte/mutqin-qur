@@ -19,39 +19,83 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecitation:()->Unit,onAdhkar:()->Unit,onTasbih:()->Unit,onLearning:()->Unit) {
   val c=MaterialTheme.colorScheme
-  LazyColumn(Modifier.fillMaxSize().background(c.background),contentPadding=PaddingValues(18.dp),verticalArrangement=Arrangement.spacedBy(18.dp)) {
+  val hadithCount=hadithEntries.size
+  val lessonCount=tajweedLessons.size
+  val storyCount=quranStories.size
+  LazyColumn(Modifier.fillMaxSize().background(Color(0xFF06130F)),contentPadding=PaddingValues(start=18.dp,end=18.dp,top=18.dp,bottom=30.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
     item {
       Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
-        Column(verticalArrangement=Arrangement.spacedBy(4.dp)) {
-          Text("مُتقن",fontSize=34.sp,fontWeight=FontWeight.Black,color=c.primary)
-          Text("رفيق القرآن والعبادة",fontSize=13.sp,color=c.onSurfaceVariant)
+        Column(verticalArrangement=Arrangement.spacedBy(3.dp)) {
+          Text("مُتقن",fontSize=34.sp,fontWeight=FontWeight.Black,color=Color(0xFFE5C36A))
+          Text("رحلتك إلى إتقان التلاوة والعلم",fontSize=12.sp,color=Color(0xFFB7C9C0))
         }
-        Surface(shape=RoundedCornerShape(50.dp),color=c.surface) { Row(Modifier.padding(horizontal=12.dp,vertical=6.dp),verticalAlignment=Alignment.CenterVertically) { Text("☾",fontSize=14.sp);Switch(checked=dark,onCheckedChange=onDark) } }
-      }
-    }
-    item {
-      Card(shape=RoundedCornerShape(28.dp),colors=CardDefaults.cardColors(containerColor=Color(0xFF123D32))) {
-        Column(Modifier.fillMaxWidth().padding(22.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-          Text("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",fontSize=23.sp,fontWeight=FontWeight.Bold,color=Color(0xFFE5C66B),textAlign=TextAlign.Center,modifier=Modifier.fillMaxWidth())
-          Text("وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا",fontSize=25.sp,color=Color.White,textAlign=TextAlign.Center,modifier=Modifier.fillMaxWidth())
-          Text("ابدأ رحلتك اليوم بآياتٍ تتلوها وقلبٍ يتدبرها.",fontSize=14.sp,color=Color.White.copy(alpha=.85f),textAlign=TextAlign.Center)
-          Button(onClick=onQuran,modifier=Modifier.fillMaxWidth(),shape=RoundedCornerShape(16.dp),colors=ButtonDefaults.buttonColors(containerColor=Color(0xFFD8B65C),contentColor=Color(0xFF102C24))) { Text("فتح المصحف  ←",fontSize=16.sp,fontWeight=FontWeight.Bold) }
+        Surface(shape=RoundedCornerShape(18.dp),color=Color(0xFF142B23),border=androidx.compose.foundation.BorderStroke(1.dp,Color(0xFF426B58))) {
+          Row(Modifier.padding(horizontal=10.dp,vertical=5.dp),verticalAlignment=Alignment.CenterVertically) {
+            Text("الوضع الليلي",fontSize=10.sp,color=Color(0xFFE8E2CE))
+            Switch(checked=dark,onCheckedChange=onDark)
+          }
         }
       }
     }
-    item { Text("مساحتك اليومية",fontSize=21.sp,fontWeight=FontWeight.Bold,color=c.onBackground) }
-    item { FeatureCard("◉","المصحف الشريف","قراءة السور والآيات والبحث وورد التلاوة.",onQuran) }
-    item { FeatureCard("♧","التسميع","أدوات متابعة التلاوة والتسجيل.",onRecitation) }
-    item { FeatureCard("✧","مكتبة العلم","تجويد • تفسير • حديث • فقه • قصص • سيرة.",onLearning) }
-    item { FeatureCard("۞","الأذكار","أذكار الصباح والمساء والنوم وأذكار عامة.",onAdhkar) }
-    item { FeatureCard("◌","المسبحة","عداد ذكر بأهداف تحفظ تقدمك.",onTasbih) }
     item {
-      Card(shape=RoundedCornerShape(20.dp),colors=CardDefaults.cardColors(containerColor=c.surface)) {
+      Card(shape=RoundedCornerShape(30.dp),colors=CardDefaults.cardColors(containerColor=Color(0xFF123D30)),border=androidx.compose.foundation.BorderStroke(1.dp,Color(0xFFB9974C).copy(alpha=.55f))) {
+        Column(Modifier.fillMaxWidth().padding(22.dp),verticalArrangement=Arrangement.spacedBy(13.dp),horizontalAlignment=Alignment.CenterHorizontally) {
+          Text("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",fontSize=18.sp,fontWeight=FontWeight.Bold,color=Color(0xFFE8C96F),textAlign=TextAlign.Center)
+          Text("وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا",fontSize=27.sp,fontWeight=FontWeight.Bold,color=Color.White,textAlign=TextAlign.Center)
+          Text("افتح مصحفك، وواصل وردك، وتعلّم كل يوم.",fontSize=13.sp,color=Color(0xFFD4E3DB),textAlign=TextAlign.Center)
+          Button(onClick=onQuran,modifier=Modifier.fillMaxWidth().height(54.dp),shape=RoundedCornerShape(17.dp),colors=ButtonDefaults.buttonColors(containerColor=Color(0xFFE0BD60),contentColor=Color(0xFF10271F))) {
+            Text("متابعة القرآن  ←",fontSize=17.sp,fontWeight=FontWeight.ExtraBold)
+          }
+        }
+      }
+    }
+    item {
+      Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)) {
+        listOf(Triple("٦٢٣٦","آية","القرآن"),Triple(toArabic(hadithCount),"حديث","الحديث"),Triple(toArabic(lessonCount),"درس","التجويد")).forEach { stat ->
+          Card(Modifier.weight(1f),shape=RoundedCornerShape(19.dp),colors=CardDefaults.cardColors(containerColor=Color(0xFF142820)),border=androidx.compose.foundation.BorderStroke(1.dp,Color(0xFF315544))) {
+            Column(Modifier.fillMaxWidth().padding(vertical=13.dp,horizontal=5.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(3.dp)) {
+              Text(stat.first,fontSize=19.sp,fontWeight=FontWeight.Black,color=Color(0xFFE5C36A))
+              Text(stat.second,fontSize=11.sp,color=Color.White,fontWeight=FontWeight.Bold)
+              Text(stat.third,fontSize=9.sp,color=Color(0xFFAFC4B8))
+            }
+          }
+        }
+      }
+    }
+    item { Text("أقسامك الرئيسية",fontSize=21.sp,fontWeight=FontWeight.ExtraBold,color=Color(0xFFF3EBD7)) }
+    item { Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
+      HomeTile("المصحف","قراءة وتدبر","۞",Modifier.weight(1f),onQuran)
+      HomeTile("التسميع","تدريب ومراجعة","◉",Modifier.weight(1f),onRecitation)
+    } }
+    item { Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
+      HomeTile("مكتبة العلم","حديث وفقه وسيرة","✧",Modifier.weight(1f),onLearning)
+      HomeTile("الأذكار","أذكار وأدعية","❈",Modifier.weight(1f),onAdhkar)
+    } }
+    item { HomeTile("المسبحة الإلكترونية","عداد ذكر وأهداف يومية","◌",Modifier.fillMaxWidth(),onTasbih) }
+    item {
+      Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=Color(0xFF101F1A)),border=androidx.compose.foundation.BorderStroke(1.dp,Color(0xFF765F31))) {
         Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
-          Text("تنويه",fontWeight=FontWeight.Bold,color=c.secondary)
-          Text("التصحيح الصوتي الآلي لأخطاء الكلمات والتجويد غير معتمد بعد؛ لا تظهر درجات وهمية.",fontSize=12.sp,lineHeight=19.sp,color=c.onSurfaceVariant)
+          Text("مكتبة تتوسع بالمراجعة والتوثيق",fontSize=15.sp,fontWeight=FontWeight.Bold,color=Color(0xFFE5C36A))
+          Text("المتاح حاليًا: \${toArabic(hadithCount)} حديثًا، \${toArabic(lessonCount)} درس تجويد، و\${toArabic(storyCount)} مادة قصصية. الأعداد المستهدفة ليست أعدادًا منشورة بعد.",fontSize=12.sp,lineHeight=20.sp,color=Color(0xFFD0DDD6))
+          Text("لن نضيف رواية أو ننسبها إلى صحابي إلا مع مصدر يمكن مراجعته.",fontSize=11.sp,color=Color(0xFFB8C8BE))
         }
       }
+    }
+  }
+}
+
+@Composable
+private fun HomeTile(title:String,subtitle:String,symbol:String,modifier:Modifier,onClick:()->Unit) {
+  Card(modifier.clickable(onClick=onClick),shape=RoundedCornerShape(23.dp),colors=CardDefaults.cardColors(containerColor=Color(0xFF142820)),border=androidx.compose.foundation.BorderStroke(1.dp,Color(0xFF315544))) {
+    Row(Modifier.fillMaxWidth().padding(15.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+      Box(Modifier.size(48.dp).background(Color(0xFF244638),RoundedCornerShape(16.dp)),contentAlignment=Alignment.Center) {
+        Text(symbol,fontSize=25.sp,color=Color(0xFFE5C36A),fontWeight=FontWeight.Bold)
+      }
+      Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) {
+        Text(title,fontSize=15.sp,fontWeight=FontWeight.Bold,color=Color(0xFFF1EAD8))
+        Text(subtitle,fontSize=10.sp,color=Color(0xFFB5C9BD))
+      }
+      Text("‹",fontSize=24.sp,color=Color(0xFFE5C36A),fontWeight=FontWeight.Bold)
     }
   }
 }
