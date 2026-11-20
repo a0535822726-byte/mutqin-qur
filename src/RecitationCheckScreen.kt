@@ -113,6 +113,31 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
     }
   }
 
+  fun playSavedRecording(file: File) {
+    if (!file.exists()) {
+      status = "ملف هذا التسجيل غير موجود على الجهاز."
+      return
+    }
+    try {
+      player?.release()
+      player = MediaPlayer().apply {
+        setDataSource(file.absolutePath)
+        setOnCompletionListener { completed ->
+          completed.release()
+          if (player === completed) player = null
+          status = "انتهى تشغيل التسجيل."
+        }
+        prepare()
+        start()
+      }
+      status = "تشغيل تسجيل جلسة المراجعة."
+    } catch (_: Exception) {
+      try { player?.release() } catch (_: Exception) {}
+      player = null
+      status = "تعذر تشغيل هذا التسجيل."
+    }
+  }
+
   val colors = MaterialTheme.colorScheme
   Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -171,19 +196,7 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
           Button(onClick = { stopCapture() }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = colors.error)) { Text("إيقاف وحفظ التسجيل") }
         }
         OutlinedButton(onClick = {
-          val file = savedFile
-          if (file != null && file.exists()) {
-            try {
-              player?.release()
-              player = MediaPlayer().apply {
-                setDataSource(file.absolutePath)
-                setOnCompletionListener { it.release(); player = null }
-                prepare()
-                start()
-              }
-              status = "تشغيل تسجيل جلسة المراجعة."
-            } catch (_: Exception) { status = "تعذر تشغيل التسجيل." }
-          }
+          savedFile?.let { playSavedRecording(it) }
         }, enabled = !recording && savedFile?.exists() == true, modifier = Modifier.fillMaxWidth()) { Text("▶ استمع إلى تلاوتك") }
       }
     }
@@ -192,8 +205,21 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         Text("سجل جلسات التسميع", fontWeight = FontWeight.Bold, color = colors.primary)
         if (sessionHistory.isEmpty()) Text("لا توجد جلسات محفوظة بعد.", fontSize = 12.sp, color = colors.onSurfaceVariant) else sessionHistory.take(8).forEach { entry ->
           val parts = entry.split(":")
-          if (parts.size >= 5) { val s = (parts[0].toIntOrNull() ?: 1).coerceIn(1,114); val f = parts[1].toIntOrNull() ?: 1; val t = parts[2].toIntOrNull() ?: f; val sec = parts[3].toIntOrNull() ?: 0
-            Text("• ${SURAH_NAMES[s-1]}: الآيات ${toArabic(f)}–${toArabic(t)} | ${toArabic(sec/60)}:${toArabic(sec%60)}", fontSize = 12.sp, color = colors.onSurface)
+          if (parts.size >= 5) {
+            val s = (parts[0].toIntOrNull() ?: 1).coerceIn(1,114)
+            val f = parts[1].toIntOrNull() ?: 1
+            val t = parts[2].toIntOrNull() ?: f
+            val sec = parts[3].toIntOrNull() ?: 0
+            val recordingFile = File(File(context.filesDir, "mutqin_sessions"), parts.drop(4).joinToString(":"))
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+              Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text("${SURAH_NAMES[s-1]} • الآيات ${toArabic(f)}–${toArabic(t)}", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.onSurface)
+                Text("المدة ${toArabic(sec/60)}:${toArabic(sec%60)}", fontSize = 10.sp, color = colors.onSurfaceVariant)
+              }
+              OutlinedButton(onClick = { playSavedRecording(recordingFile) }, enabled = !recording && recordingFile.exists()) {
+                Text("▶ تشغيل")
+              }
+            }
           }
         }
         Text("ما الذي تفعله هذه الجلسة؟", fontWeight = FontWeight.Bold, color = colors.primary)
