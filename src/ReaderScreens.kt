@@ -152,6 +152,7 @@ fun ReaderScreen(
         )
       }
     }
+    }
     HorizontalDivider()
     LazyColumn(
       contentPadding = PaddingValues(16.dp),
