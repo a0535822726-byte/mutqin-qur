@@ -227,7 +227,7 @@ fun ReaderScreen(
     ) {
       TextButton(onClick = onBack) { Text("رجوع", color = androidx.compose.ui.graphics.Color.White) }
       Text(
-        "سورة \${SURAH_NAMES[surah - 1]}",
+        "سورة ${SURAH_NAMES[surah - 1]}",
         modifier = Modifier.weight(1f),
         fontSize = 19.sp,
         fontWeight = FontWeight.Bold,
@@ -260,7 +260,7 @@ fun ReaderScreen(
             Switch(checked = hide, onCheckedChange = { hide = it; revealed.clear() })
           }
           Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = { showBookmarks = true }) { Text("المحفوظات (\${toArabic(bookmarks.size)})") }
+            TextButton(onClick = { showBookmarks = true }) { Text("المحفوظات (${toArabic(bookmarks.size)})") }
             Text("حجم الخط", color = androidx.compose.ui.graphics.Color(0xFF243B32), fontSize = 12.sp)
           }
           Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
