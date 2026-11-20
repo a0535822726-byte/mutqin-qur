@@ -188,7 +188,7 @@ fun AdhkarScreen(onBack:()->Unit) {
         val countKey = category + "-" + i
         val count = adhkarCounts[countKey] ?: 0
         Card(
-          modifier = Modifier.fillMaxWidth().clickable { adhkarCounts[countKey] = count + 1; adhkarPrefs.edit().putInt(countKey,count+1).apply() },
+          modifier = Modifier.fillMaxWidth(),
           colors=CardDefaults.cardColors(containerColor=c.surface),
           shape=RoundedCornerShape(18.dp)
         ) {
@@ -198,7 +198,24 @@ fun AdhkarScreen(onBack:()->Unit) {
               Text("العدد: " + toArabic(count),fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.primary)
             }
             Text(adhkar[category]!![i],fontSize=20.sp,lineHeight=34.sp,textAlign=TextAlign.Center,color=c.onSurface)
-            Text("اضغط هنا للتسبيح والعد",fontSize=10.sp,color=c.secondary,textAlign=TextAlign.Center)
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+              Button(
+                onClick = {
+                  adhkarCounts[countKey] = count + 1
+                  adhkarPrefs.edit().putInt(countKey, count + 1).apply()
+                },
+                modifier = Modifier.weight(1f)
+              ) { Text("تسبيح +١") }
+              OutlinedButton(
+                onClick = {
+                  val previous = (count - 1).coerceAtLeast(0)
+                  adhkarCounts[countKey] = previous
+                  adhkarPrefs.edit().putInt(countKey, previous).apply()
+                },
+                enabled = count > 0,
+                modifier = Modifier.weight(1f)
+              ) { Text("تراجع −١") }
+            }
           }
         }
       }
