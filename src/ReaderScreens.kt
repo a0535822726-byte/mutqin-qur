@@ -13,6 +13,10 @@ import androidx.core.content.ContextCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -114,6 +118,24 @@ fun ReaderScreen(
   var bookmarkVersion by remember { mutableIntStateOf(0) }
   val bookmarks = remember(bookmarkVersion) { prefs.bookmarks() }
   val listState = rememberLazyListState()
+  val mushafPages = remember(surah, from, to) {
+    val groups = mutableListOf<List<Int>>()
+    var current = mutableListOf<Int>()
+    var chars = 0
+    for (n in from..to) {
+      val length = repo.ayah(surah, n).length
+      if (current.isNotEmpty() && chars + length > 520) {
+        groups.add(current.toList())
+        current = mutableListOf()
+        chars = 0
+      }
+      current.add(n)
+      chars += length
+    }
+    if (current.isNotEmpty()) groups.add(current.toList())
+    groups
+  }
+  var pageIndex by remember(surah, from, to) { mutableIntStateOf(0) }
   val scope = rememberCoroutineScope()
   val context = androidx.compose.ui.platform.LocalContext.current
   var transcript by remember { mutableStateOf("") }
@@ -256,59 +278,117 @@ fun ReaderScreen(
       }
     }
     Surface(
-      modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 7.dp),
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 8.dp, vertical = 7.dp)
+        .pointerInput(pageIndex, mushafPages.size) {
+          var drag = 0f
+          detectHorizontalDragGestures(
+            onHorizontalDrag = { _, amount -> drag += amount },
+            onDragEnd = {
+              if (drag < -55f) pageIndex = (pageIndex + 1).coerceAtMost(mushafPages.lastIndex)
+              else if (drag > 55f) pageIndex = (pageIndex - 1).coerceAtLeast(0)
+              drag = 0f
+            }
+          )
+        },
       color = androidx.compose.ui.graphics.Color(0xFFFAF5E8),
-      shape = RoundedCornerShape(8.dp),
-      shadowElevation = 2.dp
+      shape = RoundedCornerShape(3.dp),
+      shadowElevation = 3.dp
     ) {
-      LazyColumn(
-        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-        state = listState
-      ) {
-        item {
-          Column(Modifier.fillMaxWidth().padding(bottom = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 20.sp)
-            Text("سُورَةُ \${SURAH_NAMES[surah - 1]}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 17.sp, fontWeight = FontWeight.Bold)
-            Text("ــــــــــــــــــــــــــــــــــــــــــــــــــــــــ", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 12.sp)
-          }
+      Column(Modifier.fillMaxSize()) {
+        Row(
+          Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 7.dp),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          Text("سورة ${SURAH_NAMES[surah - 1]}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+          Text("الصفحة ${toArabic(pageIndex + 1)} / ${toArabic(mushafPages.size)}", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 12.sp)
         }
-        items((from..to).toList()) { n ->
-          val verse = repo.ayah(surah, n)
-          val shown = !hide || n in revealed
-          val body = if (shown) verse else verse.substringBefore(' ') + " …"
-          Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(2.dp)
-          ) {
+        androidx.compose.foundation.Canvas(
+          Modifier.fillMaxWidth().height(1.dp).padding(horizontal = 12.dp)
+        ) {
+          drawLine(
+            color = androidx.compose.ui.graphics.Color(0xFFB28A3B),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(size.width, 0f),
+            strokeWidth = 1.dp.toPx()
+          )
+        }
+        Column(
+          Modifier.weight(1f).fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 19.dp, vertical = 13.dp),
+          horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+          Text("۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 21.sp)
+          Text(
+            "سُورَةُ ${SURAH_NAMES[surah - 1]}",
+            color = androidx.compose.ui.graphics.Color(0xFF174B3B),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+          )
+          if (from == 1 && surah != 1 && surah != 9) {
             Text(
-              body + " ۞ " + toArabic(n),
-              fontSize = size.sp,
-              lineHeight = (size * 2.0f).sp,
-              textAlign = TextAlign.Justify,
+              "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+              modifier = Modifier.padding(top = 10.dp, bottom = 8.dp),
               color = androidx.compose.ui.graphics.Color(0xFF30291F),
-              modifier = Modifier
-                .weight(1f)
-                .clickable(enabled = hide) {
-                  if (n in revealed) revealed.remove(n) else revealed.add(n)
-                }
-                .padding(vertical = 5.dp)
+              fontSize = (size * 0.92f).sp,
+              textAlign = TextAlign.Center
             )
-            TextButton(
-              onClick = {
-                prefs.toggleBookmark(surah, n)
-                bookmarkVersion++
-              },
-              contentPadding = PaddingValues(horizontal = 2.dp)
+          }
+          Spacer(Modifier.height(8.dp))
+          mushafPages.getOrNull(pageIndex).orEmpty().forEach { n ->
+            val verse = repo.ayah(surah, n)
+            val shown = !hide || n in revealed
+            val body = if (shown) verse else verse.substringBefore(' ') + " …"
+            Row(
+              Modifier.fillMaxWidth(),
+              verticalAlignment = Alignment.CenterVertically
             ) {
               Text(
-                if (prefs.isBookmarked(surah, n)) "★" else "☆",
-                fontSize = 17.sp,
-                color = androidx.compose.ui.graphics.Color(0xFFB28A3B)
+                body + " ﴿" + toArabic(n) + "﴾",
+                modifier = Modifier.weight(1f).clickable(enabled = hide) {
+                  if (n in revealed) revealed.remove(n) else revealed.add(n)
+                }.padding(vertical = 3.dp),
+                fontSize = size.sp,
+                lineHeight = (size * 2.05f).sp,
+                textAlign = TextAlign.Justify,
+                color = androidx.compose.ui.graphics.Color(0xFF30291F)
               )
+              TextButton(
+                onClick = {
+                  prefs.toggleBookmark(surah, n)
+                  bookmarkVersion++
+                },
+                contentPadding = PaddingValues(horizontal = 1.dp),
+                modifier = Modifier.width(28.dp)
+              ) {
+                Text(
+                  if (prefs.isBookmarked(surah, n)) "★" else "☆",
+                  fontSize = 14.sp,
+                  color = androidx.compose.ui.graphics.Color(0xFFB28A3B)
+                )
+              }
             }
           }
+          Spacer(Modifier.height(18.dp))
+          Text("۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 18.sp)
+        }
+        Row(
+          Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          TextButton(
+            onClick = { pageIndex = (pageIndex - 1).coerceAtLeast(0) },
+            enabled = pageIndex > 0
+          ) { Text("‹ السابقة", color = androidx.compose.ui.graphics.Color(0xFF174B3B)) }
+          Text("اسحب لتقليب الصفحة", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 11.sp)
+          TextButton(
+            onClick = { pageIndex = (pageIndex + 1).coerceAtMost(mushafPages.lastIndex) },
+            enabled = pageIndex < mushafPages.lastIndex
+          ) { Text("التالية ›", color = androidx.compose.ui.graphics.Color(0xFF174B3B)) }
         }
       }
     }
