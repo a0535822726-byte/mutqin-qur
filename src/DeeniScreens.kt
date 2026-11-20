@@ -195,7 +195,8 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
     Text("الهدف: ${toArabic(target)} • المتبقي: ${toArabic((target-count).coerceAtLeast(0))}",fontSize=14.sp,color=c.secondary,fontWeight=FontWeight.Bold)
     LinearProgressIndicator(progress={ (count.toFloat()/target).coerceIn(0f,1f) },modifier=Modifier.fillMaxWidth())
     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) { targets.forEach { t-> OutlinedButton(onClick={target=t},modifier=Modifier.weight(1f)) { Text(toArabic(t)) } } }
-    Button(onClick={count++;prefs.setTasbihCount(count)},modifier=Modifier.fillMaxWidth().height(68.dp),shape=RoundedCornerShape(22.dp)) { Text("تسبيح +١",fontSize=22.sp) }\n    OutlinedButton(onClick={count=(count-1).coerceAtLeast(0);prefs.setTasbihCount(count)},enabled=count>0,modifier=Modifier.fillMaxWidth()) { Text("تراجع عن آخر تسبيحة −١") }
+    Button(onClick={count++;prefs.setTasbihCount(count)},modifier=Modifier.fillMaxWidth().height(68.dp),shape=RoundedCornerShape(22.dp)) { Text("تسبيح +١",fontSize=22.sp) }
+    OutlinedButton(onClick={count=(count-1).coerceAtLeast(0);prefs.setTasbihCount(count)},enabled=count>0,modifier=Modifier.fillMaxWidth()) { Text("تراجع عن آخر تسبيحة −١") }
     if(count>=target) Text("أحسنت! وصلت إلى هدفك. يمكنك مواصلة الذكر أو بدء هدف جديد.",fontSize=14.sp,color=c.primary,textAlign=TextAlign.Center)
     OutlinedButton(onClick={showReset=true},modifier=Modifier.fillMaxWidth()) { Text("إعادة العداد") }
     Text("يُحفظ العدد تلقائياً على جهازك.",fontSize=12.sp,color=c.onSurfaceVariant)
