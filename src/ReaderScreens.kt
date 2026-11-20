@@ -291,9 +291,10 @@ fun ReaderScreen(
     ) {
       Surface(
         modifier = Modifier.weight(1f).clickable { showTools = !showTools },
-        shape = RoundedCornerShape(14.dp),
-        color = if (showTools) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
-      ) { Text("Aa  إعدادات القراءة", modifier = Modifier.padding(vertical = 11.dp), textAlign = TextAlign.Center, color = if (showTools) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+        shape = RoundedCornerShape(16.dp),
+        color = if (showTools) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surface,
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha=.45f))
+      ) { Text("Aa  إعدادات القراءة", modifier = Modifier.padding(vertical = 12.dp), textAlign = TextAlign.Center, color = if (showTools) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontWeight = FontWeight.Bold) }
       Surface(
         modifier = Modifier.weight(1f).clickable { showTools = true; hide = !hide; revealed.clear() },
         shape = RoundedCornerShape(14.dp),
@@ -302,8 +303,9 @@ fun ReaderScreen(
       Surface(
         modifier = Modifier.weight(1f).clickable { showBookmarks = true },
         shape = RoundedCornerShape(14.dp),
-        color = androidx.compose.ui.graphics.Color(0xFF173A2E)
-      ) { Text("☆  المحفوظات", modifier = Modifier.padding(vertical = 11.dp), textAlign = TextAlign.Center, color = androidx.compose.ui.graphics.Color(0xFFF4E8C9), fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+        color = MaterialTheme.colorScheme.primary,
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.55f))
+      ) { Text("☆  المحفوظات", modifier = Modifier.padding(vertical = 12.dp), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold) }
     }
 
     if (showTools) {
