@@ -15,10 +15,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 
-private val Green = Color(0xFF0F5132)
-private val Gold = Color(0xFFD4AF37)
-private val LightColors = lightColorScheme(primary=Green,secondary=Gold,background=Color(0xFFFAF6EC),surface=Color(0xFFFAF6EC),onBackground=Color(0xFF1B1B1B),onSurface=Color(0xFF1B1B1B))
-private val DarkColors = darkColorScheme(primary=Gold,secondary=Gold,background=Color(0xFF0B1F17),surface=Color(0xFF0B1F17),onBackground=Color(0xFFEDE8D8),onSurface=Color(0xFFEDE8D8))
+private val Green = Color(0xFF0D5746)
+private val Gold = Color(0xFFD8B65C)
+private val LightColors = lightColorScheme(primary=Green,secondary=Gold,background=Color(0xFFF3F5EF),surface=Color(0xFFFFFFFF),onBackground=Color(0xFF1B1B1B),onSurface=Color(0xFF1B1B1B))
+private val DarkColors = darkColorScheme(primary=Gold,secondary=Gold,background=Color(0xFF071713),surface=Color(0xFF10251F),onBackground=Color(0xFFEDE8D8),onSurface=Color(0xFFEDE8D8))
 
 sealed interface Screen {
   data object Home:Screen
