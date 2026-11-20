@@ -273,8 +273,8 @@ fun ReaderScreen(
           }
           if (transcript.isNotBlank()) {
             Text("ما التقطه الجهاز: $transcript", color = androidx.compose.ui.graphics.Color(0xFF243B32), fontSize = 13.sp)
-            Text("التطابق النصي: \${toArabic(matchedWords)} من \${toArabic(targetWords.size)} كلمة", fontSize = 12.sp, color = androidx.compose.ui.graphics.Color(0xFF17664E))
-            if (hasMismatch) Text("راجع الكلمة التالية: \${targetWords.getOrNull(matchedWords).orEmpty()}", color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 13.sp)
+            Text("التطابق النصي: ${toArabic(matchedWords)} من ${toArabic(targetWords.size)} كلمة", fontSize = 12.sp, color = androidx.compose.ui.graphics.Color(0xFF17664E))
+            if (hasMismatch) Text("راجع الكلمة التالية: ${expectedWord.orEmpty()}", color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 13.sp)
             else if (matchedWords == targetWords.size && targetWords.isNotEmpty()) Text("اكتملت المطابقة النصية للمقطع.", color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 13.sp)
           }
           if (speechError != null) Text(speechError!!, color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 12.sp)
