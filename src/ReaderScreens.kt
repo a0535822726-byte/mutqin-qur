@@ -521,4 +521,18 @@ fun ReaderScreen(
     )
   }
 }
-\n@Composable\nprivate fun FlowRowCompat(words: List<String>, selected: String?, onSelect: (String) -> Unit) {\n  Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {\n    words.chunked(4).forEach { chunk -> Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) { chunk.forEach { word -> TextButton(onClick = { onSelect(word) }) { Text(word, color = if (word == selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary, fontSize = 15.sp) } } } }\n  }\n}\n
+
+@Composable
+private fun FlowRowCompat(words: List<String>, selected: String?, onSelect: (String) -> Unit) {
+  Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    words.chunked(4).forEach { chunk ->
+      Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        chunk.forEach { word ->
+          TextButton(onClick = { onSelect(word) }) {
+            Text(word, color = if (word == selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary, fontSize = 15.sp)
+          }
+        }
+      }
+    }
+  }
+}
