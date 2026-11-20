@@ -414,7 +414,7 @@ fun ReaderScreen(
     AlertDialog(
       onDismissRequest = { selectedAyah = 0 },
       title = { Text("سورة ${SURAH_NAMES[surah - 1]} — الآية ${toArabic(selectedAyah)}") },
-      text = { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) { Text(selectedText, fontSize = 20.sp, lineHeight = 34.sp, textAlign = TextAlign.Center); Text("اختر كلمة للتأمل فيها أو نسخها", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary); FlowRowCompat(selectedText.split(Regex("\\s+")), focusedWord) { focusedWord = it }; if (focusedWord != null) Text("الكلمة المحددة: $focusedWord", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold) } },
+      text = { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) { Text(selectedText, fontSize = 20.sp, lineHeight = 34.sp, textAlign = TextAlign.Center); Text("اختر كلمة للتأمل فيها أو نسخها", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary); FlowRowCompat(selectedText.split(Regex("\\s+")), focusedWord) { focusedWord = it }; if (focusedWord != null) { Text("الكلمة المحددة: $focusedWord", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold); TextButton(onClick = { val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager; clipboard.setPrimaryClip(android.content.ClipData.newPlainText("كلمة قرآنية", focusedWord)); android.widget.Toast.makeText(context, "تم نسخ الكلمة", android.widget.Toast.LENGTH_SHORT).show() }, modifier = Modifier.fillMaxWidth()) { Text("نسخ الكلمة المحددة") } } } },
       confirmButton = {
         TextButton(onClick = {
           val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
