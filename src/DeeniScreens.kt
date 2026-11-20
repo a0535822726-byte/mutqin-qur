@@ -176,103 +176,72 @@ private fun FeatureCard(emoji:String,title:String,desc:String,onClick:()->Unit) 
 fun AdhkarScreen(onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
   var category by remember { mutableStateOf("عام") }
-  val context = LocalContext.current
-  val adhkarPrefs = remember { context.getSharedPreferences("mutqin_adhkar", android.content.Context.MODE_PRIVATE) }
-  val adhkarCounts = remember {
-    mutableStateMapOf<String, Int>().apply {
-      listOf("عام", "الصباح", "المساء", "النوم").forEach { section ->
-        val sectionItems = when (section) {
-          "عام" -> 5
-          "الصباح" -> 4
-          "المساء" -> 4
-          else -> 3
-        }
-        repeat(sectionItems) { index ->
-          val key = section + "-" + index
-          this[key] = adhkarPrefs.getInt(key, 0)
-        }
-      }
-    }
-  }
+  val context=LocalContext.current
+  val store=remember { context.getSharedPreferences("mutqin_adhkar",android.content.Context.MODE_PRIVATE) }
+  val counts=remember { mutableStateMapOf<String,Int>().apply {
+    listOf("عام" to 5,"الصباح" to 4,"المساء" to 4,"النوم" to 3).forEach { pair -> repeat(pair.second) { i -> val k="${pair.first}-$i"; this[k]=store.getInt(k,0) } }
+  } }
   val categories=listOf("عام","الصباح","المساء","النوم")
   val adhkar=mapOf(
-    "عام" to listOf(
-      "سبحان الله وبحمده، سبحان الله العظيم",
-      "أستغفر الله وأتوب إليه",
-      "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير",
-      "اللهم صل وسلم على نبينا محمد",
-      "رضيت بالله رباً، وبالإسلام ديناً، وبمحمد صلى الله عليه وسلم نبياً"
-    ),
-    "الصباح" to listOf(
-      "أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له.",
-      "اللهم بك أصبحنا، وبك أمسينا، وبك نحيا، وبك نموت، وإليك النشور.",
-      "اللهم إني أسألك العفو والعافية في الدنيا والآخرة.",
-      "سبحان الله وبحمده."
-    ),
-    "المساء" to listOf(
-      "أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له.",
-      "اللهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير.",
-      "اللهم إني أسألك العفو والعافية في الدنيا والآخرة.",
-      "أستغفر الله وأتوب إليه."
-    ),
-    "النوم" to listOf(
-      "باسمك اللهم أموت وأحيا.",
-      "اللهم قني عذابك يوم تبعث عبادك.",
-      "سبحان الله، والحمد لله، والله أكبر."
-    )
+    "عام" to listOf("سبحان الله وبحمده، سبحان الله العظيم","أستغفر الله وأتوب إليه","لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير","اللهم صل وسلم على نبينا محمد","رضيت بالله رباً، وبالإسلام ديناً، وبمحمد صلى الله عليه وسلم نبياً"),
+    "الصباح" to listOf("أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له.","اللهم بك أصبحنا، وبك أمسينا، وبك نحيا، وبك نموت، وإليك النشور.","اللهم إني أسألك العفو والعافية في الدنيا والآخرة.","سبحان الله وبحمده."),
+    "المساء" to listOf("أمسينا وأمسى الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له.","اللهم بك أمسينا، وبك أصبحنا، وبك نحيا، وبك نموت، وإليك المصير.","اللهم إني أسألك العفو والعافية في الدنيا والآخرة.","أستغفر الله وأتوب إليه."),
+    "النوم" to listOf("باسمك اللهم أموت وأحيا.","اللهم قني عذابك يوم تبعث عبادك.","سبحان الله، والحمد لله، والله أكبر.")
   )
-  Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding().padding(16.dp)) {
-    TextButton(onClick=onBack){Text("رجوع")}
-    Text("الأذكار",fontSize=27.sp,fontWeight=FontWeight.Bold,color=c.primary)
-    Text("اختر القسم لعرض مجموعة من الأذكار",fontSize=13.sp,color=c.onSurfaceVariant)
-    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-      categories.forEach { name ->
-        FilterChip(selected=category==name,onClick={category=name},label={Text(name)})
-      }
+  val itemsNow=adhkar[category].orEmpty()
+  val total=itemsNow.indices.sumOf { counts["$category-$it"] ?: 0 }
+  Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
+    Row(Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically) {
+      TextButton(onClick=onBack){Text("‹  الرئيسية")}
+      Spacer(Modifier.weight(1f))
+      Text("وِرْدُ الذِّكْر",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
     }
-    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
-      Text("اضغط على الذكر لزيادة عدّاده",fontSize=11.sp,color=c.onSurfaceVariant)
-      TextButton(onClick={ adhkarCounts.keys.filter { it.startsWith(category + "-") }.forEach { key -> adhkarCounts[key]=0; adhkarPrefs.edit().putInt(key,0).apply() } }) {
-        Text("تصفير القسم")
-      }
-    }
-    LazyColumn(verticalArrangement=Arrangement.spacedBy(10.dp),modifier=Modifier.weight(1f)) {
-      items(adhkar[category]?.size ?: 0) { i ->
-        val countKey = category + "-" + i
-        val count = adhkarCounts[countKey] ?: 0
-        Card(
-          modifier = Modifier.fillMaxWidth(),
-          colors=CardDefaults.cardColors(containerColor=c.surface),
-          shape=RoundedCornerShape(18.dp)
-        ) {
-          Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
-            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
-              Text(toArabic(i+1),fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
-              Text("العدد: " + toArabic(count),fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.primary)
-            }
-            Text(adhkar[category]!![i],fontSize=20.sp,lineHeight=34.sp,textAlign=TextAlign.Center,color=c.onSurface)
-            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-              Button(
-                onClick = {
-                  adhkarCounts[countKey] = count + 1
-                  adhkarPrefs.edit().putInt(countKey, count + 1).apply()
-                },
-                modifier = Modifier.weight(1f)
-              ) { Text("تسبيح +١") }
-              OutlinedButton(
-                onClick = {
-                  val previous = (count - 1).coerceAtLeast(0)
-                  adhkarCounts[countKey] = previous
-                  adhkarPrefs.edit().putInt(countKey, previous).apply()
-                },
-                enabled = count > 0,
-                modifier = Modifier.weight(1f)
-              ) { Text("تراجع −١") }
+    LazyColumn(contentPadding=PaddingValues(start=16.dp,end=16.dp,top=4.dp,bottom=28.dp),verticalArrangement=Arrangement.spacedBy(13.dp)) {
+      item {
+        Card(shape=RoundedCornerShape(27.dp),colors=CardDefaults.cardColors(containerColor=c.primary),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
+          Column(Modifier.fillMaxWidth().padding(21.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
+            Text("سَكِينَةٌ وَذِكْر",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            Text("اذكر الله بقلب حاضر",fontSize=24.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+            Text("مساحة هادئة لأذكارك اليومية، مع عدّاد يحفظ تقدمك على هذا الجهاز.",fontSize=12.sp,lineHeight=20.sp,color=c.onPrimary.copy(alpha=.82f))
+            Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+              Surface(shape=RoundedCornerShape(12.dp),color=c.onPrimary.copy(alpha=.12f)){Text("${toArabic(itemsNow.size)} أذكار",Modifier.padding(horizontal=10.dp,vertical=8.dp),fontSize=10.sp,color=c.onPrimary,fontWeight=FontWeight.Bold)}
+              Surface(shape=RoundedCornerShape(12.dp),color=c.secondary.copy(alpha=.18f)){Text("مجموع تكراراتك: ${toArabic(total)}",Modifier.padding(horizontal=10.dp,vertical=8.dp),fontSize=10.sp,color=c.onPrimary,fontWeight=FontWeight.Bold)}
             }
           }
         }
       }
-      item { Text("هذه مجموعة مختارة؛ يُرجى الرجوع إلى مصدر موثوق للتحقق من النصوص والأعداد الخاصة بكل ذكر.",fontSize=11.sp,color=c.onSurfaceVariant,lineHeight=17.sp) }
+      item {
+        Text("اختر وِردك",fontSize=17.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground)
+        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+          categories.forEach { name -> FilterChip(selected=category==name,onClick={category=name},label={Text(name,fontSize=11.sp)},modifier=Modifier.weight(1f)) }
+        }
+      }
+      items(itemsNow.size) { i ->
+        val key="$category-$i"
+        val n=counts[key] ?: 0
+        Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.6f))) {
+          Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
+              Text("الذِّكر  ${toArabic(i+1)}",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+              Surface(shape=RoundedCornerShape(20.dp),color=c.primary.copy(alpha=.09f)){Text("التكرار  ${toArabic(n)}",Modifier.padding(horizontal=11.dp,vertical=6.dp),fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.primary)}
+            }
+            Text(itemsNow[i],Modifier.fillMaxWidth().padding(vertical=5.dp),fontSize=19.sp,lineHeight=34.sp,textAlign=TextAlign.Center,color=c.onSurface)
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+              Button(onClick={counts[key]=n+1;store.edit().putInt(key,n+1).apply()},modifier=Modifier.weight(1f).height(46.dp),shape=RoundedCornerShape(14.dp)){Text("تسبيح  +١",fontWeight=FontWeight.Bold)}
+              OutlinedButton(onClick={val v=(n-1).coerceAtLeast(0);counts[key]=v;store.edit().putInt(key,v).apply()},enabled=n>0,modifier=Modifier.height(46.dp),shape=RoundedCornerShape(14.dp)){Text("تراجع")}
+            }
+          }
+        }
+      }
+      item {
+        Card(shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=c.surfaceVariant)) {
+          Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(5.dp)) {
+            Text("تنبيه توثيقي",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.primary)
+            Text("هذه مجموعة مختارة. ينبغي مراجعة النصوص والأعداد والأوقات على مصادر الأذكار المعتمدة قبل اعتمادها كمكتبة موثقة.",fontSize=11.sp,lineHeight=18.sp,color=c.onSurfaceVariant)
+            TextButton(onClick={counts.keys.filter{it.startsWith("$category-")}.forEach{key->counts[key]=0;store.edit().putInt(key,0).apply()}}){Text("تصفير عدادات هذا القسم")}
+          }
+        }
+      }
     }
   }
 }
@@ -280,69 +249,68 @@ fun AdhkarScreen(onBack:()->Unit) {
 @Composable
 fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
-  val context = LocalContext.current
-  val phrasePrefs = remember { context.getSharedPreferences("mutqin_tasbih_phrases", android.content.Context.MODE_PRIVATE) }
+  val context=LocalContext.current
+  val phrasePrefs=remember { context.getSharedPreferences("mutqin_tasbih_phrases",android.content.Context.MODE_PRIVATE) }
   var phraseIndex by remember { mutableIntStateOf(0) }
-  var count by remember { mutableIntStateOf(phrasePrefs.getInt("phrase_0", prefs.tasbihCount())) }
+  var count by remember { mutableIntStateOf(phrasePrefs.getInt("phrase_0",prefs.tasbihCount())) }
   var target by remember { mutableIntStateOf(33) }
   var showReset by remember { mutableStateOf(false) }
-  val phrases = listOf("سُبْحَانَ اللَّهِ","الْحَمْدُ لِلَّهِ","اللَّهُ أَكْبَرُ","أَسْتَغْفِرُ اللَّهَ","أَذْكَرُ اللَّهَ")
-  val targets = listOf(33,100,500,1000)
-  Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding().padding(20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(16.dp)) {
-    Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) { TextButton(onClick=onBack){Text("رجوع")};Text("المسبحة الإلكترونية",fontSize=22.sp,fontWeight=FontWeight.Bold,color=c.primary) }
-    Text("اختر الذكر",fontSize=14.sp,color=c.onSurfaceVariant)
-    Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
-      phrases.forEachIndexed { index, phrase ->
-        OutlinedButton(
-          onClick={
-            phraseIndex=index
-            count=phrasePrefs.getInt("phrase_$index", if(index==0) prefs.tasbihCount() else 0)
-          },
-          modifier=Modifier.fillMaxWidth(),
-          colors=ButtonDefaults.outlinedButtonColors(containerColor=if(phraseIndex==index)c.primary.copy(alpha=.12f) else Color.Transparent)
-        ) { Text(phrase) }
+  val phrases=listOf("سُبْحَانَ اللَّهِ","الْحَمْدُ لِلَّهِ","اللَّهُ أَكْبَرُ","أَسْتَغْفِرُ اللَّهَ","أَذْكَرُ اللَّهَ")
+  val targets=listOf(33,100,500,1000)
+  val progress=(count.toFloat()/target).coerceIn(0f,1f)
+  Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
+    Row(Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically) {
+      TextButton(onClick=onBack){Text("‹  الرئيسية")}
+      Spacer(Modifier.weight(1f))
+      Text("المسبحة",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+    }
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal=18.dp,vertical=8.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)) {
+      Card(shape=RoundedCornerShape(26.dp),colors=CardDefaults.cardColors(containerColor=c.primary),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
+        Column(Modifier.fillMaxWidth().padding(19.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
+          Text("وِرْدُكَ الْيَوْمِيّ",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+          Text("مسبحة متقن",fontSize=23.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+          Text("اختر الذكر والهدف، ثم تابع عدّك بهدوء. يُحفظ كل عدّاد تلقائيًا.",fontSize=11.sp,lineHeight=18.sp,color=c.onPrimary.copy(alpha=.82f))
+        }
       }
+      Text("اختر الذكر",Modifier.fillMaxWidth(),fontSize=15.sp,fontWeight=FontWeight.Bold,color=c.onBackground)
+      Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+        phrases.forEachIndexed { index,phrase ->
+          Surface(modifier=Modifier.weight(1f).clickable{phraseIndex=index;count=phrasePrefs.getInt("phrase_$index",if(index==0)prefs.tasbihCount() else 0)},shape=RoundedCornerShape(13.dp),color=if(phraseIndex==index)c.primary else c.surface,border=androidx.compose.foundation.BorderStroke(1.dp,if(phraseIndex==index)c.secondary else c.outlineVariant)) {
+            Text(phrase,Modifier.fillMaxWidth().padding(horizontal=4.dp,vertical=11.dp),fontSize=9.sp,textAlign=TextAlign.Center,fontWeight=FontWeight.Bold,color=if(phraseIndex==index)c.onPrimary else c.onSurface,maxLines=2)
+          }
+        }
+      }
+      Card(shape=RoundedCornerShape(28.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f))) {
+        Column(Modifier.fillMaxWidth().padding(20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(10.dp)) {
+          Text("الذكر المختار",fontSize=10.sp,color=c.onSurfaceVariant,fontWeight=FontWeight.Bold)
+          Text(phrases[phraseIndex],fontSize=21.sp,fontWeight=FontWeight.Bold,color=c.primary,textAlign=TextAlign.Center)
+          Box(Modifier.size(194.dp).background(c.primary.copy(alpha=.08f),RoundedCornerShape(100.dp)).padding(9.dp).background(c.surfaceVariant,RoundedCornerShape(100.dp)).border(2.dp,c.secondary.copy(alpha=.75f),RoundedCornerShape(100.dp)).clickable{
+            count+=1;phrasePrefs.edit().putInt("phrase_$phraseIndex",count).apply();prefs.setTasbihCount(count)
+          },contentAlignment=Alignment.Center) {
+            Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(2.dp)) {
+              Text(toArabic(count),fontSize=47.sp,fontWeight=FontWeight.Black,color=c.primary)
+              Text("اضغط للعدّ",fontSize=10.sp,color=c.onSurfaceVariant)
+            }
+          }
+          Text("الهدف  ${toArabic(target)}     •     المتبقي  ${toArabic((target-count).coerceAtLeast(0))}",fontSize=12.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+          LinearProgressIndicator(progress={progress},modifier=Modifier.fillMaxWidth().height(7.dp))
+          Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(7.dp)) {
+            targets.forEach{t->FilterChip(selected=target==t,onClick={target=t},label={Text(toArabic(t),fontSize=10.sp)},modifier=Modifier.weight(1f))}
+          }
+          Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)) {
+            Button(onClick={count+=1;phrasePrefs.edit().putInt("phrase_$phraseIndex",count).apply();prefs.setTasbihCount(count)},modifier=Modifier.weight(1f).height(49.dp),shape=RoundedCornerShape(15.dp)){Text("تسبيح +١",fontWeight=FontWeight.Bold)}
+            OutlinedButton(onClick={count=(count-1).coerceAtLeast(0);phrasePrefs.edit().putInt("phrase_$phraseIndex",count).apply();prefs.setTasbihCount(count)},enabled=count>0,modifier=Modifier.height(49.dp),shape=RoundedCornerShape(15.dp)){Text("تراجع −١")}
+          }
+          if(count>=target) Text("أحسنت! وصلت إلى هدفك، ويمكنك مواصلة الذكر.",fontSize=12.sp,color=c.tertiary,textAlign=TextAlign.Center,fontWeight=FontWeight.Bold)
+        }
+      }
+      OutlinedButton(onClick={showReset=true},modifier=Modifier.fillMaxWidth(),shape=RoundedCornerShape(14.dp)){Text("إعادة عداد الذكر الحالي")}
+      Text("أعدادك محفوظة على هذا الجهاز فقط.",fontSize=10.sp,color=c.onSurfaceVariant)
     }
-    Text(phrases[phraseIndex],fontSize=27.sp,fontWeight=FontWeight.Bold,color=c.primary,textAlign=TextAlign.Center)
-    Text(count.toString().map { '٠'+(it-'0') }.joinToString(""),fontSize=56.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
-    Text("الهدف: ${toArabic(target)} • المتبقي: ${toArabic((target-count).coerceAtLeast(0))}",fontSize=14.sp,color=c.secondary,fontWeight=FontWeight.Bold)
-    LinearProgressIndicator(progress={ (count.toFloat()/target).coerceIn(0f,1f) },modifier=Modifier.fillMaxWidth())
-    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) { targets.forEach { t-> OutlinedButton(onClick={target=t},modifier=Modifier.weight(1f)) { Text(toArabic(t)) } } }
-    Button(
-      onClick = {
-        count += 1
-        phrasePrefs.edit().putInt("phrase_$phraseIndex", count).apply()
-        prefs.setTasbihCount(count)
-      },
-      modifier = Modifier.fillMaxWidth().height(68.dp),
-      shape = RoundedCornerShape(22.dp)
-    ) {
-      Text("تسبيح +١", fontSize = 22.sp)
-    }
-    OutlinedButton(
-      onClick = {
-        count = (count - 1).coerceAtLeast(0)
-        phrasePrefs.edit().putInt("phrase_$phraseIndex", count).apply()
-        prefs.setTasbihCount(count)
-      },
-      enabled = count > 0,
-      modifier = Modifier.fillMaxWidth()
-    ) {
-      Text("تراجع عن آخر تسبيحة −١")
-    }
-    if(count>=target) Text("أحسنت! وصلت إلى هدفك. يمكنك مواصلة الذكر أو بدء هدف جديد.",fontSize=14.sp,color=c.primary,textAlign=TextAlign.Center)
-    OutlinedButton(onClick={showReset=true},modifier=Modifier.fillMaxWidth()) { Text("إعادة العداد") }
-    Text("يُحفظ العدد تلقائياً على جهازك.",fontSize=12.sp,color=c.onSurfaceVariant)
   }
-  if(showReset) {
-    AlertDialog(
-      onDismissRequest={showReset=false},
-      title={Text("إعادة عداد التسبيح؟")},
-      text={Text("سيُعاد العدد الحالي إلى صفر.")},
-      confirmButton={TextButton(onClick={count=0;phrasePrefs.edit().putInt("phrase_$phraseIndex",0).apply();prefs.setTasbihCount(0);showReset=false}){Text("إعادة")}},
-      dismissButton={TextButton(onClick={showReset=false}){Text("إلغاء")}}
-    )
-  }
+  if(showReset) AlertDialog(onDismissRequest={showReset=false},title={Text("إعادة عداد التسبيح؟")},text={Text("سيُعاد عدد الذكر المحدد حاليًا إلى صفر.")},
+    confirmButton={TextButton(onClick={count=0;phrasePrefs.edit().putInt("phrase_$phraseIndex",0).apply();prefs.setTasbihCount(0);showReset=false}){Text("إعادة")}},
+    dismissButton={TextButton(onClick={showReset=false}){Text("إلغاء")}})
 }
 
 private data class LearningSectionInfo(
