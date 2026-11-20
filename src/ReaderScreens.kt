@@ -202,6 +202,7 @@ fun ReaderScreen(
       }
     }
   }
+  }
   if (showBookmarks) {
     AlertDialog(
       onDismissRequest = { showBookmarks = false },
