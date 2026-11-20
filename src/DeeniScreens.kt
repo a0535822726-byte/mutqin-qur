@@ -356,6 +356,7 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
           "الحديث" -> hadithEntries.size
           "الفقه" -> fiqhEntries.size
           "القصص الإسلامية" -> quranStories.size
+          "الاختبارات" -> mutqinQuizQuestions.size
           else -> 0
         }
         val status=if(publishedCount>0) "متاح: ${toArabic(publishedCount)} مادة" else "قيد البناء"
@@ -390,6 +391,9 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
   }
   val info=learningSections.firstOrNull { it.title==section }
   var searchQuery by remember(section) { mutableStateOf("") }
+  var quizIndex by remember(section) { mutableStateOf(0) }
+  var quizSelected by remember(section) { mutableStateOf<Int?>(null) }
+  var quizScore by remember(section) { mutableStateOf(0) }
   val query = normalizeAr(searchQuery.trim())
   val filteredTajweed = tajweedLessons.filter { lesson ->
     query.isBlank() || normalizeAr(listOf(lesson.title,lesson.objective,lesson.definition,lesson.rule,lesson.examples.joinToString(" "),lesson.practice,lesson.commonMistake,lesson.references).joinToString(" ")).contains(query)
@@ -433,7 +437,63 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
         Text("ضع علامة بعد إكمال المادة؛ سيُحفظ تقدمك على هذا الجهاز.",fontSize=11.sp,color=c.onSurfaceVariant)
       }
     }
-    if(section=="التجويد") {
+    if(section=="الاختبارات") {
+      item {
+        val question = mutqinQuizQuestions.getOrNull(quizIndex)
+        Card(
+          modifier=Modifier.fillMaxWidth(),
+          shape=RoundedCornerShape(22.dp),
+          colors=CardDefaults.cardColors(containerColor=c.surface),
+          border=androidx.compose.foundation.BorderStroke(1.dp,c.primary.copy(alpha=.25f))
+        ) {
+          Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+            Text("اختبر معلوماتك",fontSize=22.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+            Text("بنك الأسئلة المنشور: ${mutqinQuizQuestions.size} سؤالًا من أصل 7,000 مستهدف.",fontSize=12.sp,color=c.onSurfaceVariant)
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
+              Text("السؤال ${toArabic(quizIndex+1)} من ${toArabic(mutqinQuizQuestions.size)}",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+              Text("نتيجتك: ${toArabic(quizScore)}",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.primary)
+            }
+            LinearProgressIndicator(progress={ (quizIndex+1).toFloat()/mutqinQuizQuestions.size.coerceAtLeast(1) },modifier=Modifier.fillMaxWidth())
+            if(question!=null) {
+              Text(question.question,fontSize=18.sp,fontWeight=FontWeight.Bold,lineHeight=27.sp,color=c.onSurface)
+              question.choices.forEachIndexed { choiceIndex, choice ->
+                val chosen=quizSelected==choiceIndex
+                val correct=choiceIndex==question.correctIndex
+                val bg=if(quizSelected!=null && correct) Color(0xFF1E704A).copy(alpha=.16f) else if(chosen) c.error.copy(alpha=.12f) else c.surfaceVariant
+                Surface(
+                  modifier=Modifier.fillMaxWidth().clickable(enabled=quizSelected==null) {
+                    quizSelected=choiceIndex
+                    if(correct) quizScore++
+                  },
+                  shape=RoundedCornerShape(14.dp),
+                  color=bg,
+                  border=androidx.compose.foundation.BorderStroke(1.dp,if(quizSelected!=null && (correct || chosen)) (if(correct) Color(0xFF278553) else c.error) else c.outlineVariant)
+                ) {
+                  Text("${listOf("أ","ب","ج","د").getOrElse(choiceIndex){"•"}}. $choice",modifier=Modifier.padding(14.dp),fontSize=14.sp,color=c.onSurface)
+                }
+              }
+              if(quizSelected!=null) {
+                val isCorrect=quizSelected==question.correctIndex
+                Text(if(isCorrect) "إجابة صحيحة، أحسنت!" else "الإجابة الصحيحة: ${question.choices[question.correctIndex]}",fontSize=14.sp,fontWeight=FontWeight.Bold,color=if(isCorrect) Color(0xFF278553) else c.error)
+                Text(question.explanation,fontSize=13.sp,lineHeight=21.sp,color=c.onSurface)
+                Text("المرجع: ${question.reference}",fontSize=11.sp,lineHeight=17.sp,color=c.onSurfaceVariant)
+              }
+              Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(onClick={quizIndex=0;quizSelected=null;quizScore=0},modifier=Modifier.weight(1f)) { Text("إعادة الاختبار") }
+                Button(
+                  onClick={
+                    if(quizIndex<mutqinQuizQuestions.lastIndex) { quizIndex++; quizSelected=null }
+                    else { quizIndex=0; quizSelected=null; quizScore=0 }
+                  },
+                  enabled=quizSelected!=null,
+                  modifier=Modifier.weight(1f)
+                ) { Text(if(quizIndex==mutqinQuizQuestions.lastIndex) "إنهاء وبدء من جديد" else "السؤال التالي") }
+              }
+            }
+          }
+        }
+      }
+    } else if(section=="التجويد") {
       item {
         Text("دروس التجويد المتاحة: ${tajweedLessons.size} من أصل 300 درس مستهدف",fontSize=14.sp,fontWeight=FontWeight.Bold,color=c.primary)
         Text("كل درس يعرض الهدف والتعريف والقاعدة والأمثلة والتدريب والأخطاء الشائعة والمراجع. يلزم استكمال المراجعة العلمية قبل اعتماد بقية المنهج.",fontSize=12.sp,lineHeight=19.sp,color=c.onSurfaceVariant)
