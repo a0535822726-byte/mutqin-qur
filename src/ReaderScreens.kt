@@ -251,6 +251,9 @@ fun ReaderScreen(
           permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
         }
       }) { Text(if (isListening) "إيقاف" else "🎙", color = androidx.compose.ui.graphics.Color.White) }
+      TextButton(onClick = { showBookmarks = true }) {
+        Text("☆", color = androidx.compose.ui.graphics.Color(0xFFFFE6A3), fontSize = 20.sp)
+      }
       TextButton(onClick = { showTools = !showTools }) {
         Text(if (showTools) "إخفاء" else "Aa", color = androidx.compose.ui.graphics.Color.White)
       }
@@ -434,7 +437,7 @@ fun ReaderScreen(
       title = { Text("الآيات المحفوظة") },
       text = {
         if (bookmarks.isEmpty()) {
-          Text("لم تحفظ أي آية بعد. اضغط ☆ بجانب الآية لإضافتها هنا.")
+          Text("لم تحفظ أي آية بعد. اضغط على الآية ثم اختر «حفظ» لإضافتها هنا.")
         } else {
           LazyColumn(modifier = Modifier.heightIn(max = 360.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             items(bookmarks) { item ->
