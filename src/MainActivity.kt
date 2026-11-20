@@ -7,7 +7,16 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -60,6 +69,15 @@ class MainActivity:ComponentActivity() {
 @Composable
 fun AppRoot(repo:QuranRepository,prefs:AppPrefs,dark:Boolean,onDark:(Boolean)->Unit) {
   var screen by remember { mutableStateOf<Screen>(Screen.Home) }
+  var showSplash by remember { mutableStateOf(true) }
+  LaunchedEffect(Unit) {
+    delay(1800)
+    showSplash = false
+  }
+  if (showSplash) {
+    DeeniSplashScreen()
+    return
+  }
   BackHandler(enabled=screen !is Screen.Home) {
     screen=when(val current=screen) {
       is Screen.Reader->Screen.Range(current.surah)
@@ -78,5 +96,41 @@ fun AppRoot(repo:QuranRepository,prefs:AppPrefs,dark:Boolean,onDark:(Boolean)->U
     is Screen.Tasbih->TasbihScreen(prefs,{screen=Screen.Home})
     is Screen.LearningHub->LearningHubScreen({screen=Screen.Home},{screen=Screen.SectionDetail(it)})
     is Screen.SectionDetail->LearningSectionScreen(s.section,{screen=Screen.LearningHub})
+  }
+}
+
+
+@Composable
+private fun DeeniSplashScreen() {
+  val ink = Color(0xFF173D32)
+  val gold = Color(0xFFC5A45B)
+  Box(
+    modifier = Modifier.fillMaxSize().background(Color(0xFFFFFEFC)).safeDrawingPadding(),
+    contentAlignment = Alignment.Center
+  ) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center
+    ) {
+      Text(
+        "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+        color = ink,
+        fontSize = 25.sp,
+        fontWeight = FontWeight.Medium,
+        textAlign = TextAlign.Center
+      )
+      Spacer(Modifier.height(30.dp))
+      Box(Modifier.width(74.dp).height(2.dp).background(gold, RoundedCornerShape(2.dp)))
+      Spacer(Modifier.height(22.dp))
+      Text("مُتْقِن", color = ink, fontSize = 42.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+      Spacer(Modifier.height(5.dp))
+      Text("MUTQIN", color = gold, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 4.sp)
+    }
+    Text(
+      "رفيق القرآن",
+      modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 22.dp),
+      color = ink.copy(alpha = 0.65f),
+      fontSize = 13.sp
+    )
   }
 }
