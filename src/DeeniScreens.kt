@@ -219,7 +219,7 @@ fun AdhkarScreen(onBack:()->Unit) {
       items(itemsNow.size) { i ->
         val key="$category-$i"
         val n=counts[key] ?: 0
-        Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.6f))) {
+        Card(shape=RoundedCornerShape(24.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.65f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
               Text("الذِّكر  ${toArabic(i+1)}",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary)
@@ -280,7 +280,7 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
           }
         }
       }
-      Card(shape=RoundedCornerShape(28.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f))) {
+      Card(shape=RoundedCornerShape(30.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.38f)),elevation=CardDefaults.cardElevation(defaultElevation=3.dp)) {
         Column(Modifier.fillMaxWidth().padding(20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(10.dp)) {
           Text("الذكر المختار",fontSize=10.sp,color=c.onSurfaceVariant,fontWeight=FontWeight.Bold)
           Text(phrases[phraseIndex],fontSize=21.sp,fontWeight=FontWeight.Bold,color=c.primary,textAlign=TextAlign.Center)
@@ -383,16 +383,23 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
           colors=CardDefaults.cardColors(containerColor=c.surface),
           border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.65f))
         ) {
-          Row(Modifier.fillMaxWidth().padding(15.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
-            Box(Modifier.size(51.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(17.dp)),contentAlignment=Alignment.Center) {
-              Text(sectionIcons[item.title] ?: "✦",fontSize=25.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+          Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+              Box(Modifier.size(48.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(16.dp)),contentAlignment=Alignment.Center) {
+                Text(sectionIcons[item.title] ?: "✦",fontSize=24.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+              }
+              Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
+                Text(item.title,fontSize=16.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
+                Text(item.subtitle,fontSize=11.sp,color=c.onSurfaceVariant,lineHeight=17.sp)
+              }
+              Text("‹",fontSize=24.sp,color=c.secondary,fontWeight=FontWeight.Bold)
             }
-            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) {
-              Text(item.title,fontSize=16.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
-              Text(item.subtitle,fontSize=11.sp,color=c.onSurfaceVariant,lineHeight=17.sp)
-              Text(status,fontSize=10.sp,fontWeight=FontWeight.Bold,color=if(publishedCount>0) c.tertiary else c.error)
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
+              Surface(shape=RoundedCornerShape(30.dp),color=if(publishedCount>0)c.tertiary.copy(alpha=.12f) else c.error.copy(alpha=.09f)) {
+                Text(status,Modifier.padding(horizontal=11.dp,vertical=6.dp),fontSize=10.sp,fontWeight=FontWeight.Bold,color=if(publishedCount>0)c.tertiary else c.error)
+              }
+              Text("استكشف القسم",fontSize=10.sp,fontWeight=FontWeight.SemiBold,color=c.secondary)
             }
-            Text("‹",fontSize=25.sp,color=c.secondary,fontWeight=FontWeight.Bold)
           }
         }
       }
