@@ -285,7 +285,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
   val filteredTajweed = tajweedLessons.filter { lesson ->
     query.isBlank() || normalizeAr(listOf(lesson.title,lesson.objective,lesson.definition,lesson.rule,lesson.examples.joinToString(" "),lesson.practice,lesson.commonMistake,lesson.references).joinToString(" ")).contains(query)
   }
-  val filteredHadith = hadithEntries.filter { h ->
+  val filteredHadith: List<HadithEntry> = hadithEntries.filter { h: HadithEntry ->
     query.isBlank() || normalizeAr(listOf(h.title,h.text,h.narrator,h.source,h.reference,h.grade,h.explanation).joinToString(" ")).contains(query)
   }
   val filteredFiqh = fiqhEntries.filter { f ->
