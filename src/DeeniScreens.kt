@@ -139,7 +139,13 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
     Text("يُحفظ العدد تلقائياً على جهازك.",fontSize=12.sp,color=c.onSurfaceVariant)
   }
   if(showReset) {
-    AlertDialog(onDismissRequest={showReset=false},title={Text("إعادة عداد التسبيح؟")},text={Text("سيُعاد العدد الحالي إلى صفر.")},confirmButton={TextButton(onClick={count=0;prefs.setTasbihCount(0);showReset=false){Text("إعادة")}},dismissButton={TextButton(onClick={showReset=false){Text("إلغاء")}})
+    AlertDialog(
+      onDismissRequest={showReset=false},
+      title={Text("إعادة عداد التسبيح؟")},
+      text={Text("سيُعاد العدد الحالي إلى صفر.")},
+      confirmButton={TextButton(onClick={count=0;prefs.setTasbihCount(0);showReset=false}){Text("إعادة")}},
+      dismissButton={TextButton(onClick={showReset=false}){Text("إلغاء")}}
+    )
   }
 }
 
