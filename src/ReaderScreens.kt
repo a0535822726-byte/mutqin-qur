@@ -256,7 +256,7 @@ fun ReaderScreen(
   ) {
     // Premium reading header: compact navigation, surah identity and quick actions.
     Row(
-      modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = 14.dp, vertical = 10.dp),
+      modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).border(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.18f)).padding(horizontal = 14.dp, vertical = 10.dp),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(7.dp)
     ) {
@@ -273,7 +273,7 @@ fun ReaderScreen(
         } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
           beginRecognition()
         } else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-      }) { Text(if (isListening) "إيقاف" else "🎙", color = if (isListening) androidx.compose.ui.graphics.Color(0xFFFF9B8F) else androidx.compose.ui.graphics.Color(0xFFE8D49A), fontWeight = FontWeight.Bold) }
+      }) { Text(if (isListening) "إيقاف" else "🎙", color = if (isListening) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold) }
       TextButton(onClick = {
         val current = mushafPages.getOrNull(pageIndex)
         if (!current.isNullOrEmpty()) {
@@ -281,7 +281,7 @@ fun ReaderScreen(
           bookmarkVersion++
           android.widget.Toast.makeText(context, "تم حفظ موضع الصفحة", android.widget.Toast.LENGTH_SHORT).show()
         }
-      }) { Text("⚑", color = androidx.compose.ui.graphics.Color(0xFFE8D49A), fontSize = 19.sp) }
+      }) { Text("⚑", color = MaterialTheme.colorScheme.secondary, fontSize = 19.sp) }
     }
 
     // Reading modes are explicit and remain accessible without opening a separate screen.
@@ -292,12 +292,12 @@ fun ReaderScreen(
       Surface(
         modifier = Modifier.weight(1f).clickable { showTools = !showTools },
         shape = RoundedCornerShape(14.dp),
-        color = if (showTools) androidx.compose.ui.graphics.Color(0xFFB8954B) else androidx.compose.ui.graphics.Color(0xFF173A2E)
-      ) { Text("Aa  إعدادات القراءة", modifier = Modifier.padding(vertical = 11.dp), textAlign = TextAlign.Center, color = if (showTools) androidx.compose.ui.graphics.Color(0xFF17251D) else androidx.compose.ui.graphics.Color(0xFFF4E8C9), fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+        color = if (showTools) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+      ) { Text("Aa  إعدادات القراءة", modifier = Modifier.padding(vertical = 11.dp), textAlign = TextAlign.Center, color = if (showTools) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold) }
       Surface(
         modifier = Modifier.weight(1f).clickable { showTools = true; hide = !hide; revealed.clear() },
         shape = RoundedCornerShape(14.dp),
-        color = if (hide) androidx.compose.ui.graphics.Color(0xFFB8954B) else androidx.compose.ui.graphics.Color(0xFF173A2E)
+        color = if (hide) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
       ) { Text(if (hide) "إظهار الحفظ" else "اختبار الحفظ", modifier = Modifier.padding(vertical = 11.dp), textAlign = TextAlign.Center, color = if (hide) androidx.compose.ui.graphics.Color(0xFF17251D) else androidx.compose.ui.graphics.Color(0xFFF4E8C9), fontSize = 11.sp, fontWeight = FontWeight.Bold) }
       Surface(
         modifier = Modifier.weight(1f).clickable { showBookmarks = true },
