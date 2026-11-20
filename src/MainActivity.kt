@@ -160,15 +160,6 @@ private fun DeeniSplashScreen() {
         Text("مُتْقِن", color = ink, fontSize = 43.sp, fontWeight = FontWeight.ExtraBold, textAlign = TextAlign.Center)
       }
       Spacer(Modifier.height(12.dp))
-      Text("M U T Q I N", color = gold, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
-    }
-    Column(
-      Modifier.align(Alignment.BottomCenter).padding(bottom=17.dp),
-      horizontalAlignment=Alignment.CenterHorizontally,
-      verticalArrangement=Arrangement.spacedBy(5.dp)
-    ) {
-      Box(Modifier.width(28.dp).height(1.dp).background(gold.copy(alpha=.55f),RoundedCornerShape(2.dp)))
-      Text("رفيق القرآن",color=ink.copy(alpha=.65f),fontSize=12.sp,fontWeight=FontWeight.Medium)
     }
   }
 }
