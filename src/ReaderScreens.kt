@@ -137,6 +137,12 @@ fun ReaderScreen(
     groups
   }
   var pageIndex by remember(surah, from, to) { mutableIntStateOf(0) }
+  LaunchedEffect(pageIndex, mushafPages) {
+    val currentPage = mushafPages.getOrNull(pageIndex)
+    if (!currentPage.isNullOrEmpty()) {
+      prefs.setLastPosition(surah, currentPage.first(), currentPage.last())
+    }
+  }
   val scope = rememberCoroutineScope()
   val context = androidx.compose.ui.platform.LocalContext.current
   var transcript by remember { mutableStateOf("") }
