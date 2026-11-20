@@ -328,8 +328,21 @@ fun ReaderScreen(
             Text("النص الذي التقطه الجهاز: $transcript", color = androidx.compose.ui.graphics.Color(0xFF243B32), fontSize = 12.sp)
             Text("تطابق نصي تقريبي: ${toArabic(matchedWords)} / ${toArabic(targetWords.size)}", color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 11.sp)
             LinearProgressIndicator(progress = { if (targetWords.isEmpty()) 0f else (matchedWords.toFloat() / targetWords.size).coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth(), color = androidx.compose.ui.graphics.Color(0xFF17664E), trackColor = androidx.compose.ui.graphics.Color(0xFFD7E5DC))
-            if (hasMismatch) Text("الكلمة التالية للمراجعة: ${expectedWord.orEmpty()}", color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 12.sp)
-            else if (matchedWords == targetWords.size && targetWords.isNotEmpty()) Text("اكتملت المطابقة النصية للمقطع.", color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 12.sp)
+            if (hasMismatch) {
+              Text("موضع اختلاف محتمل — راجع التلاوة يدويًا", color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+              Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(Modifier.weight(1f)) {
+                  Text("سمعه الجهاز", color = androidx.compose.ui.graphics.Color(0xFF75684F), fontSize = 10.sp)
+                  Text(spokenWords.getOrNull(matchedWords).orEmpty(), color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                }
+                Column(Modifier.weight(1f)) {
+                  Text("الكلمة في المصحف", color = androidx.compose.ui.graphics.Color(0xFF75684F), fontSize = 10.sp)
+                  Text(expectedWord.orEmpty(), color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                }
+              }
+            } else if (matchedWords == targetWords.size && targetWords.isNotEmpty()) {
+              Text("اكتملت المطابقة النصية للمقطع.", color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 12.sp)
+            }
           }
           if (speechError != null) Text(speechError!!, color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 11.sp)
           Text("تنبيه: هذه مطابقة صوت إلى نص بشكل أولي، وليست حكمًا على صحة التجويد أو المخارج.", color = androidx.compose.ui.graphics.Color(0xFF75684F), fontSize = 10.sp)
