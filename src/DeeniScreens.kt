@@ -76,7 +76,7 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
       Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=Color(0xFF101F1A)),border=androidx.compose.foundation.BorderStroke(1.dp,Color(0xFF765F31))) {
         Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
           Text("مكتبة تتوسع بالمراجعة والتوثيق",fontSize=15.sp,fontWeight=FontWeight.Bold,color=Color(0xFFE5C36A))
-          Text("المتاح حاليًا: \${toArabic(hadithCount)} حديثًا، \${toArabic(lessonCount)} درس تجويد، و\${toArabic(storyCount)} مادة قصصية. الأعداد المستهدفة ليست أعدادًا منشورة بعد.",fontSize=12.sp,lineHeight=20.sp,color=Color(0xFFD0DDD6))
+          Text("المتاح حاليًا: ${toArabic(hadithCount)} حديثًا، ${toArabic(lessonCount)} درس تجويد، و${toArabic(storyCount)} مادة قصصية. الأعداد المستهدفة ليست أعدادًا منشورة بعد.",fontSize=12.sp,lineHeight=20.sp,color=Color(0xFFD0DDD6))
           Text("لن نضيف رواية أو ننسبها إلى صحابي إلا مع مصدر يمكن مراجعته.",fontSize=11.sp,color=Color(0xFFB8C8BE))
         }
       }
