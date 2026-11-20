@@ -263,6 +263,16 @@ fun ReaderScreen(
           permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
         }
       }) { Text(if (isListening) "إيقاف" else "🎙", color = androidx.compose.ui.graphics.Color.White) }
+      TextButton(onClick = {
+        val current = mushafPages.getOrNull(pageIndex)
+        if (!current.isNullOrEmpty()) {
+          prefs.toggleBookmark(surah, current.first())
+          bookmarkVersion++
+          android.widget.Toast.makeText(context, "تم حفظ موضع الصفحة", android.widget.Toast.LENGTH_SHORT).show()
+        }
+      }) {
+        Text("⚑", color = androidx.compose.ui.graphics.Color(0xFFFFE6A3), fontSize = 18.sp)
+      }
       TextButton(onClick = { showBookmarks = true }) {
         Text("☆", color = androidx.compose.ui.graphics.Color(0xFFFFE6A3), fontSize = 20.sp)
       }
