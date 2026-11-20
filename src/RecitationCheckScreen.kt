@@ -9,6 +9,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -139,16 +141,26 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   }
 
   val colors = MaterialTheme.colorScheme
-  Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-      TextButton(onClick = onBack) { Text("رجوع") }
-      Column(Modifier.weight(1f)) {
-        Text("جلسة التسميع", fontSize = 23.sp, fontWeight = FontWeight.ExtraBold, color = colors.primary)
-        Text("تدريب صوتي خاص بك", fontSize = 11.sp, color = colors.onSurfaceVariant)
-      }
-      Text("🎙", fontSize = 27.sp)
+  Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().verticalScroll(rememberScrollState()).padding(horizontal=16.dp, vertical=10.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
+    Row(Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically) {
+      TextButton(onClick = onBack) { Text("‹  الرئيسية") }
+      Spacer(Modifier.weight(1f))
+      Text("مُتْقِن  •  التَّلْقِين",fontSize=11.sp,fontWeight=FontWeight.Bold,color=colors.secondary)
     }
-    Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
+    Card(shape=RoundedCornerShape(25.dp),colors=CardDefaults.cardColors(containerColor=colors.primary),
+      border=androidx.compose.foundation.BorderStroke(1.dp,colors.secondary.copy(alpha=.7f))) {
+      Row(Modifier.fillMaxWidth().padding(19.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
+        Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(6.dp)) {
+          Text("جَلْسَةُ الْمُرَاجَعَة",fontSize=10.sp,fontWeight=FontWeight.Bold,color=colors.secondary)
+          Text("استمع إلى تلاوتك وراجعها",fontSize=20.sp,fontWeight=FontWeight.ExtraBold,color=colors.onPrimary)
+          Text("حدّد الآيات، سجّل قراءتك، ثم استمع إلى الجلسة المحفوظة.",fontSize=11.sp,lineHeight=18.sp,color=colors.onPrimary.copy(alpha=.82f))
+        }
+        Box(Modifier.size(54.dp).clip(RoundedCornerShape(18.dp)).background(colors.onPrimary.copy(alpha=.10f)),contentAlignment=Alignment.Center) {
+          Text("🎙",fontSize=27.sp)
+        }
+      }
+    }
+    Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), border=androidx.compose.foundation.BorderStroke(1.dp,colors.outline.copy(alpha=.22f))) {
       Column(Modifier.fillMaxWidth().padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text("موضع المراجعة", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         OutlinedTextField(value = surahInput, onValueChange = { surahInput = it.filter(Char::isDigit).take(3); ayahInput = "1"; endAyahInput = "1" }, modifier = Modifier.fillMaxWidth(), singleLine = true, label = { Text("رقم السورة (١–١١٤)") })
@@ -169,7 +181,7 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         }
       }
     }
-    Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant)) {
+    Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant), border=androidx.compose.foundation.BorderStroke(1.dp,colors.secondary.copy(alpha=.32f))) {
       Column(Modifier.fillMaxWidth().padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(13.dp)) {
         Box(Modifier.size(94.dp).clip(CircleShape).background(if (recording) colors.error.copy(alpha = .13f) else colors.primary.copy(alpha = .12f)), contentAlignment = Alignment.Center) {
           Text(if (recording) "●" else "🎙", color = if (recording) colors.error else colors.primary, fontSize = 35.sp)
@@ -200,7 +212,7 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         }, enabled = !recording && savedFile?.exists() == true, modifier = Modifier.fillMaxWidth()) { Text("▶ استمع إلى تلاوتك") }
       }
     }
-    Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
+    Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), border=androidx.compose.foundation.BorderStroke(1.dp,colors.outline.copy(alpha=.22f))) {
       Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("سجل جلسات التسميع", fontWeight = FontWeight.Bold, color = colors.primary)
         if (sessionHistory.isEmpty()) Text("لا توجد جلسات محفوظة بعد.", fontSize = 12.sp, color = colors.onSurfaceVariant) else sessionHistory.take(8).forEach { entry ->
