@@ -292,6 +292,15 @@ fun ReaderScreen(
               TextButton(onClick = { revealed.clear() }) { Text("إخفاء الكل") }
             }
           }
+          Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = { transcript = ""; speechError = null; matchedWords.takeIf { it > 0 } }, modifier = Modifier.weight(1f)) { Text("مسح نتيجة التسميع") }
+            Button(onClick = {
+              transcript = ""
+              speechError = null
+              if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) beginRecognition()
+              else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }, modifier = Modifier.weight(1f)) { Text("ابدأ من جديد") }
+          }
           if (transcript.isNotBlank()) {
             Text("ما التقطه الجهاز: $transcript", color = androidx.compose.ui.graphics.Color(0xFF243B32), fontSize = 13.sp)
             Text("التطابق النصي: ${toArabic(matchedWords)} من ${toArabic(targetWords.size)} كلمة", fontSize = 12.sp, color = androidx.compose.ui.graphics.Color(0xFF17664E))
