@@ -119,13 +119,16 @@ fun ReaderScreen(
   var bookmarkVersion by remember { mutableIntStateOf(0) }
   val bookmarks = remember(bookmarkVersion) { prefs.bookmarks() }
   val listState = rememberLazyListState()
-  val mushafPages = remember(surah, from, to) {
+  val mushafPages = remember(surah, from, to, size, hide) {
     val groups = mutableListOf<List<Int>>()
     var current = mutableListOf<Int>()
     var chars = 0
+    // Dynamic page grouping tuned to the reader font size, with a conservative
+    // estimate to avoid overflowing the reading surface.
+    val pageCapacity = (520f * (30f / size.coerceAtLeast(20f))).toInt().coerceIn(260, 720)
     for (n in from..to) {
       val length = repo.ayah(surah, n).length
-      if (current.isNotEmpty() && chars + length > 520) {
+      if (current.isNotEmpty() && chars + length > pageCapacity) {
         groups.add(current.toList())
         current = mutableListOf()
         chars = 0
