@@ -227,8 +227,10 @@ fun AdhkarScreen(onBack:()->Unit) {
 @Composable
 fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
-  var count by remember { mutableIntStateOf(prefs.tasbihCount()) }
+  val context = LocalContext.current
+  val phrasePrefs = remember { context.getSharedPreferences("mutqin_tasbih_phrases", android.content.Context.MODE_PRIVATE) }
   var phraseIndex by remember { mutableIntStateOf(0) }
+  var count by remember { mutableIntStateOf(phrasePrefs.getInt("phrase_0", prefs.tasbihCount())) }
   var target by remember { mutableIntStateOf(33) }
   var showReset by remember { mutableStateOf(false) }
   val phrases = listOf("سُبْحَانَ اللَّهِ","الْحَمْدُ لِلَّهِ","اللَّهُ أَكْبَرُ","أَسْتَغْفِرُ اللَّهَ","أَذْكَرُ اللَّهَ")
@@ -238,7 +240,14 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
     Text("اختر الذكر",fontSize=14.sp,color=c.onSurfaceVariant)
     Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
       phrases.forEachIndexed { index, phrase ->
-        OutlinedButton(onClick={phraseIndex=index},modifier=Modifier.fillMaxWidth(),colors=ButtonDefaults.outlinedButtonColors(containerColor=if(phraseIndex==index)c.primary.copy(alpha=.12f) else Color.Transparent)) { Text(phrase) }
+        OutlinedButton(
+          onClick={
+            phraseIndex=index
+            count=phrasePrefs.getInt("phrase_$index", if(index==0) prefs.tasbihCount() else 0)
+          },
+          modifier=Modifier.fillMaxWidth(),
+          colors=ButtonDefaults.outlinedButtonColors(containerColor=if(phraseIndex==index)c.primary.copy(alpha=.12f) else Color.Transparent)
+        ) { Text(phrase) }
       }
     }
     Text(phrases[phraseIndex],fontSize=27.sp,fontWeight=FontWeight.Bold,color=c.primary,textAlign=TextAlign.Center)
@@ -249,6 +258,7 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
     Button(
       onClick = {
         count += 1
+        phrasePrefs.edit().putInt("phrase_$phraseIndex", count).apply()
         prefs.setTasbihCount(count)
       },
       modifier = Modifier.fillMaxWidth().height(68.dp),
@@ -259,6 +269,7 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
     OutlinedButton(
       onClick = {
         count = (count - 1).coerceAtLeast(0)
+        phrasePrefs.edit().putInt("phrase_$phraseIndex", count).apply()
         prefs.setTasbihCount(count)
       },
       enabled = count > 0,
