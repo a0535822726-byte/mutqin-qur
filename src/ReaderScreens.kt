@@ -417,20 +417,30 @@ fun ReaderScreen(
           Spacer(Modifier.height(18.dp))
           Text("۞  ❁  ۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 18.sp)
         }
-        Row(
-          Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp),
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically
-        ) {
-          TextButton(
-            onClick = { pageIndex = (pageIndex - 1).coerceAtLeast(0) },
-            enabled = pageIndex > 0
-          ) { Text("‹ السابقة", color = androidx.compose.ui.graphics.Color(0xFF174B3B)) }
-          Text("${toArabic(pageIndex + 1)}  •  اسحب لتقليب صفحات المصحف", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 11.sp)
-          TextButton(
-            onClick = { pageIndex = (pageIndex + 1).coerceAtMost(mushafPages.lastIndex) },
-            enabled = pageIndex < mushafPages.lastIndex
-          ) { Text("التالية ›", color = androidx.compose.ui.graphics.Color(0xFF174B3B)) }
+        Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp)) {
+          Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+          ) {
+            TextButton(
+              onClick = { pageIndex = (pageIndex - 1).coerceAtLeast(0) },
+              enabled = pageIndex > 0
+            ) { Text("‹ السابقة", color = androidx.compose.ui.graphics.Color(0xFF174B3B)) }
+            Text("${toArabic(pageIndex + 1)} / ${toArabic(mushafPages.size)}", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 12.sp)
+            TextButton(
+              onClick = { pageIndex = (pageIndex + 1).coerceAtMost(mushafPages.lastIndex) },
+              enabled = pageIndex < mushafPages.lastIndex
+            ) { Text("التالية ›", color = androidx.compose.ui.graphics.Color(0xFF174B3B)) }
+          }
+          Slider(
+            value = pageIndex.toFloat(),
+            onValueChange = { pageIndex = it.toInt().coerceIn(0, mushafPages.lastIndex) },
+            valueRange = 0f..mushafPages.lastIndex.coerceAtLeast(1).toFloat(),
+            steps = (mushafPages.size - 2).coerceAtLeast(0),
+            modifier = Modifier.fillMaxWidth()
+          )
+          Text("اسحب المؤشر للانتقال سريعًا بين صفحات المقطع", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
         }
       }
     }
