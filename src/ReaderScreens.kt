@@ -288,34 +288,27 @@ fun ReaderScreen(
   Column(
     modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)
   ) {
-    // Premium reading header: compact navigation, surah identity and quick actions.
-    Row(
-      modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).border(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.18f)).padding(horizontal = 14.dp, vertical = 10.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(7.dp)
-    ) {
-      TextButton(onClick = onBack) { Text("رجوع", color = MaterialTheme.colorScheme.secondary) }
-      Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("الْمُصْحَفُ الشَّرِيف", fontSize = 9.sp, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, letterSpacing = 1.4.sp)
-        Text(SURAH_NAMES[surah - 1], fontSize = 21.sp, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Black)
-      }
-      TextButton(onClick = {
-        if (isListening) {
-          recognizer?.cancel()
-          isListening = false
-          speechError = "تم إيقاف التسميع."
-        } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-          beginRecognition()
-        } else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-      }) { Text(if (isListening) "إيقاف" else "تسميع", color = if (isListening) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold, fontSize = 11.sp) }
-      TextButton(onClick = {
-        val current = mushafPages.getOrNull(pageIndex)
-        if (!current.isNullOrEmpty()) {
-          prefs.toggleBookmark(surah, current.first())
-          bookmarkVersion++
-          android.widget.Toast.makeText(context, "تم حفظ موضع الصفحة", android.widget.Toast.LENGTH_SHORT).show()
+    Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primary).padding(horizontal=18.dp,vertical=13.dp)) {
+      Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(9.dp)) {
+        Surface(onClick=onBack,shape=RoundedCornerShape(13.dp),color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.12f)) {
+          Text("‹",Modifier.padding(horizontal=14.dp,vertical=6.dp),fontSize=23.sp,color=MaterialTheme.colorScheme.onPrimary)
         }
-      }) { Text("⚑", color = MaterialTheme.colorScheme.secondary, fontSize = 19.sp) }
+        Column(Modifier.weight(1f),horizontalAlignment=Alignment.CenterHorizontally) {
+          Text("مُتْقِن  /  الْمُصْحَف",fontSize=9.sp,color=MaterialTheme.colorScheme.secondary,fontWeight=FontWeight.Bold,letterSpacing=1.sp)
+          Text(SURAH_NAMES[surah-1],fontSize=20.sp,color=MaterialTheme.colorScheme.onPrimary,fontWeight=FontWeight.ExtraBold)
+        }
+        Surface(shape=RoundedCornerShape(13.dp),color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.12f),onClick={
+          if(isListening){recognizer?.cancel();isListening=false;speechError="تم إيقاف التسميع."}
+          else if(ContextCompat.checkSelfPermission(context,Manifest.permission.RECORD_AUDIO)==PackageManager.PERMISSION_GRANTED) beginRecognition()
+          else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }) { Text(if(isListening) "■" else "🎙",Modifier.padding(horizontal=13.dp,vertical=10.dp),fontSize=16.sp,color=if(isListening) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimary) }
+        Surface(shape=RoundedCornerShape(13.dp),color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.12f),onClick={
+          val current=mushafPages.getOrNull(pageIndex)
+          if(!current.isNullOrEmpty()){prefs.toggleBookmark(surah,current.first());bookmarkVersion++;android.widget.Toast.makeText(context,"تم حفظ موضع الصفحة",android.widget.Toast.LENGTH_SHORT).show()}
+        }) { Text("⚑",Modifier.padding(horizontal=13.dp,vertical=9.dp),fontSize=18.sp,color=MaterialTheme.colorScheme.secondary) }
+      }
+      Spacer(Modifier.height(9.dp))
+      Text("تِلَاوَةٌ • تَدَبُّرٌ • مُرَاجَعَة",Modifier.align(Alignment.CenterHorizontally),fontSize=9.sp,color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.7f),letterSpacing=1.sp)
     }
 
     // Reading modes are explicit and remain accessible without opening a separate screen.
