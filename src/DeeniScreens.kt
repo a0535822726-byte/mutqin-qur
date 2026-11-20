@@ -27,21 +27,21 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
   val storyCount=quranStories.size
   LazyColumn(
     Modifier.fillMaxSize().background(c.background),
-    contentPadding=PaddingValues(start=20.dp,end=20.dp,top=18.dp,bottom=34.dp),
-    verticalArrangement=Arrangement.spacedBy(20.dp)
+    contentPadding=PaddingValues(start=17.dp,end=17.dp,top=12.dp,bottom=34.dp),
+    verticalArrangement=Arrangement.spacedBy(17.dp)
   ) {
     item {
-      Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
-        Box(Modifier.size(48.dp).background(c.surfaceVariant,RoundedCornerShape(17.dp)),contentAlignment=Alignment.Center) {
-          Text("م",fontSize=27.sp,fontWeight=FontWeight.Black,color=c.secondary)
+      Row(Modifier.fillMaxWidth().padding(vertical=5.dp),verticalAlignment=Alignment.CenterVertically) {
+        Box(Modifier.size(49.dp).background(c.primary,RoundedCornerShape(17.dp)).border(1.dp,c.secondary.copy(alpha=.8f),RoundedCornerShape(17.dp)),contentAlignment=Alignment.Center) {
+          Text("م",fontSize=29.sp,fontWeight=FontWeight.Black,color=c.secondary)
         }
         Spacer(Modifier.width(11.dp))
         Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(1.dp)) {
           Text("مُتْقِن",fontSize=23.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground)
-          Text("M U T Q I N   /   رفيق القرآن",fontSize=9.sp,color=c.onSurfaceVariant,letterSpacing=1.1.sp)
+          Text("M U T Q I N   •   رفيق القرآن",fontSize=9.sp,color=c.onSurfaceVariant,letterSpacing=1.sp)
         }
         Surface(shape=RoundedCornerShape(30.dp),color=c.surface,border=androidx.compose.foundation.BorderStroke(1.dp,c.outline.copy(alpha=.35f))) {
-          Row(Modifier.padding(start=10.dp,end=4.dp),verticalAlignment=Alignment.CenterVertically) {
+          Row(Modifier.padding(start=9.dp,end=3.dp),verticalAlignment=Alignment.CenterVertically) {
             Text(if(dark) "ليلي" else "نهاري",fontSize=10.sp,color=c.onSurfaceVariant)
             Switch(checked=dark,onCheckedChange=onDark)
           }
@@ -50,48 +50,29 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
     }
     item {
       Card(shape=RoundedCornerShape(30.dp),colors=CardDefaults.cardColors(containerColor=c.primary),
-        border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.7f)),
+        border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.78f)),
         elevation=CardDefaults.cardElevation(defaultElevation=5.dp)) {
         Box(Modifier.fillMaxWidth()) {
-          Text("۞",modifier=Modifier.align(Alignment.TopEnd).padding(end=14.dp,top=0.dp),fontSize=118.sp,color=c.onPrimary.copy(alpha=.055f))
-          Column(Modifier.fillMaxWidth().padding(horizontal=21.dp,vertical=23.dp),verticalArrangement=Arrangement.spacedBy(13.dp)) {
-            Surface(shape=RoundedCornerShape(30.dp),color=c.onPrimary.copy(alpha=.10f)) {
-              Text("مَسَاحَةٌ لِلتَّدَبُّرِ وَالْمُرَاجَعَة",modifier=Modifier.padding(horizontal=12.dp,vertical=7.dp),fontSize=9.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+          Text("۞",modifier=Modifier.align(Alignment.TopEnd).padding(end=9.dp,top=2.dp),fontSize=126.sp,color=c.onPrimary.copy(alpha=.055f))
+          Column(Modifier.fillMaxWidth().padding(horizontal=21.dp,vertical=22.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+              Surface(shape=RoundedCornerShape(30.dp),color=c.onPrimary.copy(alpha=.10f)) {
+                Text("مَجْلِسُ الْقُرْآن",modifier=Modifier.padding(horizontal=12.dp,vertical=7.dp),fontSize=9.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+              }
+              Spacer(Modifier.weight(1f))
+              Text("✦  ✦  ✦",fontSize=10.sp,color=c.secondary)
             }
             Text("وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا",fontSize=26.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
-            Text("اجعل لقراءتك وقتًا، ولحفظك مراجعة، وليومك ذكرًا.",fontSize=12.sp,color=c.onPrimary.copy(alpha=.78f),lineHeight=21.sp)
-            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)) {
-              Button(onClick=onQuran,modifier=Modifier.weight(1.1f).height(50.dp),shape=RoundedCornerShape(16.dp),
+            Text("اقرأ بتدبّر، وراجع محفوظك، واجعل للذكر مكانًا في يومك.",fontSize=12.sp,color=c.onPrimary.copy(alpha=.82f),lineHeight=21.sp)
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+              Button(onClick=onQuran,modifier=Modifier.weight(1.05f).height(49.dp),shape=RoundedCornerShape(16.dp),
                 colors=ButtonDefaults.buttonColors(containerColor=c.secondary,contentColor=c.primary)) {
-                Text("افتح المصحف  ←",fontSize=13.sp,fontWeight=FontWeight.ExtraBold)
+                Text("افتح المصحف  ←",fontSize=12.sp,fontWeight=FontWeight.ExtraBold)
               }
-              OutlinedButton(onClick=onRecitation,modifier=Modifier.weight(1f).height(50.dp),shape=RoundedCornerShape(16.dp),
-                border=androidx.compose.foundation.BorderStroke(1.dp,c.onPrimary.copy(alpha=.35f)),
+              OutlinedButton(onClick=onRecitation,modifier=Modifier.weight(1f).height(49.dp),shape=RoundedCornerShape(16.dp),
+                border=androidx.compose.foundation.BorderStroke(1.dp,c.onPrimary.copy(alpha=.38f)),
                 colors=ButtonDefaults.outlinedButtonColors(contentColor=c.onPrimary)) {
-                Text("جلسة التسميع  ◉",fontSize=11.sp,fontWeight=FontWeight.Bold)
-              }
-            }
-          }
-        }
-      }
-    }
-    item {
-      Column(verticalArrangement=Arrangement.spacedBy(11.dp)) {
-        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.Bottom,horizontalArrangement=Arrangement.SpaceBetween) {
-          Column(verticalArrangement=Arrangement.spacedBy(3.dp)) {
-            Text("محتوى المكتبة",fontSize=18.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground)
-            Text("الأعداد الموجودة في هذه النسخة",fontSize=10.sp,color=c.onSurfaceVariant)
-          }
-          Text("إحصاءات",fontSize=10.sp,color=c.secondary,fontWeight=FontWeight.Bold)
-        }
-        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)) {
-          listOf(Triple(toArabic(hadithCount),"حديث","السنة"),Triple(toArabic(lessonCount),"درس","التجويد"),Triple(toArabic(storyCount),"قصة","السيرة")).forEach { stat ->
-            Card(Modifier.weight(1f),shape=RoundedCornerShape(20.dp),colors=CardDefaults.cardColors(containerColor=c.surface),
-              border=androidx.compose.foundation.BorderStroke(1.dp,c.outline.copy(alpha=.28f))) {
-              Column(Modifier.fillMaxWidth().padding(vertical=15.dp,horizontal=3.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(4.dp)) {
-                Text(stat.first,fontSize=22.sp,fontWeight=FontWeight.Black,color=c.secondary)
-                Text(stat.second,fontSize=11.sp,color=c.onSurface,fontWeight=FontWeight.Bold)
-                Text(stat.third,fontSize=9.sp,color=c.onSurfaceVariant)
+                Text("ابدأ التسميع  ◉",fontSize=11.sp,fontWeight=FontWeight.Bold)
               }
             }
           }
@@ -100,28 +81,49 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
     }
     item {
       Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
-        Text("مساحتك في متقن",fontSize=18.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground)
-        Text("خمسة أقسام",fontSize=10.sp,color=c.onSurfaceVariant)
+        Column(verticalArrangement=Arrangement.spacedBy(2.dp)) {
+          Text("حصاد المكتبة",fontSize=17.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground)
+          Text("المواد الموجودة فعليًا في هذه النسخة",fontSize=10.sp,color=c.onSurfaceVariant)
+        }
+        Text("إحصاءاتك",fontSize=10.sp,color=c.secondary,fontWeight=FontWeight.Bold)
       }
-    }
-    item {
-      Column(verticalArrangement=Arrangement.spacedBy(11.dp)) {
-        HomeTile("المصحف الشريف","قراءة هادئة وتقليب صفحات المصحف","۞",Modifier.fillMaxWidth(),onQuran)
-        HomeTile("التسميع والمراجعة","سجّل تلاوتك واستمع إلى جلساتك","◉",Modifier.fillMaxWidth(),onRecitation)
-        HomeTile("مكتبة العلم","الحديث والقصص والفقه والتجويد","✧",Modifier.fillMaxWidth(),onLearning)
-        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(11.dp)) {
-          HomeTile("الأذكار","أذكار اليوم", "❈",Modifier.weight(1f),onAdhkar)
-          HomeTile("المسبحة","عداد الذكر", "◌",Modifier.weight(1f),onTasbih)
+      Spacer(Modifier.height(9.dp))
+      Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+        listOf(Triple(toArabic(hadithCount),"حديث","السنة"),Triple(toArabic(lessonCount),"درس","التجويد"),Triple(toArabic(storyCount),"قصة","السيرة")).forEachIndexed { index, stat ->
+          Card(Modifier.weight(1f),shape=RoundedCornerShape(19.dp),colors=CardDefaults.cardColors(containerColor=c.surface),
+            border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.24f))) {
+            Column(Modifier.fillMaxWidth().padding(vertical=14.dp,horizontal=2.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(3.dp)) {
+              Text(stat.first,fontSize=21.sp,fontWeight=FontWeight.Black,color=if(index==1)c.primary else c.secondary)
+              Text(stat.second,fontSize=11.sp,color=c.onSurface,fontWeight=FontWeight.Bold)
+              Text(stat.third,fontSize=9.sp,color=c.onSurfaceVariant)
+            }
+          }
         }
       }
     }
     item {
-      Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=c.surfaceVariant),
+      Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
+        Text("أقسام متقن",fontSize=18.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground)
+        Text("اختر وجهتك",fontSize=10.sp,color=c.onSurfaceVariant)
+      }
+      Spacer(Modifier.height(10.dp))
+      Column(verticalArrangement=Arrangement.spacedBy(9.dp)) {
+        HomeTile("المصحف الشريف","صفحات قرآنية للقراءة والتدبّر","۞",Modifier.fillMaxWidth(),onQuran)
+        HomeTile("التسميع والمراجعة","جلسات صوتية لمتابعة تلاوتك","◉",Modifier.fillMaxWidth(),onRecitation)
+        HomeTile("مكتبة العلم","الحديث والقصص والفقه والتجويد","✧",Modifier.fillMaxWidth(),onLearning)
+        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)) {
+          HomeTile("الأذكار","وردك اليومي","❈",Modifier.weight(1f),onAdhkar)
+          HomeTile("المسبحة","عداد الذكر","◌",Modifier.weight(1f),onTasbih)
+        }
+      }
+    }
+    item {
+      Card(shape=RoundedCornerShape(21.dp),colors=CardDefaults.cardColors(containerColor=c.surfaceVariant),
         border=androidx.compose.foundation.BorderStroke(1.dp,c.outline.copy(alpha=.25f))) {
-        Row(Modifier.fillMaxWidth().padding(16.dp),horizontalArrangement=Arrangement.spacedBy(11.dp),verticalAlignment=Alignment.Top) {
+        Row(Modifier.fillMaxWidth().padding(15.dp),horizontalArrangement=Arrangement.spacedBy(10.dp),verticalAlignment=Alignment.Top) {
           Text("✦",fontSize=19.sp,color=c.secondary)
-          Column(verticalArrangement=Arrangement.spacedBy(5.dp)) {
-            Text("المحتوى بأمانة",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.onSurface)
+          Column(verticalArrangement=Arrangement.spacedBy(4.dp)) {
+            Text("المحتوى بأمانة",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.onSurface)
             Text("الأعداد المعروضة هي المواد الموجودة فعليًا داخل النسخة، مع الحرص على بيان المصادر وعدم عرض الأهداف المستقبلية كأنها منجزة.",fontSize=10.sp,lineHeight=18.sp,color=c.onSurfaceVariant)
           }
         }
@@ -136,38 +138,19 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
 @Composable
 private fun HomeTile(title:String,subtitle:String,symbol:String,modifier:Modifier,onClick:()->Unit) {
   val c=MaterialTheme.colorScheme
-  Card(modifier.clickable(onClick=onClick),shape=RoundedCornerShape(22.dp),
+  Card(modifier.clickable(onClick=onClick),shape=RoundedCornerShape(21.dp),
     colors=CardDefaults.cardColors(containerColor=c.surface),
-    border=androidx.compose.foundation.BorderStroke(1.dp,c.outline.copy(alpha=.30f)),
+    border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.22f)),
     elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
-    Row(Modifier.fillMaxWidth().padding(horizontal=15.dp,vertical=15.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
-      Box(Modifier.size(49.dp).background(c.surfaceVariant,RoundedCornerShape(16.dp)),contentAlignment=Alignment.Center) {
-        Text(symbol,fontSize=25.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+    Row(Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=13.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+      Box(Modifier.size(47.dp).background(c.primary.copy(alpha=.09f),RoundedCornerShape(16.dp)).border(1.dp,c.secondary.copy(alpha=.28f),RoundedCornerShape(16.dp)),contentAlignment=Alignment.Center) {
+        Text(symbol,fontSize=24.sp,color=c.secondary,fontWeight=FontWeight.Bold)
       }
-      Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) {
+      Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
         Text(title,fontSize=14.sp,fontWeight=FontWeight.Bold,color=c.onSurface)
         Text(subtitle,fontSize=10.sp,color=c.onSurfaceVariant)
       }
-      Text("‹",fontSize=25.sp,color=c.secondary,fontWeight=FontWeight.Bold)
-    }
-  }
-}
-
-@Composable
-private fun FeatureCard(emoji:String,title:String,desc:String,onClick:()->Unit) {
-  val c=MaterialTheme.colorScheme
-  Card(Modifier.fillMaxWidth().clickable(onClick=onClick),shape=RoundedCornerShape(24.dp),
-    colors=CardDefaults.cardColors(containerColor=c.surface),
-    border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.25f))) {
-    Row(Modifier.fillMaxWidth().padding(16.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)) {
-      Box(Modifier.size(60.dp).background(c.primary.copy(alpha=.12f),RoundedCornerShape(20.dp)),contentAlignment=Alignment.Center) {
-        Text(emoji,fontSize=28.sp,color=c.secondary)
-      }
-      Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(5.dp)) {
-        Text(title,fontSize=19.sp,fontWeight=FontWeight.Bold,color=c.primary)
-        Text(desc,fontSize=12.sp,color=c.onSurfaceVariant,lineHeight=18.sp)
-      }
-      Text("‹",fontSize=26.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+      Text("‹",fontSize=24.sp,color=c.secondary,fontWeight=FontWeight.Bold)
     }
   }
 }
