@@ -95,7 +95,10 @@ fun SurahListScreen(
         items(ayahMatches) { match ->
           val (surahNumber, ayahNumber) = match
           Card(
-            modifier = Modifier.fillMaxWidth().clickable { onResume(surahNumber, ayahNumber, ayahNumber) },shape=androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
+            modifier = Modifier.fillMaxWidth().clickable { onResume(surahNumber, ayahNumber, ayahNumber) },shape=androidx.compose.foundation.shape.RoundedCornerShape(23.dp),
+            colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),
+            border=androidx.compose.foundation.BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.25f)),
+            elevation=CardDefaults.cardElevation(defaultElevation=1.dp)
           ) {
             Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
               Text(
@@ -118,7 +121,10 @@ fun SurahListScreen(
         item {
           Card(
             modifier = Modifier.fillMaxWidth().clickable { onResume(last.first, last.second, last.third) },
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+            shape=androidx.compose.foundation.shape.RoundedCornerShape(23.dp),
+            border=androidx.compose.foundation.BorderStroke(1.dp,MaterialTheme.colorScheme.secondary.copy(alpha=.55f)),
+            elevation=CardDefaults.cardElevation(defaultElevation=3.dp)
           ) {
             Column(modifier = Modifier.padding(16.dp)) {
               val c = MaterialTheme.colorScheme.background
@@ -135,22 +141,29 @@ fun SurahListScreen(
         item { Text("لا توجد سورة بهذا الاسم أو الرقم") }
       }
       if (searchText.length < 2) items(filtered) { n ->
-        Card(modifier = Modifier.fillMaxWidth().clickable { onOpenSurah(n) },shape=androidx.compose.foundation.shape.RoundedCornerShape(21.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=androidx.compose.foundation.BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.28f))) {
+        Card(modifier = Modifier.fillMaxWidth().clickable { onOpenSurah(n) },shape=androidx.compose.foundation.shape.RoundedCornerShape(23.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=androidx.compose.foundation.BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.25f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
           Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
           ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-              Text(
-                toArabic(n),
-                color = MaterialTheme.colorScheme.secondary,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.width(40.dp)
-              )
-              Text(SURAH_NAMES[n - 1], fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+              Box(
+                modifier=Modifier.size(43.dp).background(MaterialTheme.colorScheme.surfaceVariant,androidx.compose.foundation.shape.RoundedCornerShape(14.dp)),
+                contentAlignment=Alignment.Center
+              ) {
+                Text(toArabic(n),color=MaterialTheme.colorScheme.secondary,fontWeight=FontWeight.ExtraBold,fontSize=14.sp)
+              }
+              Spacer(Modifier.width(12.dp))
+              Column(verticalArrangement=Arrangement.spacedBy(2.dp)) {
+                Text(SURAH_NAMES[n - 1], fontSize = 19.sp, fontWeight = FontWeight.ExtraBold)
+                Text("سورة من القرآن الكريم",fontSize=9.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
+              }
             }
-            Text("${toArabic(repo.ayahCount(n))} آية", fontSize = 13.sp)
+            Column(horizontalAlignment=Alignment.End,verticalArrangement=Arrangement.spacedBy(2.dp)) {
+              Text("${toArabic(repo.ayahCount(n))} آية", fontSize = 12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant,fontWeight=FontWeight.Medium)
+              Text("فتح السورة  ‹",fontSize=9.sp,color=MaterialTheme.colorScheme.secondary,fontWeight=FontWeight.Bold)
+            }
           }
         }
       }
