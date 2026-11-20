@@ -48,27 +48,34 @@ fun SurahListScreen(
   }
 
   Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)) {
-    Row(
-      modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-      Column {
-        Text("مُتقن", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-        Text("رفيق القرآن", fontSize = 14.sp, color = MaterialTheme.colorScheme.secondary)
+    val c = MaterialTheme.colorScheme
+    Row(Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=8.dp),verticalAlignment=Alignment.CenterVertically) {
+      TextButton(onClick={onResume(last?.first ?: 1,last?.second ?: 1,last?.third ?: 7)}) {
+        Text("آخر موضع",fontSize=11.sp,color=c.secondary)
       }
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("الوضع الليلي", fontSize = 13.sp)
-        Spacer(Modifier.width(8.dp))
-        Switch(checked = dark, onCheckedChange = onDark)
+      Spacer(Modifier.weight(1f))
+      Text("مُتْقِن  •  الْمُصْحَف",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+      Spacer(Modifier.width(8.dp))
+      Switch(checked=dark,onCheckedChange=onDark)
+    }
+    Card(Modifier.fillMaxWidth().padding(horizontal=16.dp),shape=androidx.compose.foundation.shape.RoundedCornerShape(25.dp),
+      colors=CardDefaults.cardColors(containerColor=c.primary),
+      border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
+      Row(Modifier.fillMaxWidth().padding(19.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
+        Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(6.dp)) {
+          Text("بَيْنَ يَدَيْكَ كِتَابُ الله",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+          Text("اختر سورتك وابدأ التلاوة",fontSize=20.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+          Text("١١٤ سورة • بحث في السور والآيات",fontSize=11.sp,color=c.onPrimary.copy(alpha=.8f))
+        }
+        Text("۞",fontSize=49.sp,color=c.secondary)
       }
     }
     OutlinedTextField(
-      value = query,
-      onValueChange = { query = it },
-      label = { Text("ابحث عن سورة أو آية من القرآن") },
-      singleLine = true,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+      value=query,onValueChange={query=it},
+      label={Text("ابحث باسم السورة أو بكلمات من آية")},
+      singleLine=true,
+      shape=androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+      modifier=Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=10.dp)
     )
     LazyColumn(
       contentPadding = PaddingValues(16.dp),
