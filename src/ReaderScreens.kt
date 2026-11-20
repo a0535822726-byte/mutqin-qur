@@ -240,21 +240,19 @@ fun ReaderScreen(
   val hasMismatch = spokenWords.isNotEmpty() && matchedWords < spokenWords.size
 
   Column(
-    modifier = Modifier.fillMaxSize().safeDrawingPadding().background(androidx.compose.ui.graphics.Color(0xFF0B2C25))
+    modifier = Modifier.fillMaxSize().safeDrawingPadding().background(androidx.compose.ui.graphics.Color(0xFF071B16))
   ) {
+    // Premium reading header: compact navigation, surah identity and quick actions.
     Row(
-      modifier = Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF123D32)).padding(horizontal = 8.dp, vertical = 5.dp),
-      verticalAlignment = Alignment.CenterVertically
+      modifier = Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF102D24)).padding(horizontal = 10.dp, vertical = 8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(7.dp)
     ) {
-      TextButton(onClick = onBack) { Text("رجوع", color = androidx.compose.ui.graphics.Color.White) }
-      Text(
-        "سورة ${SURAH_NAMES[surah - 1]}",
-        modifier = Modifier.weight(1f),
-        fontSize = 19.sp,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
-        color = androidx.compose.ui.graphics.Color(0xFFFFE6A3)
-      )
+      TextButton(onClick = onBack) { Text("رجوع", color = androidx.compose.ui.graphics.Color(0xFFE8D49A)) }
+      Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text("مُصْحَفُ مُتْقِن", fontSize = 11.sp, color = androidx.compose.ui.graphics.Color(0xFFBDA66A), fontWeight = FontWeight.Bold)
+        Text(SURAH_NAMES[surah - 1], fontSize = 19.sp, color = androidx.compose.ui.graphics.Color.White, fontWeight = FontWeight.ExtraBold)
+      }
       TextButton(onClick = {
         if (isListening) {
           recognizer?.cancel()
@@ -262,10 +260,8 @@ fun ReaderScreen(
           speechError = "تم إيقاف التسميع."
         } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
           beginRecognition()
-        } else {
-          permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-        }
-      }) { Text(if (isListening) "إيقاف" else "🎙", color = androidx.compose.ui.graphics.Color.White) }
+        } else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+      }) { Text(if (isListening) "إيقاف" else "🎙", color = if (isListening) androidx.compose.ui.graphics.Color(0xFFFF9B8F) else androidx.compose.ui.graphics.Color(0xFFE8D49A), fontWeight = FontWeight.Bold) }
       TextButton(onClick = {
         val current = mushafPages.getOrNull(pageIndex)
         if (!current.isNullOrEmpty()) {
@@ -273,80 +269,83 @@ fun ReaderScreen(
           bookmarkVersion++
           android.widget.Toast.makeText(context, "تم حفظ موضع الصفحة", android.widget.Toast.LENGTH_SHORT).show()
         }
-      }) {
-        Text("⚑", color = androidx.compose.ui.graphics.Color(0xFFFFE6A3), fontSize = 18.sp)
-      }
-      TextButton(onClick = { showBookmarks = true }) {
-        Text("☆", color = androidx.compose.ui.graphics.Color(0xFFFFE6A3), fontSize = 20.sp)
-      }
-      TextButton(onClick = { showTools = !showTools }) {
-        Text(if (showTools) "إخفاء" else "Aa", color = androidx.compose.ui.graphics.Color.White)
-      }
+      }) { Text("⚑", color = androidx.compose.ui.graphics.Color(0xFFE8D49A), fontSize = 19.sp) }
     }
-    Row(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF0B2C25)).padding(horizontal=8.dp, vertical=3.dp), horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-      Surface(shape=RoundedCornerShape(14.dp),color=androidx.compose.ui.graphics.Color(0xFF1B493B)) {
-        TextButton(onClick={ showTools=true; hide=true; revealed.clear() }) { Text("اختبار الحفظ",color=androidx.compose.ui.graphics.Color(0xFFFFE6A3),fontSize=12.sp) }
-      }
-      Surface(shape=RoundedCornerShape(14.dp),color=androidx.compose.ui.graphics.Color(0xFF1B493B)) {
-        TextButton(onClick={ showBookmarks=true }) { Text("علاماتي",color=androidx.compose.ui.graphics.Color.White,fontSize=12.sp) }
-      }
-      Surface(shape=RoundedCornerShape(14.dp),color=androidx.compose.ui.graphics.Color(0xFF1B493B)) {
-        TextButton(onClick={ showTools=!showTools }) { Text("أدوات الآية",color=androidx.compose.ui.graphics.Color.White,fontSize=12.sp) }
-      }
+
+    // Reading modes are explicit and remain accessible without opening a separate screen.
+    Row(
+      Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+      horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+      Surface(
+        modifier = Modifier.weight(1f).clickable { showTools = !showTools },
+        shape = RoundedCornerShape(14.dp),
+        color = if (showTools) androidx.compose.ui.graphics.Color(0xFFB8954B) else androidx.compose.ui.graphics.Color(0xFF173A2E)
+      ) { Text("Aa  إعدادات القراءة", modifier = Modifier.padding(vertical = 11.dp), textAlign = TextAlign.Center, color = if (showTools) androidx.compose.ui.graphics.Color(0xFF17251D) else androidx.compose.ui.graphics.Color(0xFFF4E8C9), fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+      Surface(
+        modifier = Modifier.weight(1f).clickable { showTools = true; hide = !hide; revealed.clear() },
+        shape = RoundedCornerShape(14.dp),
+        color = if (hide) androidx.compose.ui.graphics.Color(0xFFB8954B) else androidx.compose.ui.graphics.Color(0xFF173A2E)
+      ) { Text(if (hide) "إظهار الحفظ" else "اختبار الحفظ", modifier = Modifier.padding(vertical = 11.dp), textAlign = TextAlign.Center, color = if (hide) androidx.compose.ui.graphics.Color(0xFF17251D) else androidx.compose.ui.graphics.Color(0xFFF4E8C9), fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+      Surface(
+        modifier = Modifier.weight(1f).clickable { showBookmarks = true },
+        shape = RoundedCornerShape(14.dp),
+        color = androidx.compose.ui.graphics.Color(0xFF173A2E)
+      ) { Text("☆  المحفوظات", modifier = Modifier.padding(vertical = 11.dp), textAlign = TextAlign.Center, color = androidx.compose.ui.graphics.Color(0xFFF4E8C9), fontSize = 11.sp, fontWeight = FontWeight.Bold) }
     }
+
     if (showTools) {
       Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 6.dp),
-        colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFFF8F1E2)),
-        shape = RoundedCornerShape(14.dp)
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFFF5EEDC)),
+        shape = RoundedCornerShape(18.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFFB8954B))
       ) {
-        Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+        Column(Modifier.fillMaxWidth().padding(13.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
           Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("إخفاء الآيات لاختبار الحفظ", color = androidx.compose.ui.graphics.Color(0xFF243B32))
+            Column {
+              Text("وضع المراجعة", color = androidx.compose.ui.graphics.Color(0xFF173A2E), fontWeight = FontWeight.Bold)
+              Text("أخفِ نص الآيات ثم اكشفها عند الحاجة", color = androidx.compose.ui.graphics.Color(0xFF75684F), fontSize = 10.sp)
+            }
             Switch(checked = hide, onCheckedChange = { hide = it; revealed.clear() })
           }
-          Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = { showBookmarks = true }) { Text("المحفوظات (${toArabic(bookmarks.size)})") }
-            Text("حجم الخط", color = androidx.compose.ui.graphics.Color(0xFF243B32), fontSize = 12.sp)
+          Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("حجم الخط", color = androidx.compose.ui.graphics.Color(0xFF173A2E), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+              OutlinedButton(onClick = { size = (size - 2f).coerceAtLeast(20f); prefs.setFontSize(size) }, contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)) { Text("−") }
+              Text("${size.toInt()}", color = androidx.compose.ui.graphics.Color(0xFF173A2E), modifier = Modifier.align(Alignment.CenterVertically))
+              OutlinedButton(onClick = { size = (size + 2f).coerceAtMost(44f); prefs.setFontSize(size) }, contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)) { Text("+") }
+            }
           }
-          Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TextButton(onClick = { size = (size + 2f).coerceAtMost(44f); prefs.setFontSize(size) }) { Text("تكبير +") }
-            TextButton(onClick = { size = (size - 2f).coerceAtLeast(20f); prefs.setFontSize(size) }) { Text("تصغير −") }
-            if (hide) {
-              TextButton(onClick = { revealed.clear(); revealed.addAll(from..to) }) { Text("إظهار الكل") }
+          if (hide) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+              TextButton(onClick = { revealed.clear(); revealed.addAll(from..to) }) { Text("كشف الكل") }
               TextButton(onClick = { revealed.clear() }) { Text("إخفاء الكل") }
             }
           }
-          Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { transcript = ""; speechError = null }, modifier = Modifier.weight(1f)) { Text("مسح نتيجة التسميع") }
+          if (transcript.isNotBlank()) {
+            Text("النص الذي التقطه الجهاز: $transcript", color = androidx.compose.ui.graphics.Color(0xFF243B32), fontSize = 12.sp)
+            Text("تطابق نصي تقريبي: ${toArabic(matchedWords)} / ${toArabic(targetWords.size)}", color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 11.sp)
+            LinearProgressIndicator(progress = { if (targetWords.isEmpty()) 0f else (matchedWords.toFloat() / targetWords.size).coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth(), color = androidx.compose.ui.graphics.Color(0xFF17664E), trackColor = androidx.compose.ui.graphics.Color(0xFFD7E5DC))
+            if (hasMismatch) Text("الكلمة التالية للمراجعة: ${expectedWord.orEmpty()}", color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 12.sp)
+            else if (matchedWords == targetWords.size && targetWords.isNotEmpty()) Text("اكتملت المطابقة النصية للمقطع.", color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 12.sp)
+          }
+          if (speechError != null) Text(speechError!!, color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 11.sp)
+          Text("تنبيه: هذه مطابقة صوت إلى نص بشكل أولي، وليست حكمًا على صحة التجويد أو المخارج.", color = androidx.compose.ui.graphics.Color(0xFF75684F), fontSize = 10.sp)
+          Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = { transcript = ""; speechError = null }, modifier = Modifier.weight(1f)) { Text("مسح النتيجة") }
             Button(onClick = {
-              transcript = ""
-              speechError = null
+              transcript = ""; speechError = null
               if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) beginRecognition()
               else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-            }, modifier = Modifier.weight(1f)) { Text("ابدأ من جديد") }
+            }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color(0xFF174B3B))) { Text("بدء التسميع") }
           }
-          if (transcript.isNotBlank()) {
-            Text("ما التقطه الجهاز: $transcript", color = androidx.compose.ui.graphics.Color(0xFF243B32), fontSize = 13.sp)
-            Text("التطابق النصي: ${toArabic(matchedWords)} من ${toArabic(targetWords.size)} كلمة", fontSize = 12.sp, color = androidx.compose.ui.graphics.Color(0xFF17664E))
-            LinearProgressIndicator(
-              progress = { if (targetWords.isEmpty()) 0f else (matchedWords.toFloat() / targetWords.size).coerceIn(0f, 1f) },
-              modifier = Modifier.fillMaxWidth(),
-              color = androidx.compose.ui.graphics.Color(0xFF17664E),
-              trackColor = androidx.compose.ui.graphics.Color(0xFFD7E5DC)
-            )
-            if (hasMismatch) Text("راجع الكلمة التالية: ${expectedWord.orEmpty()}", color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 13.sp)
-            else if (matchedWords == targetWords.size && targetWords.isNotEmpty()) Text("اكتملت المطابقة النصية للمقطع.", color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 13.sp)
-          }
-          if (speechError != null) Text(speechError!!, color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 12.sp)
-          Text("التسميع هنا تحويل صوت إلى نص ومطابقة أولية فقط، ولا يصحح التجويد أو المخارج.", color = androidx.compose.ui.graphics.Color(0xFF6C6253), fontSize = 10.sp)
         }
       }
     }
+
     Surface(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 8.dp, vertical = 7.dp)
+      modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 10.dp, vertical = 5.dp)
         .pointerInput(pageIndex, mushafPages.size) {
           var drag = 0f
           detectHorizontalDragGestures(
@@ -358,104 +357,83 @@ fun ReaderScreen(
             }
           )
         },
-      color = androidx.compose.ui.graphics.Color(0xFFFFFCF3),
-      shape = RoundedCornerShape(16.dp),
-      border = androidx.compose.foundation.BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFFB28A3B)),
-      shadowElevation = 9.dp
+      color = androidx.compose.ui.graphics.Color(0xFFF8F1DF),
+      shape = RoundedCornerShape(9.dp),
+      border = androidx.compose.foundation.BorderStroke(2.dp, androidx.compose.ui.graphics.Color(0xFFB8954B)),
+      shadowElevation = 12.dp
     ) {
-      Column(Modifier.fillMaxSize()) {
-        Column(
-          Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-          horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-          Text("الْقُرْآنُ الْكَرِيمُ", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 16.sp, fontWeight = FontWeight.Bold)
-          Spacer(Modifier.height(3.dp))
-          Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("سورة ${SURAH_NAMES[surah - 1]}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 12.sp, fontWeight = FontWeight.Bold)
-            Text("صفحة ${toArabic(pageIndex + 1)} من ${toArabic(mushafPages.size)}", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 11.sp)
+      Column(Modifier.fillMaxSize().padding(5.dp).background(androidx.compose.ui.graphics.Color(0xFFF8F1DF), RoundedCornerShape(7.dp)).padding(7.dp)) {
+        // Double-rule page ornament gives the reader a recognizable printed-mushaf frame.
+        Column(Modifier.fillMaxSize().border(1.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(5.dp)).padding(horizontal = 12.dp, vertical = 8.dp)) {
+          Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text("الْجُزْءُ", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
+            Spacer(Modifier.weight(1f))
+            Text("الْقُرْآنُ الْكَرِيمُ", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
+            Spacer(Modifier.weight(1f))
+            Text("حِفْظٌ وَتِلَاوَة", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
           }
-        }
-        androidx.compose.foundation.Canvas(
-          Modifier.fillMaxWidth().height(2.dp).padding(horizontal = 18.dp)
-        ) {
-          drawLine(
-            color = androidx.compose.ui.graphics.Color(0xFFB28A3B),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(this.size.width, 0f),
-            strokeWidth = 1.dp.toPx()
-          )
-        }
-        Column(
-          Modifier.weight(1f).fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 19.dp, vertical = 13.dp),
-          horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-          Text("۞  ❁  ۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 21.sp)
-          Text(
-            "سُورَةُ ${SURAH_NAMES[surah - 1]}",
-            color = androidx.compose.ui.graphics.Color(0xFF174B3B),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-          )
-          if (from == 1 && surah != 1 && surah != 9) {
-            Text(
-              "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
-              modifier = Modifier.padding(top = 10.dp, bottom = 8.dp),
-              color = androidx.compose.ui.graphics.Color(0xFF30291F),
-              fontSize = (size * 0.92f).sp,
-              textAlign = TextAlign.Center
-            )
+          androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().padding(top = 7.dp).height(2.dp)) {
+            drawLine(color = androidx.compose.ui.graphics.Color(0xFFB8954B), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(size.width, 0f), strokeWidth = 1.dp.toPx())
           }
-          Spacer(Modifier.height(8.dp))
-          mushafPages.getOrNull(pageIndex).orEmpty().forEach { n ->
-            val verse = repo.ayah(surah, n)
-            val shown = !hide || n in revealed
-            val body = if (shown) verse else verse.substringBefore(' ') + " …"
-            Text(
-              body + " ۞" + toArabic(n) + "۞",
-              modifier = Modifier.fillMaxWidth().clickable {
-                if (hide) {
-                  if (n in revealed) revealed.remove(n) else revealed.add(n)
-                } else {
-                  selectedAyah = n
-                }
-              }.padding(vertical = 1.dp),
-              fontSize = size.sp,
-              lineHeight = (size * 1.95f).sp,
-              textAlign = TextAlign.Justify,
-              color = androidx.compose.ui.graphics.Color(0xFF29271F)
-            )
+          Row(Modifier.fillMaxWidth().padding(vertical = 7.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Text("سورة ${SURAH_NAMES[surah - 1]}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Text("صفحة ${toArabic(pageIndex + 1)} من ${toArabic(mushafPages.size)}", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 10.sp)
           }
-          Spacer(Modifier.height(18.dp))
-          Text("۞  ❁  ۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 18.sp)
-        }
-        Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp)) {
-          Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+          androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height(1.dp)) {
+            drawLine(color = androidx.compose.ui.graphics.Color(0xFFD6BD83), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(size.width, 0f), strokeWidth = 1.dp.toPx())
+          }
+          Column(
+            Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 7.dp, vertical = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
           ) {
-            TextButton(
-              onClick = { pageIndex = (pageIndex - 1).coerceAtLeast(0) },
-              enabled = pageIndex > 0
-            ) { Text("‹ السابقة", color = androidx.compose.ui.graphics.Color(0xFF174B3B)) }
-            Text("${toArabic(pageIndex + 1)} / ${toArabic(mushafPages.size)}", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 12.sp)
-            TextButton(
-              onClick = { pageIndex = (pageIndex + 1).coerceAtMost(mushafPages.lastIndex) },
-              enabled = pageIndex < mushafPages.lastIndex
-            ) { Text("التالية ›", color = androidx.compose.ui.graphics.Color(0xFF174B3B)) }
+            Text("۞  ❁  ۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 20.sp)
+            Text("سُورَةُ ${SURAH_NAMES[surah - 1]}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            if (from == 1 && surah != 1 && surah != 9) {
+              Text("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", modifier = Modifier.padding(top = 10.dp, bottom = 8.dp), color = androidx.compose.ui.graphics.Color(0xFF30291F), fontSize = (size * 0.92f).sp, textAlign = TextAlign.Center)
+            }
+            Spacer(Modifier.height(8.dp))
+            mushafPages.getOrNull(pageIndex).orEmpty().forEach { n ->
+              val verse = repo.ayah(surah, n)
+              val shown = !hide || n in revealed
+              val body = if (shown) verse else verse.substringBefore(' ') + " …"
+              Text(
+                body + " ۞" + toArabic(n) + "۞",
+                modifier = Modifier.fillMaxWidth().clickable {
+                  if (hide) { if (n in revealed) revealed.remove(n) else revealed.add(n) }
+                  else selectedAyah = n
+                }.padding(vertical = 1.dp),
+                fontSize = size.sp,
+                lineHeight = (size * 1.95f).sp,
+                textAlign = TextAlign.Justify,
+                color = androidx.compose.ui.graphics.Color(0xFF29271F)
+              )
+            }
+            Spacer(Modifier.height(15.dp))
+            Text("۞  ❁  ۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 17.sp)
           }
-          Slider(
-            value = pageIndex.toFloat(),
-            onValueChange = { pageIndex = it.toInt().coerceIn(0, mushafPages.lastIndex) },
-            valueRange = 0f..mushafPages.lastIndex.coerceAtLeast(1).toFloat(),
-            steps = (mushafPages.size - 2).coerceAtLeast(0),
-            modifier = Modifier.fillMaxWidth()
-          )
-          Text("التقدم: ${toArabic(((pageIndex + 1f) / mushafPages.size.coerceAtLeast(1) * 100).toInt())}% • اسحب المؤشر للانتقال سريعًا", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+          androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height(1.dp)) {
+            drawLine(color = androidx.compose.ui.graphics.Color(0xFFD6BD83), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(size.width, 0f), strokeWidth = 1.dp.toPx())
+          }
+          Row(Modifier.fillMaxWidth().padding(top = 7.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Text("مُتْقِن", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontWeight = FontWeight.Bold, fontSize = 10.sp)
+            Text("اسحب يمينًا أو يسارًا لقلب الصفحة", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
+            Text(toArabic(pageIndex + 1), color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontWeight = FontWeight.Bold, fontSize = 10.sp)
+          }
         }
       }
+    }
+
+    // Fixed bottom page navigator with progress and direct previous/next actions.
+    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF102D24)).padding(horizontal = 14.dp, vertical = 8.dp)) {
+      Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+        TextButton(onClick = { pageIndex = (pageIndex - 1).coerceAtLeast(0) }, enabled = pageIndex > 0) { Text("السابق", color = androidx.compose.ui.graphics.Color(0xFFE8D49A)) }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          Text("${toArabic(pageIndex + 1)} / ${toArabic(mushafPages.size)}", color = androidx.compose.ui.graphics.Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+          Text("${toArabic(((pageIndex + 1f) / mushafPages.size.coerceAtLeast(1) * 100).toInt())}% من المقطع", color = androidx.compose.ui.graphics.Color(0xFFBDA66A), fontSize = 9.sp)
+        }
+        TextButton(onClick = { pageIndex = (pageIndex + 1).coerceAtMost(mushafPages.lastIndex) }, enabled = pageIndex < mushafPages.lastIndex) { Text("التالي", color = androidx.compose.ui.graphics.Color(0xFFE8D49A)) }
+      }
+      Slider(value = pageIndex.toFloat(), onValueChange = { pageIndex = it.toInt().coerceIn(0, mushafPages.lastIndex) }, valueRange = 0f..mushafPages.lastIndex.coerceAtLeast(1).toFloat(), steps = (mushafPages.size - 2).coerceAtLeast(0), modifier = Modifier.fillMaxWidth())
     }
   }
   if (selectedAyah > 0) {
