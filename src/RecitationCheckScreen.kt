@@ -142,35 +142,29 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
   }
 
   val colors = MaterialTheme.colorScheme
-  Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().verticalScroll(rememberScrollState()).padding(horizontal=16.dp, vertical=10.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
-    Row(Modifier.fillMaxWidth().padding(bottom=2.dp),verticalAlignment = Alignment.CenterVertically) {
-      Surface(onClick=onBack,shape=RoundedCornerShape(14.dp),color=colors.surface,border=androidx.compose.foundation.BorderStroke(1.dp,colors.secondary.copy(alpha=.35f))) {
-        Text("‹",modifier=Modifier.padding(horizontal=14.dp,vertical=7.dp),fontSize=23.sp,color=colors.primary,fontWeight=FontWeight.Bold)
+  Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().verticalScroll(rememberScrollState())) {
+    Column(Modifier.fillMaxWidth().background(colors.primary).padding(horizontal=20.dp,vertical=18.dp)) {
+      Row(verticalAlignment=Alignment.CenterVertically) {
+        Surface(onClick=onBack,shape=CircleShape,color=colors.onPrimary.copy(alpha=.12f)) { Text("‹",Modifier.padding(horizontal=15.dp,vertical=7.dp),fontSize=24.sp,color=colors.onPrimary) }
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+          Text("مُتْقِن  /  القرآن الكريم",fontSize=10.sp,color=colors.secondary,fontWeight=FontWeight.Bold)
+          Text("التسميع والمراجعة",fontSize=21.sp,color=colors.onPrimary,fontWeight=FontWeight.ExtraBold)
+        }
+        Text("◉",fontSize=30.sp,color=colors.secondary)
       }
-      Spacer(Modifier.width(11.dp))
-      Column(verticalArrangement=Arrangement.spacedBy(1.dp)) {
-        Text("مُتْقِن",fontSize=16.sp,fontWeight=FontWeight.ExtraBold,color=colors.primary)
-        Text("التسميع والمراجعة",fontSize=9.sp,color=colors.onSurfaceVariant)
-      }
-      Spacer(Modifier.weight(1f))
-      Surface(shape=RoundedCornerShape(50),color=colors.secondary.copy(alpha=.13f)) {
-        Text("جلسة صوتية",modifier=Modifier.padding(horizontal=11.dp,vertical=7.dp),fontSize=10.sp,fontWeight=FontWeight.Bold,color=colors.secondary)
+      Spacer(Modifier.height(22.dp))
+      Text("جَلْسَةُ تِلَاوَةٍ",fontSize=10.sp,color=colors.secondary,fontWeight=FontWeight.Bold,letterSpacing=2.sp)
+      Text("أنصت إلى تلاوتك.",fontSize=29.sp,color=colors.onPrimary,fontWeight=FontWeight.Black)
+      Text("حدّد مقطعك، سجّل قراءتك، ثم استمع إلى مراجعتك.",fontSize=12.sp,color=colors.onPrimary.copy(alpha=.78f))
+      Spacer(Modifier.height(13.dp))
+      Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+        Surface(shape=RoundedCornerShape(13.dp),color=colors.onPrimary.copy(alpha=.12f)) { Text("تسجيل محلي",Modifier.padding(horizontal=12.dp,vertical=8.dp),fontSize=10.sp,color=colors.onPrimary) }
+        Surface(shape=RoundedCornerShape(13.dp),color=colors.onPrimary.copy(alpha=.12f)) { Text("حفظ الجلسات",Modifier.padding(horizontal=12.dp,vertical=8.dp),fontSize=10.sp,color=colors.onPrimary) }
       }
     }
-    Card(shape=RoundedCornerShape(25.dp),colors=CardDefaults.cardColors(containerColor=colors.primary),
-      border=androidx.compose.foundation.BorderStroke(1.dp,colors.secondary.copy(alpha=.7f))) {
-      Row(Modifier.fillMaxWidth().padding(19.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
-        Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(6.dp)) {
-          Text("جَلْسَةُ الْمُرَاجَعَة",fontSize=10.sp,fontWeight=FontWeight.Bold,color=colors.secondary)
-          Text("استمع إلى تلاوتك وراجعها",fontSize=20.sp,fontWeight=FontWeight.ExtraBold,color=colors.onPrimary)
-          Text("حدّد الآيات، سجّل قراءتك، ثم استمع إلى الجلسة المحفوظة.",fontSize=11.sp,lineHeight=18.sp,color=colors.onPrimary.copy(alpha=.82f))
-        }
-        Box(Modifier.size(54.dp).clip(RoundedCornerShape(18.dp)).background(colors.onPrimary.copy(alpha=.10f)),contentAlignment=Alignment.Center) {
-          Text("🎙",fontSize=27.sp)
-        }
-      }
-    }
-    Card(shape = RoundedCornerShape(25.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), border=androidx.compose.foundation.BorderStroke(1.dp,colors.outline.copy(alpha=.28f)), elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
+    Column(Modifier.padding(horizontal=16.dp).offset(y=(-12).dp),verticalArrangement=Arrangement.spacedBy(13.dp)) {
+    Card(shape = RoundedCornerShape(25.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), border=androidx.compose.foundation.BorderStroke(1.dp,colors.outlineVariant), elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
       Column(Modifier.fillMaxWidth().padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
           Text("موضع المراجعة", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp,color=colors.primary)
