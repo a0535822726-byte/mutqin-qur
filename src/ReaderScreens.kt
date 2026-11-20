@@ -1,5 +1,15 @@
 package com.mutqin.app
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.clickable
@@ -105,6 +115,81 @@ fun ReaderScreen(
   val listState = rememberLazyListState()
   val scope = rememberCoroutineScope()
   val showBasmala = surah != 1 && surah != 9 && from == 1
+  val context = androidx.compose.ui.platform.LocalContext.current
+  var transcript by remember { mutableStateOf("") }
+  var speechError by remember { mutableStateOf<String?>(null) }
+  var isListening by remember { mutableStateOf(false) }
+  val recognizer = remember(context) {
+    if (SpeechRecognizer.isRecognitionAvailable(context)) SpeechRecognizer.createSpeechRecognizer(context) else null
+  }
+  DisposableEffect(recognizer) {
+    if (recognizer != null) {
+      recognizer.setRecognitionListener(object : RecognitionListener {
+        override fun onReadyForSpeech(params: Bundle?) { speechError = null }
+        override fun onBeginningOfSpeech() {}
+        override fun onRmsChanged(rmsdB: Float) {}
+        override fun onBufferReceived(buffer: ByteArray?) {}
+        override fun onEndOfSpeech() {}
+        override fun onError(error: Int) {
+          isListening = false
+          speechError = when (error) {
+            SpeechRecognizer.ERROR_NO_MATCH -> "لم أتعرف على الكلمات بوضوح؛ حاول القراءة بهدوء."
+            SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "لم أسمع قراءة؛ اضغط وابدأ من جديد."
+            SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "يلزم السماح باستخدام الميكروفون."
+            else -> "تعذر إكمال التعرف الصوتي. تحقق من اتصال الإنترنت وإعدادات خدمة الصوت."
+          }
+        }
+        override fun onResults(results: Bundle?) {
+          transcript = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull().orEmpty()
+          isListening = false
+        }
+        override fun onPartialResults(partialResults: Bundle?) {
+          val partial = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
+          if (!partial.isNullOrBlank()) transcript = partial
+        }
+        override fun onEvent(eventType: Int, params: Bundle?) {}
+      })
+    }
+    onDispose { recognizer?.destroy() }
+  }
+  fun beginRecognition() {
+    if (recognizer == null) {
+      speechError = "التعرف الصوتي غير متاح على هذا الجهاز."
+      return
+    }
+    try {
+      transcript = ""
+      speechError = null
+      val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA")
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "ar-SA")
+        putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+        putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+      }
+      recognizer.startListening(intent)
+      isListening = true
+    } catch (e: Exception) {
+      isListening = false
+      speechError = "تعذر تشغيل الميكروفون؛ تحقق من أذونات الجهاز."
+    }
+  }
+  val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+    if (granted) beginRecognition() else speechError = "لم يتم منح إذن الميكروفون."
+  }
+  fun normalizeSpeech(value: String): String = value
+    .replace(Regex("[\\u064B-\\u065F\\u0670\\u0640\\u06D6-\\u06ED]"), "")
+    .replace("أ", "ا").replace("إ", "ا").replace("آ", "ا")
+    .replace("ى", "ي").replace("ؤ", "و").replace("ئ", "ي")
+    .replace(Regex("[^\\p{L}\\p{N} ]"), "")
+    .trim()
+  val targetWords = remember(surah, from, to) {
+    (from..to).flatMap { repo.ayah(surah, it).split(Regex("\\s+")) }
+      .map { normalizeSpeech(it) }.filter { it.isNotBlank() }
+  }
+  val spokenWords = remember(transcript) { normalizeSpeech(transcript).split(Regex("\\s+")).filter { it.isNotBlank() } }
+  val matchedWords = spokenWords.zip(targetWords).takeWhile { (spoken, target) -> spoken == target }.size
+  val hasMismatch = spokenWords.size > matchedWords && matchedWords < targetWords.size
 
   Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)) {
     Row(
@@ -138,6 +223,43 @@ fun ReaderScreen(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
           TextButton(onClick = { revealed.clear(); revealed.addAll(from..to) }) { Text("إظهار الكل") }
           TextButton(onClick = { revealed.clear() }) { Text("إخفاء الكل") }
+        }
+      }
+      Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        shape = RoundedCornerShape(16.dp)
+      ) {
+        Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+          Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+            Column(Modifier.weight(1f)) {
+              Text("التسميع الصوتي", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+              Text("مطابقة نصية أولية للآيات المحددة", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Button(onClick = {
+              if (isListening) {
+                recognizer?.stopListening()
+                isListening = false
+              } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                beginRecognition()
+              } else {
+                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+              }
+            }) { Text(if (isListening) "إيقاف" else "ابدأ") }
+          }
+          if (transcript.isNotBlank()) {
+            Text("ما التقطه الجهاز: $transcript", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
+            Text("التطابق المتتابع: ${toArabic(matchedWords)} من ${toArabic(targetWords.size)} كلمة", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+            if (hasMismatch) {
+              Text("راجع الكلمة التالية في المصحف: ${targetWords.getOrNull(matchedWords).orEmpty()}", fontSize = 13.sp, color = MaterialTheme.colorScheme.error)
+            } else if (matchedWords == targetWords.size && targetWords.isNotEmpty()) {
+              Text("اكتملت المطابقة النصية للمقطع المحدد.", fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)
+            }
+          } else if (isListening) {
+            Text("استمع الآن إلى قراءتك بالعربية…", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
+          }
+          if (speechError != null) Text(speechError!!, fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
+          Text("تنبيه: هذه مطابقة صوت إلى نص فقط؛ لا تحكم على أحكام التجويد أو المخارج، وقد يخطئ التعرف الصوتي.", fontSize = 10.sp, lineHeight = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
       }
       Row(verticalAlignment = Alignment.CenterVertically) {
