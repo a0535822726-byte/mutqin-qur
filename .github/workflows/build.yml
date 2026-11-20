@@ -210,13 +210,11 @@ jobs:
         run: |
           cd Mutqin
           gradle assembleDebug --no-daemon
-      - name: Publish
+      - name: Publish APK artifact
         if: steps.check.outputs.ready == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          TAG="mutqin-build-${GITHUB_RUN_NUMBER}"
-          gh release create "$TAG" Mutqin/app/build/outputs/apk/debug/app-debug.apk \
-            --title "مُتقن - البناء ${GITHUB_RUN_NUMBER}" \
-            --notes "نسخة مرتبطة بالالتزام البرمجي: ${GITHUB_SHA}" \
-            --target "${GITHUB_SHA}"
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutqin-apk-${{ github.run_number }}
+          path: Mutqin/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
