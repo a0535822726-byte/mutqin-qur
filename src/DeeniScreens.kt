@@ -548,7 +548,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
       items(filteredTajweed.size) { index ->
         val lesson=filteredTajweed[index]
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp)) {
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(24.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
             Text("الدرس ${lesson.id}: ${lesson.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
             Text("الهدف: ${lesson.objective}",fontSize=13.sp,color=c.onSurface)
@@ -577,7 +577,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
       items(filteredHadith.size) { index ->
         val h=filteredHadith[index]
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp)) {
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(24.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
             Text("الحديث ${h.id}: ${h.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
             Text(h.text,fontSize=19.sp,lineHeight=31.sp,color=c.onSurface,textAlign=TextAlign.Center)
@@ -600,7 +600,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
       items(filteredFiqh.size) { index ->
         val f=filteredFiqh[index]
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp)) {
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(24.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
             Text("المسألة ${f.id}: ${f.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
             Text("السؤال: ${f.question}",fontSize=14.sp,fontWeight=FontWeight.SemiBold,color=c.onSurface)
@@ -623,7 +623,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
       items(filteredStories.size) { index ->
         val story=filteredStories[index]
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp)) {
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(24.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
             Text("القصة ${story.id}: ${story.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
             Text(story.summary,fontSize=14.sp,lineHeight=23.sp,color=c.onSurface)
@@ -631,7 +631,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
             if(story.chapters.isNotEmpty()) {
               Text("النسخة المطوّلة: ${story.chapters.size} فصول",fontSize=14.sp,fontWeight=FontWeight.Bold,color=c.primary)
               story.chapters.forEachIndexed { chapterIndex, chapter ->
-                Card(colors=CardDefaults.cardColors(containerColor=c.surfaceVariant),shape=RoundedCornerShape(14.dp)) {
+                Card(colors=CardDefaults.cardColors(containerColor=c.surfaceVariant),shape=RoundedCornerShape(18.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outline.copy(alpha=.25f))) {
                   Text(chapter,Modifier.fillMaxWidth().padding(14.dp),fontSize=14.sp,lineHeight=25.sp,color=c.onSurface)
                 }
               }
