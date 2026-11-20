@@ -243,8 +243,9 @@ fun ReaderScreen(
       )
       TextButton(onClick = {
         if (isListening) {
-          recognizer?.stopListening()
+          recognizer?.cancel()
           isListening = false
+          speechError = "تم إيقاف التسميع."
         } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
           beginRecognition()
         } else {
