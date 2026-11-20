@@ -427,23 +427,32 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
     verticalArrangement=Arrangement.spacedBy(12.dp)
   ) {
     item {
-      Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
-        TextButton(onClick=onBack){Text("‹  المكتبة")}
-        Spacer(Modifier.weight(1f))
-        Text("مُتْقِن  •  مَسَارُ الْعِلْم",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
-      }
-      Card(shape=RoundedCornerShape(28.dp),colors=CardDefaults.cardColors(containerColor=c.primary),
-        border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.72f)),
-        elevation=CardDefaults.cardElevation(defaultElevation=3.dp)) {
-        Row(Modifier.fillMaxWidth().padding(19.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
-          Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(8.dp)) {
-            Text("مِنْ مَكْتَبَةِ مُتْقِن",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
-            Text(section,fontSize=25.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
-            if(info!=null) Text(info.subtitle,fontSize=12.sp,lineHeight=19.sp,color=c.onPrimary.copy(alpha=.82f))
-            if(info!=null) Text("الهدف: ${info.target}",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+      Column(Modifier.fillMaxWidth().background(c.primary).padding(horizontal=18.dp, vertical=15.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
+        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+          Surface(onClick=onBack,shape=RoundedCornerShape(13.dp),color=c.onPrimary.copy(alpha=.12f)) {
+            Text("‹",Modifier.padding(horizontal=14.dp,vertical=7.dp),fontSize=23.sp,color=c.onPrimary)
           }
-          Box(Modifier.size(64.dp).background(c.onPrimary.copy(alpha=.09f),RoundedCornerShape(22.dp)).border(1.dp,c.secondary.copy(alpha=.45f),RoundedCornerShape(22.dp)),contentAlignment=Alignment.Center) {
-            Text("۞",fontSize=37.sp,color=c.secondary)
+          Spacer(Modifier.weight(1f))
+          Text("مُتْقِن  /  مَكْتَبَةُ الْعِلْم",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary,letterSpacing=1.sp)
+        }
+        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.Bottom,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+          Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(7.dp)) {
+            Text("رِحْلَةُ تَعَلُّمٍ",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary,letterSpacing=2.sp)
+            Text(section,fontSize=29.sp,fontWeight=FontWeight.Black,color=c.onPrimary)
+            if(info!=null) Text(info.subtitle,fontSize=12.sp,lineHeight=20.sp,color=c.onPrimary.copy(alpha=.82f))
+          }
+          Box(Modifier.size(62.dp).background(c.onPrimary.copy(alpha=.10f),RoundedCornerShape(20.dp)).border(1.dp,c.secondary.copy(alpha=.55f),RoundedCornerShape(20.dp)),contentAlignment=Alignment.Center) {
+            Text("۞",fontSize=35.sp,color=c.secondary)
+          }
+        }
+        if(info!=null) {
+          Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+            Surface(shape=RoundedCornerShape(12.dp),color=c.onPrimary.copy(alpha=.12f)) {
+              Text("الهدف: ${info.target}",Modifier.padding(horizontal=11.dp,vertical=8.dp),fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.onPrimary)
+            }
+            Surface(shape=RoundedCornerShape(12.dp),color=c.secondary.copy(alpha=.18f)) {
+              Text("مسار معرفي",Modifier.padding(horizontal=11.dp,vertical=8.dp),fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.onPrimary)
+            }
           }
         }
       }
