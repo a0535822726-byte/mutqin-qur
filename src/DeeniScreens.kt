@@ -117,7 +117,8 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
   var count by remember { mutableIntStateOf(prefs.tasbihCount()) }
   var phraseIndex by remember { mutableIntStateOf(0) }
   var target by remember { mutableIntStateOf(33) }
-  val phrases = listOf("سُبْحَانَ اللَّهِ","الْحَمْدُ لِلَّهِ","اللَّهُ أَكْبَرُ","أَسْتَغْفِرُ اللَّهَ","اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ")
+  var showReset by remember { mutableStateOf(false) }
+  val phrases = listOf("سُبْحَانَ اللَّهِ","الْحَمْدُ لِلَّهِ","اللَّهُ أَكْبَرُ","أَسْتَغْفِرُ اللَّهَ","أَذْكَرُ اللَّهَ")
   val targets = listOf(33,100,500,1000)
   Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding().padding(20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(16.dp)) {
     Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) { TextButton(onClick=onBack){Text("رجوع")};Text("المسبحة الإلكترونية",fontSize=22.sp,fontWeight=FontWeight.Bold,color=c.primary) }
@@ -129,13 +130,16 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
     }
     Text(phrases[phraseIndex],fontSize=27.sp,fontWeight=FontWeight.Bold,color=c.primary,textAlign=TextAlign.Center)
     Text(count.toString().map { '٠'+(it-'0') }.joinToString(""),fontSize=56.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
-    Text("الهدف: \${toArabic(target)} • المتبقي: \${toArabic((target-count).coerceAtLeast(0))}",fontSize=14.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+    Text("الهدف: ${toArabic(target)} • المتبقي: ${toArabic((target-count).coerceAtLeast(0))}",fontSize=14.sp,color=c.secondary,fontWeight=FontWeight.Bold)
     LinearProgressIndicator(progress={ (count.toFloat()/target).coerceIn(0f,1f) },modifier=Modifier.fillMaxWidth())
     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) { targets.forEach { t-> OutlinedButton(onClick={target=t},modifier=Modifier.weight(1f)) { Text(toArabic(t)) } } }
     Button(onClick={count++;prefs.setTasbihCount(count)},modifier=Modifier.fillMaxWidth().height(68.dp),shape=RoundedCornerShape(22.dp)) { Text("تسبيح +١",fontSize=22.sp) }
     if(count>=target) Text("أحسنت! وصلت إلى هدفك. يمكنك مواصلة الذكر أو بدء هدف جديد.",fontSize=14.sp,color=c.primary,textAlign=TextAlign.Center)
-    OutlinedButton(onClick={count=0;prefs.setTasbihCount(0)},modifier=Modifier.fillMaxWidth()) { Text("إعادة العداد") }
+    OutlinedButton(onClick={showReset=true},modifier=Modifier.fillMaxWidth()) { Text("إعادة العداد") }
     Text("يُحفظ العدد تلقائياً على جهازك.",fontSize=12.sp,color=c.onSurfaceVariant)
+  }
+  if(showReset) {
+    AlertDialog(onDismissRequest={showReset=false},title={Text("إعادة عداد التسبيح؟")},text={Text("سيُعاد العدد الحالي إلى صفر.")},confirmButton={TextButton(onClick={count=0;prefs.setTasbihCount(0);showReset=false){Text("إعادة")}},dismissButton={TextButton(onClick={showReset=false){Text("إلغاء")}})
   }
 }
 
