@@ -115,6 +115,7 @@ fun ReaderScreen(
   val revealed = remember { mutableStateListOf<Int>() }
   var showBookmarks by remember { mutableStateOf(false) }
   var showTools by remember { mutableStateOf(false) }
+  var selectedAyah by remember { mutableIntStateOf(0) }
   var bookmarkVersion by remember { mutableIntStateOf(0) }
   val bookmarks = remember(bookmarkVersion) { prefs.bookmarks() }
   val listState = rememberLazyListState()
@@ -353,8 +354,12 @@ fun ReaderScreen(
             ) {
               Text(
                 body + " ﴿" + toArabic(n) + "﴾",
-                modifier = Modifier.weight(1f).clickable(enabled = hide) {
-                  if (n in revealed) revealed.remove(n) else revealed.add(n)
+                modifier = Modifier.weight(1f).clickable {
+                  if (hide) {
+                    if (n in revealed) revealed.remove(n) else revealed.add(n)
+                  } else {
+                    selectedAyah = n
+                  }
                 }.padding(vertical = 3.dp),
                 fontSize = size.sp,
                 lineHeight = (size * 2.05f).sp,
@@ -397,6 +402,40 @@ fun ReaderScreen(
         }
       }
     }
+  }
+  if (selectedAyah > 0) {
+    val selectedText = repo.ayah(surah, selectedAyah)
+    AlertDialog(
+      onDismissRequest = { selectedAyah = 0 },
+      title = { Text("سورة \${SURAH_NAMES[surah - 1]} — الآية \${toArabic(selectedAyah)}") },
+      text = { Text(selectedText, fontSize = 20.sp, lineHeight = 34.sp, textAlign = TextAlign.Center) },
+      confirmButton = {
+        TextButton(onClick = {
+          val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+          clipboard.setPrimaryClip(android.content.ClipData.newPlainText("آية من القرآن", selectedText))
+          selectedAyah = 0
+          android.widget.Toast.makeText(context, "تم نسخ الآية", android.widget.Toast.LENGTH_SHORT).show()
+        }) { Text("نسخ الآية") }
+      },
+      dismissButton = {
+        Row {
+          TextButton(onClick = {
+            val share = Intent(Intent.ACTION_SEND).apply {
+              type = "text/plain"
+              putExtra(Intent.EXTRA_TEXT, "$selectedText\n(سورة \${SURAH_NAMES[surah - 1]}، الآية \${toArabic(selectedAyah)})")
+            }
+            context.startActivity(Intent.createChooser(share, "مشاركة الآية"))
+            selectedAyah = 0
+          }) { Text("مشاركة") }
+          TextButton(onClick = {
+            prefs.toggleBookmark(surah, selectedAyah)
+            bookmarkVersion++
+            selectedAyah = 0
+          }) { Text("حفظ") }
+          TextButton(onClick = { selectedAyah = 0 }) { Text("إغلاق") }
+        }
+      }
+    )
   }
   if (showBookmarks) {
     AlertDialog(
