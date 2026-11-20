@@ -273,18 +273,24 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
         }
       }
       Text("اختر الذكر",Modifier.fillMaxWidth(),fontSize=15.sp,fontWeight=FontWeight.Bold,color=c.onBackground)
-      Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-        phrases.forEachIndexed { index,phrase ->
-          Surface(modifier=Modifier.weight(1f).clickable{phraseIndex=index;count=phrasePrefs.getInt("phrase_$index",if(index==0)prefs.tasbihCount() else 0)},shape=RoundedCornerShape(13.dp),color=if(phraseIndex==index)c.primary else c.surface,border=androidx.compose.foundation.BorderStroke(1.dp,if(phraseIndex==index)c.secondary else c.outlineVariant)) {
-            Text(phrase,Modifier.fillMaxWidth().padding(horizontal=4.dp,vertical=11.dp),fontSize=9.sp,textAlign=TextAlign.Center,fontWeight=FontWeight.Bold,color=if(phraseIndex==index)c.onPrimary else c.onSurface,maxLines=2)
+      Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+        phrases.chunked(3).forEach { rowPhrases ->
+          Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+            rowPhrases.forEach { phrase ->
+              val index=phrases.indexOf(phrase)
+              Surface(modifier=Modifier.weight(1f).clickable{phraseIndex=index;count=phrasePrefs.getInt("phrase_$index",if(index==0)prefs.tasbihCount() else 0)},shape=RoundedCornerShape(15.dp),color=if(phraseIndex==index)c.primary else c.surface,border=androidx.compose.foundation.BorderStroke(1.dp,if(phraseIndex==index)c.secondary else c.outlineVariant)) {
+                Text(phrase,Modifier.fillMaxWidth().padding(horizontal=7.dp,vertical=13.dp),fontSize=10.sp,textAlign=TextAlign.Center,fontWeight=FontWeight.Bold,color=if(phraseIndex==index)c.onPrimary else c.onSurface,maxLines=2)
+              }
+            }
+            if(rowPhrases.size<3) repeat(3-rowPhrases.size) { Spacer(Modifier.weight(1f)) }
           }
         }
       }
-      Card(shape=RoundedCornerShape(30.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.38f)),elevation=CardDefaults.cardElevation(defaultElevation=3.dp)) {
+      Card(shape=RoundedCornerShape(32.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.48f)),elevation=CardDefaults.cardElevation(defaultElevation=4.dp)) {
         Column(Modifier.fillMaxWidth().padding(20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(10.dp)) {
           Text("الذكر المختار",fontSize=10.sp,color=c.onSurfaceVariant,fontWeight=FontWeight.Bold)
           Text(phrases[phraseIndex],fontSize=21.sp,fontWeight=FontWeight.Bold,color=c.primary,textAlign=TextAlign.Center)
-          Box(Modifier.size(194.dp).background(c.primary.copy(alpha=.08f),RoundedCornerShape(100.dp)).padding(9.dp).background(c.surfaceVariant,RoundedCornerShape(100.dp)).border(2.dp,c.secondary.copy(alpha=.75f),RoundedCornerShape(100.dp)).clickable{
+          Box(Modifier.size(202.dp).background(c.primary.copy(alpha=.07f),RoundedCornerShape(100.dp)).padding(8.dp).background(c.surfaceVariant,RoundedCornerShape(100.dp)).border(2.dp,c.secondary.copy(alpha=.82f),RoundedCornerShape(100.dp)).clickable{
             count+=1;phrasePrefs.edit().putInt("phrase_$phraseIndex",count).apply();prefs.setTasbihCount(count)
           },contentAlignment=Alignment.Center) {
             Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(2.dp)) {
