@@ -198,12 +198,20 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
     LazyColumn(contentPadding=PaddingValues(14.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
       items(learningSections.size) { i ->
         val item=learningSections[i]
+        val publishedCount=when(item.title) {
+          "التجويد" -> tajweedLessons.size
+          "الحديث" -> hadithEntries.size
+          "الفقه" -> fiqhEntries.size
+          "القصص الإسلامية" -> quranStories.size
+          else -> 0
+        }
+        val status=if(publishedCount>0) "متاح: ${toArabic(publishedCount)} مادة" else "قيد البناء"
         Card(Modifier.fillMaxWidth().clickable { onOpen(item.title) },shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=c.surface)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
               Text(item.title,fontSize=18.sp,fontWeight=FontWeight.Bold,color=c.primary)
-              Surface(color=if(item.status.startsWith("متاح")) c.primary.copy(alpha=.12f) else c.secondary.copy(alpha=.15f),shape=RoundedCornerShape(30.dp)) {
-                Text(item.status,Modifier.padding(horizontal=10.dp,vertical=5.dp),fontSize=10.sp,color=c.onSurface)
+              Surface(color=if(publishedCount>0) c.primary.copy(alpha=.12f) else c.secondary.copy(alpha=.15f),shape=RoundedCornerShape(30.dp)) {
+                Text(status,Modifier.padding(horizontal=10.dp,vertical=5.dp),fontSize=10.sp,color=c.onSurface)
               }
             }
             Text(item.subtitle,fontSize=13.sp,color=c.onSurface)
