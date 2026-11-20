@@ -1,6 +1,6 @@
 package com.mutqin.app
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background\nimport androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -46,7 +46,7 @@ fun SurahListScreen(
     }
   }
 
-  Column(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
+  Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)) {
     Row(
       modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp),
       verticalAlignment = Alignment.CenterVertically,
@@ -87,7 +87,7 @@ fun SurahListScreen(
         items(ayahMatches) { match ->
           val (surahNumber, ayahNumber) = match
           Card(
-            modifier = Modifier.fillMaxWidth().clickable { onResume(surahNumber, ayahNumber, ayahNumber) }
+            modifier = Modifier.fillMaxWidth().clickable { onResume(surahNumber, ayahNumber, ayahNumber) },shape=androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
           ) {
             Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
               Text(
@@ -127,7 +127,7 @@ fun SurahListScreen(
         item { Text("لا توجد سورة بهذا الاسم أو الرقم") }
       }
       if (searchText.length < 2) items(filtered) { n ->
-        Card(modifier = Modifier.fillMaxWidth().clickable { onOpenSurah(n) }) {
+        Card(modifier = Modifier.fillMaxWidth().clickable { onOpenSurah(n) },shape=androidx.compose.foundation.shape.RoundedCornerShape(20.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)) {
           Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
