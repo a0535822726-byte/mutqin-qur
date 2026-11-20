@@ -47,35 +47,54 @@ fun SurahListScreen(
     }
   }
 
-  Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background).padding(top=6.dp)) {
+  Column(modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background).padding(top=4.dp)) {
     val c = MaterialTheme.colorScheme
-    Row(Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=8.dp),verticalAlignment=Alignment.CenterVertically) {
-      TextButton(onClick={onResume(last?.first ?: 1,last?.second ?: 1,last?.third ?: 7)}) {
-        Text("آخر موضع",fontSize=11.sp,color=c.secondary)
+    Row(Modifier.fillMaxWidth().padding(horizontal=18.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically) {
+      Column(verticalArrangement=Arrangement.spacedBy(1.dp)) {
+        Text("مُتْقِن",fontSize=18.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+        Text("رحلتك مع القرآن",fontSize=9.sp,color=c.onSurfaceVariant)
       }
       Spacer(Modifier.weight(1f))
-      Text("مُتْقِن  •  الْمُصْحَف",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
-      Spacer(Modifier.width(8.dp))
+      TextButton(onClick={onResume(last?.first ?: 1,last?.second ?: 1,last?.third ?: 7)}) {
+        Text("متابعة القراءة  ›",fontSize=11.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+      }
       Switch(checked=dark,onCheckedChange=onDark)
     }
-    Card(Modifier.fillMaxWidth().padding(horizontal=16.dp),shape=androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
+    Card(Modifier.fillMaxWidth().padding(horizontal=14.dp),shape=androidx.compose.foundation.shape.RoundedCornerShape(30.dp),
       colors=CardDefaults.cardColors(containerColor=c.primary),
-      border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
-      Row(Modifier.fillMaxWidth().padding(19.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
-        Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(6.dp)) {
-          Text("بَيْنَ يَدَيْكَ كِتَابُ الله",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
-          Text("اختر سورتك وابدأ التلاوة",fontSize=20.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
-          Text("١١٤ سورة • بحث في السور والآيات",fontSize=11.sp,color=c.onPrimary.copy(alpha=.8f))
+      border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.8f)),
+      elevation=CardDefaults.cardElevation(defaultElevation=5.dp)) {
+      Column(Modifier.fillMaxWidth().padding(20.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+          Text("الْمُصْحَفُ الشَّرِيف",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+          Spacer(Modifier.weight(1f))
+          Text("۞",fontSize=30.sp,color=c.secondary)
         }
-        Text("۞",fontSize=49.sp,color=c.secondary)
+        Text("افتح قلبك لآيات الله",fontSize=23.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+        Text("تصفّح السور، وابحث عن آية، وأكمل من حيث توقفت.",fontSize=11.sp,lineHeight=18.sp,color=c.onPrimary.copy(alpha=.82f))
+        Row(horizontalArrangement=Arrangement.spacedBy(8.dp),verticalAlignment=Alignment.CenterVertically) {
+          Surface(shape=androidx.compose.foundation.shape.RoundedCornerShape(50),color=c.onPrimary.copy(alpha=.10f)) {
+            Text("١١٤ سورة",modifier=Modifier.padding(horizontal=12.dp,vertical=7.dp),fontSize=10.sp,color=c.onPrimary,fontWeight=FontWeight.SemiBold)
+          }
+          Surface(shape=androidx.compose.foundation.shape.RoundedCornerShape(50),color=c.secondary.copy(alpha=.20f)) {
+            Text("بحث في القرآن",modifier=Modifier.padding(horizontal=12.dp,vertical=7.dp),fontSize=10.sp,color=c.onPrimary,fontWeight=FontWeight.SemiBold)
+          }
+        }
       }
     }
     OutlinedTextField(
       value=query,onValueChange={query=it},
       label={Text("ابحث باسم السورة أو بكلمات من آية")},
+      leadingIcon={Text("⌕",fontSize=23.sp,color=c.secondary)},
       singleLine=true,
-      shape=androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-      modifier=Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=10.dp)
+      shape=androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+      colors=OutlinedTextFieldDefaults.colors(
+        focusedBorderColor=c.secondary,
+        unfocusedBorderColor=c.outline.copy(alpha=.45f),
+        focusedContainerColor=c.surface,
+        unfocusedContainerColor=c.surface
+      ),
+      modifier=Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=12.dp)
     )
     LazyColumn(
       contentPadding = PaddingValues(16.dp),
@@ -141,28 +160,25 @@ fun SurahListScreen(
         item { Text("لا توجد سورة بهذا الاسم أو الرقم") }
       }
       if (searchText.length < 2) items(filtered) { n ->
-        Card(modifier = Modifier.fillMaxWidth().clickable { onOpenSurah(n) },shape=androidx.compose.foundation.shape.RoundedCornerShape(23.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=androidx.compose.foundation.BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.25f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
+        Card(modifier = Modifier.fillMaxWidth().clickable { onOpenSurah(n) },shape=androidx.compose.foundation.shape.RoundedCornerShape(21.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=androidx.compose.foundation.BorderStroke(1.dp,MaterialTheme.colorScheme.secondary.copy(alpha=.20f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
           Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=13.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
           ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              Box(
-                modifier=Modifier.size(43.dp).background(MaterialTheme.colorScheme.surfaceVariant,androidx.compose.foundation.shape.RoundedCornerShape(14.dp)),
-                contentAlignment=Alignment.Center
-              ) {
-                Text(toArabic(n),color=MaterialTheme.colorScheme.secondary,fontWeight=FontWeight.ExtraBold,fontSize=14.sp)
-              }
-              Spacer(Modifier.width(12.dp))
-              Column(verticalArrangement=Arrangement.spacedBy(2.dp)) {
-                Text(SURAH_NAMES[n - 1], fontSize = 19.sp, fontWeight = FontWeight.ExtraBold)
-                Text("سورة من القرآن الكريم",fontSize=9.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
-              }
+            Box(
+              modifier=Modifier.size(47.dp).background(MaterialTheme.colorScheme.primary.copy(alpha=.09f),androidx.compose.foundation.shape.RoundedCornerShape(16.dp)),
+              contentAlignment=Alignment.Center
+            ) {
+              Text(toArabic(n),color=MaterialTheme.colorScheme.secondary,fontWeight=FontWeight.ExtraBold,fontSize=15.sp)
             }
-            Column(horizontalAlignment=Alignment.End,verticalArrangement=Arrangement.spacedBy(2.dp)) {
-              Text("${toArabic(repo.ayahCount(n))} آية", fontSize = 12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant,fontWeight=FontWeight.Medium)
-              Text("فتح السورة  ‹",fontSize=9.sp,color=MaterialTheme.colorScheme.secondary,fontWeight=FontWeight.Bold)
+            Column(Modifier.weight(1f),verticalArrangement = Arrangement.spacedBy(3.dp)) {
+              Text(SURAH_NAMES[n - 1], fontSize = 18.sp, fontWeight = FontWeight.ExtraBold,color=MaterialTheme.colorScheme.onSurface)
+              Text("سُورَةٌ مِنَ الْقُرْآنِ الْكَرِيم",fontSize=9.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Column(horizontalAlignment = Alignment.End,verticalArrangement = Arrangement.spacedBy(4.dp)) {
+              Text("${toArabic(repo.ayahCount(n))} آية", fontSize = 11.sp,color=MaterialTheme.colorScheme.primary,fontWeight=FontWeight.Bold)
+              Text("اقرأ الآن  ›",fontSize=9.sp,color=MaterialTheme.colorScheme.secondary,fontWeight=FontWeight.Bold)
             }
           }
         }
