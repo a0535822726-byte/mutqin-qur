@@ -311,7 +311,7 @@ fun ReaderScreen(
           drawLine(
             color = androidx.compose.ui.graphics.Color(0xFFB28A3B),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(size.width, 0f),
+            end = androidx.compose.ui.geometry.Offset(this.size.width, 0f),
             strokeWidth = 1.dp.toPx()
           )
         }
