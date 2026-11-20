@@ -442,28 +442,37 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
     verticalArrangement=Arrangement.spacedBy(12.dp)
   ) {
     item {
-      TextButton(onClick=onBack){Text("رجوع إلى المكتبة")}
-      Text(section,fontSize=28.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
-      if(info!=null) {
-        Text(info.subtitle,fontSize=15.sp,color=c.onSurfaceVariant)
-        Text("الهدف النهائي: ${info.target}",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+      Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+        TextButton(onClick=onBack){Text("‹  المكتبة")}
+        Spacer(Modifier.weight(1f))
+        Text("مُتْقِن  •  مَسَارُ الْعِلْم",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+      }
+      Card(shape=RoundedCornerShape(24.dp),colors=CardDefaults.cardColors(containerColor=c.primary),
+        border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
+        Column(Modifier.fillMaxWidth().padding(19.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+          Text("مِنْ مَكْتَبَةِ مُتْقِن",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+          Text(section,fontSize=25.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+          if(info!=null) Text(info.subtitle,fontSize=12.sp,lineHeight=19.sp,color=c.onPrimary.copy(alpha=.82f))
+          if(info!=null) Text("الهدف: ${info.target}",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+        }
       }
       if(section=="التجويد" || section=="الحديث" || section=="الفقه" || section=="القصص الإسلامية") {
-        OutlinedTextField(
-          value=searchQuery,
-          onValueChange={searchQuery=it},
-          modifier=Modifier.fillMaxWidth(),
-          singleLine=true,
-          label={Text("ابحث داخل ${section}")},
-          placeholder={Text("اكتب كلمة أو عنوانًا أو مصدرًا")}
-        )
+        OutlinedTextField(value=searchQuery,onValueChange={searchQuery=it},modifier=Modifier.fillMaxWidth(),
+          singleLine=true,shape=RoundedCornerShape(15.dp),label={Text("ابحث داخل ${section}")},placeholder={Text("كلمة أو عنوان أو مصدر")})
       }
       if(section=="التجويد" || section=="الحديث" || section=="الفقه" || section=="القصص الإسلامية") {
-        val total = when(section) { "التجويد" -> tajweedLessons.size; "الحديث" -> hadithEntries.size; "الفقه" -> fiqhEntries.size; else -> quranStories.size }
-        val done = completedIds.size
-        Text("تقدمك في هذا القسم: $done من $total",fontSize=14.sp,fontWeight=FontWeight.Bold,color=c.primary)
-        LinearProgressIndicator(progress={ if(total==0) 0f else done.toFloat()/total },modifier=Modifier.fillMaxWidth())
-        Text("ضع علامة بعد إكمال المادة؛ سيُحفظ تقدمك على هذا الجهاز.",fontSize=11.sp,color=c.onSurfaceVariant)
+        val total=when(section){"التجويد"->tajweedLessons.size;"الحديث"->hadithEntries.size;"الفقه"->fiqhEntries.size;else->quranStories.size}
+        val done=completedIds.size
+        Card(shape=RoundedCornerShape(17.dp),colors=CardDefaults.cardColors(containerColor=c.surfaceVariant)) {
+          Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
+              Text("تقدمك في هذا القسم",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.primary)
+              Text("${toArabic(done)} / ${toArabic(total)}",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            }
+            LinearProgressIndicator(progress={if(total==0)0f else done.toFloat()/total},modifier=Modifier.fillMaxWidth())
+            Text("ضع علامة بعد إكمال المادة؛ سيُحفظ تقدمك على هذا الجهاز.",fontSize=10.sp,color=c.onSurfaceVariant)
+          }
+        }
       }
     }
     if(section=="الاختبارات") {
