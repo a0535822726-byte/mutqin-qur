@@ -457,13 +457,19 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
         Spacer(Modifier.weight(1f))
         Text("مُتْقِن  •  مَسَارُ الْعِلْم",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
       }
-      Card(shape=RoundedCornerShape(24.dp),colors=CardDefaults.cardColors(containerColor=c.primary),
-        border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
-        Column(Modifier.fillMaxWidth().padding(19.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
-          Text("مِنْ مَكْتَبَةِ مُتْقِن",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
-          Text(section,fontSize=25.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
-          if(info!=null) Text(info.subtitle,fontSize=12.sp,lineHeight=19.sp,color=c.onPrimary.copy(alpha=.82f))
-          if(info!=null) Text("الهدف: ${info.target}",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+      Card(shape=RoundedCornerShape(28.dp),colors=CardDefaults.cardColors(containerColor=c.primary),
+        border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.72f)),
+        elevation=CardDefaults.cardElevation(defaultElevation=3.dp)) {
+        Row(Modifier.fillMaxWidth().padding(19.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
+          Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+            Text("مِنْ مَكْتَبَةِ مُتْقِن",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            Text(section,fontSize=25.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+            if(info!=null) Text(info.subtitle,fontSize=12.sp,lineHeight=19.sp,color=c.onPrimary.copy(alpha=.82f))
+            if(info!=null) Text("الهدف: ${info.target}",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+          }
+          Box(Modifier.size(64.dp).background(c.onPrimary.copy(alpha=.09f),RoundedCornerShape(22.dp)).border(1.dp,c.secondary.copy(alpha=.45f),RoundedCornerShape(22.dp)),contentAlignment=Alignment.Center) {
+            Text("۞",fontSize=37.sp,color=c.secondary)
+          }
         }
       }
       if(section=="التجويد" || section=="الحديث" || section=="الفقه" || section=="القصص الإسلامية") {
@@ -473,7 +479,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       if(section=="التجويد" || section=="الحديث" || section=="الفقه" || section=="القصص الإسلامية") {
         val total=when(section){"التجويد"->tajweedLessons.size;"الحديث"->hadithEntries.size;"الفقه"->fiqhEntries.size;else->quranStories.size}
         val done=completedIds.size
-        Card(shape=RoundedCornerShape(17.dp),colors=CardDefaults.cardColors(containerColor=c.surfaceVariant)) {
+        Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.65f))) {
           Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
               Text("تقدمك في هذا القسم",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.primary)
