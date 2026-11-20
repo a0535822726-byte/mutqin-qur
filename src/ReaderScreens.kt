@@ -410,10 +410,11 @@ fun ReaderScreen(
   }
   if (selectedAyah > 0) {
     val selectedText = repo.ayah(surah, selectedAyah)
+    var focusedWord by remember(selectedAyah) { mutableStateOf<String?>(null) }
     AlertDialog(
       onDismissRequest = { selectedAyah = 0 },
       title = { Text("سورة ${SURAH_NAMES[surah - 1]} — الآية ${toArabic(selectedAyah)}") },
-      text = { Text(selectedText, fontSize = 20.sp, lineHeight = 34.sp, textAlign = TextAlign.Center) },
+      text = { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) { Text(selectedText, fontSize = 20.sp, lineHeight = 34.sp, textAlign = TextAlign.Center); Text("اختر كلمة للتأمل فيها أو نسخها", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary); FlowRowCompat(selectedText.split(Regex("\\\\s+")), focusedWord) { focusedWord = it }; if (focusedWord != null) Text("الكلمة المحددة: $focusedWord", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold) } },
       confirmButton = {
         TextButton(onClick = {
           val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
@@ -470,3 +471,4 @@ fun ReaderScreen(
     )
   }
 }
+\n@Composable\nprivate fun FlowRowCompat(words: List<String>, selected: String?, onSelect: (String) -> Unit) {\n  Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {\n    words.chunked(4).forEach { chunk -> Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) { chunk.forEach { word -> TextButton(onClick = { onSelect(word) }) { Text(word, color = if (word == selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary, fontSize = 15.sp) } } } }\n  }\n}\n
