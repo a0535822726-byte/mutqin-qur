@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -142,10 +143,19 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
 
   val colors = MaterialTheme.colorScheme
   Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().verticalScroll(rememberScrollState()).padding(horizontal=16.dp, vertical=10.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
-    Row(Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically) {
-      TextButton(onClick = onBack) { Text("‹  الرئيسية") }
+    Row(Modifier.fillMaxWidth().padding(bottom=2.dp),verticalAlignment = Alignment.CenterVertically) {
+      Surface(onClick=onBack,shape=RoundedCornerShape(14.dp),color=colors.surface,border=androidx.compose.foundation.BorderStroke(1.dp,colors.secondary.copy(alpha=.35f))) {
+        Text("‹",modifier=Modifier.padding(horizontal=14.dp,vertical=7.dp),fontSize=23.sp,color=colors.primary,fontWeight=FontWeight.Bold)
+      }
+      Spacer(Modifier.width(11.dp))
+      Column(verticalArrangement=Arrangement.spacedBy(1.dp)) {
+        Text("مُتْقِن",fontSize=16.sp,fontWeight=FontWeight.ExtraBold,color=colors.primary)
+        Text("التسميع والمراجعة",fontSize=9.sp,color=colors.onSurfaceVariant)
+      }
       Spacer(Modifier.weight(1f))
-      Text("مُتْقِن  •  التَّلْقِين",fontSize=11.sp,fontWeight=FontWeight.Bold,color=colors.secondary)
+      Surface(shape=RoundedCornerShape(50),color=colors.secondary.copy(alpha=.13f)) {
+        Text("جلسة صوتية",modifier=Modifier.padding(horizontal=11.dp,vertical=7.dp),fontSize=10.sp,fontWeight=FontWeight.Bold,color=colors.secondary)
+      }
     }
     Card(shape=RoundedCornerShape(25.dp),colors=CardDefaults.cardColors(containerColor=colors.primary),
       border=androidx.compose.foundation.BorderStroke(1.dp,colors.secondary.copy(alpha=.7f))) {
@@ -162,7 +172,11 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
     }
     Card(shape = RoundedCornerShape(25.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), border=androidx.compose.foundation.BorderStroke(1.dp,colors.outline.copy(alpha=.28f)), elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
       Column(Modifier.fillMaxWidth().padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text("موضع المراجعة", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+          Text("موضع المراجعة", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp,color=colors.primary)
+          Spacer(Modifier.weight(1f))
+          Text("١",fontSize=11.sp,fontWeight=FontWeight.Bold,color=colors.secondary)
+        }
         OutlinedTextField(value = surahInput, onValueChange = { surahInput = it.filter(Char::isDigit).take(3); ayahInput = "1"; endAyahInput = "1" }, modifier = Modifier.fillMaxWidth(), singleLine = true, shape=RoundedCornerShape(16.dp), label = { Text("رقم السورة (١–١١٤)") })
         Text("السورة: ${SURAH_NAMES[surah - 1]} • ${toArabic(count)} آية", color = colors.primary, fontWeight = FontWeight.SemiBold)
         OutlinedTextField(value = ayahInput, onValueChange = { ayahInput = it.filter(Char::isDigit).take(4) }, modifier = Modifier.fillMaxWidth(), singleLine = true, shape=RoundedCornerShape(16.dp), label = { Text("رقم الآية") })
