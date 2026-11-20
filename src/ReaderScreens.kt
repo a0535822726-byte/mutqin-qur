@@ -293,7 +293,7 @@ fun ReaderScreen(
             }
           }
           Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { transcript = ""; speechError = null; matchedWords.takeIf { it > 0 } }, modifier = Modifier.weight(1f)) { Text("مسح نتيجة التسميع") }
+            OutlinedButton(onClick = { transcript = ""; speechError = null }, modifier = Modifier.weight(1f)) { Text("مسح نتيجة التسميع") }
             Button(onClick = {
               transcript = ""
               speechError = null
