@@ -367,13 +367,37 @@ private val learningSections = listOf(
 @Composable
 fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
   val c=MaterialTheme.colorScheme
+  val publishedTotal=hadithEntries.size+tajweedLessons.size+fiqhEntries.size+quranStories.size+mutqinQuizQuestions.size
+  val sectionIcons=mapOf("التجويد" to "۞","الحديث" to "❖","الفقه" to "⚖","السيرة والصحابة" to "✧","القصص الإسلامية" to "❈","الاختبارات" to "؟","الأذكار والأدعية" to "◉")
   Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
     Row(Modifier.fillMaxWidth().padding(horizontal=14.dp, vertical=8.dp),verticalAlignment=Alignment.CenterVertically) {
-      TextButton(onClick=onBack){Text("رجوع")}
-      Text("مكتبة متقن",fontSize=24.sp,fontWeight=FontWeight.Bold,color=c.primary)
+      TextButton(onClick=onBack){Text("‹  الرئيسية")}
+      Spacer(Modifier.weight(1f))
+      Text("مكتبة متقن",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.secondary)
     }
-    Text("مصادر التعلم والعبادات في مكان واحد",Modifier.padding(horizontal=16.dp),fontSize=13.sp,color=c.onSurfaceVariant)
-    LazyColumn(contentPadding=PaddingValues(14.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+    LazyColumn(contentPadding=PaddingValues(start=16.dp,end=16.dp,top=5.dp,bottom=28.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+      item {
+        Card(shape=RoundedCornerShape(27.dp),colors=CardDefaults.cardColors(containerColor=c.primary),
+          border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
+          Column(Modifier.fillMaxWidth().padding(21.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
+            Text("مَسَارُ التَّعَلُّم",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            Text("تعلّمٌ موثوق، خطوةً بخطوة",fontSize=23.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+            Text("القرآن وعلومه والسنة والسيرة والفقه في مكتبة واحدة، بواجهة موحدة ومصادر ظاهرة.",fontSize=12.sp,lineHeight=20.sp,color=c.onPrimary.copy(alpha=.82f))
+            Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+              Surface(shape=RoundedCornerShape(12.dp),color=c.onPrimary.copy(alpha=.12f)) {
+                Text("${toArabic(learningSections.size)} أقسام",Modifier.padding(horizontal=11.dp,vertical=8.dp),fontSize=11.sp,color=c.onPrimary,fontWeight=FontWeight.Bold)
+              }
+              Surface(shape=RoundedCornerShape(12.dp),color=c.secondary.copy(alpha=.18f)) {
+                Text("${toArabic(publishedTotal)} مادة منشورة",Modifier.padding(horizontal=11.dp,vertical=8.dp),fontSize=11.sp,color=c.onPrimary,fontWeight=FontWeight.Bold)
+              }
+            }
+          }
+        }
+      }
+      item {
+        Text("استكشف الأقسام",fontSize=18.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground)
+        Text("افتح أي قسم لمتابعة المحتوى والتقدم المحفوظ على جهازك.",fontSize=11.sp,color=c.onSurfaceVariant)
+      }
       items(learningSections.size) { i ->
         val item=learningSections[i]
         val publishedCount=when(item.title) {
@@ -385,21 +409,30 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
           else -> 0
         }
         val status=if(publishedCount>0) "متاح: ${toArabic(publishedCount)} مادة" else "قيد البناء"
-        Card(Modifier.fillMaxWidth().clickable { onOpen(item.title) },shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=c.surface)) {
-          Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
-            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
-              Text(item.title,fontSize=18.sp,fontWeight=FontWeight.Bold,color=c.primary)
-              Surface(color=if(publishedCount>0) c.primary.copy(alpha=.12f) else c.secondary.copy(alpha=.15f),shape=RoundedCornerShape(30.dp)) {
-                Text(status,Modifier.padding(horizontal=10.dp,vertical=5.dp),fontSize=10.sp,color=c.onSurface)
-              }
+        Card(
+          Modifier.fillMaxWidth().clickable { onOpen(item.title) },
+          shape=RoundedCornerShape(21.dp),
+          colors=CardDefaults.cardColors(containerColor=c.surface),
+          border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.65f))
+        ) {
+          Row(Modifier.fillMaxWidth().padding(15.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
+            Box(Modifier.size(51.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(17.dp)),contentAlignment=Alignment.Center) {
+              Text(sectionIcons[item.title] ?: "✦",fontSize=25.sp,fontWeight=FontWeight.Bold,color=c.secondary)
             }
-            Text(item.subtitle,fontSize=13.sp,color=c.onSurface)
-            Text("الهدف: ${item.target}",fontSize=12.sp,fontWeight=FontWeight.SemiBold,color=c.secondary)
-            Text(item.scope,fontSize=12.sp,color=c.onSurfaceVariant,lineHeight=18.sp)
+            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) {
+              Text(item.title,fontSize=16.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+              Text(item.subtitle,fontSize=11.sp,color=c.onSurfaceVariant,lineHeight=17.sp)
+              Text(status,fontSize=10.sp,fontWeight=FontWeight.Bold,color=if(publishedCount>0) c.tertiary else c.error)
+            }
+            Text("‹",fontSize=25.sp,color=c.secondary,fontWeight=FontWeight.Bold)
           }
         }
       }
-      item { Text("الأعداد أهداف للمحتوى النهائي وليست أعدادًا منشورة حاليًا. لن نملأ المكتبة بمواد مكررة أو غير موثقة.",Modifier.fillMaxWidth().padding(8.dp),fontSize=11.sp,color=c.error,lineHeight=17.sp) }
+      item {
+        Card(shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=c.surfaceVariant)) {
+          Text("الأعداد المعروضة هي المواد الموجودة حاليًا فقط. الأهداف المستقبلية لا تُحسب ضمن المنشور، ويجب استكمال التوثيق والمراجعة قبل اعتماد المحتوى.",Modifier.fillMaxWidth().padding(14.dp),fontSize=11.sp,lineHeight=18.sp,color=c.onSurfaceVariant)
+        }
+      }
     }
   }
 }
