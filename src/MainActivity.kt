@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -121,13 +122,22 @@ private fun DeeniSplashScreen() {
   val ink = Color(0xFF173D32)
   val gold = Color(0xFFC5A45B)
   Box(
-    modifier = Modifier.fillMaxSize().background(Color(0xFFFFFEFC)).safeDrawingPadding(),
+    modifier = Modifier.fillMaxSize().background(Color(0xFFFFFEFC)).safeDrawingPadding().padding(17.dp),
     contentAlignment = Alignment.Center
   ) {
+    Box(
+      Modifier.fillMaxSize()
+        .border(1.dp,gold.copy(alpha=.42f),RoundedCornerShape(30.dp))
+        .padding(7.dp)
+        .border(1.dp,ink.copy(alpha=.10f),RoundedCornerShape(25.dp))
+    )
     Column(
+      Modifier.fillMaxWidth().padding(horizontal=22.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center
     ) {
+      Text("۞",color=gold,fontSize=35.sp,fontWeight=FontWeight.Light)
+      Spacer(Modifier.height(19.dp))
       Text(
         "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
         color = ink,
@@ -135,18 +145,30 @@ private fun DeeniSplashScreen() {
         fontWeight = FontWeight.Medium,
         textAlign = TextAlign.Center
       )
-      Spacer(Modifier.height(30.dp))
-      Box(Modifier.width(74.dp).height(2.dp).background(gold, RoundedCornerShape(2.dp)))
-      Spacer(Modifier.height(22.dp))
-      Text("مُتْقِن", color = ink, fontSize = 42.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-      Spacer(Modifier.height(5.dp))
-      Text("MUTQIN", color = gold, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 4.sp)
+      Spacer(Modifier.height(28.dp))
+      Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.Center) {
+        Box(Modifier.width(38.dp).height(1.dp).background(gold.copy(alpha=.65f),RoundedCornerShape(2.dp)))
+        Text("  ✦  ",color=gold,fontSize=14.sp)
+        Box(Modifier.width(38.dp).height(1.dp).background(gold.copy(alpha=.65f),RoundedCornerShape(2.dp)))
+      }
+      Spacer(Modifier.height(25.dp))
+      Box(
+        Modifier.size(112.dp).border(1.dp,gold.copy(alpha=.65f),RoundedCornerShape(34.dp))
+          .padding(6.dp).border(1.dp,ink.copy(alpha=.13f),RoundedCornerShape(29.dp)),
+        contentAlignment=Alignment.Center
+      ) {
+        Text("مُتْقِن", color = ink, fontSize = 43.sp, fontWeight = FontWeight.ExtraBold, textAlign = TextAlign.Center)
+      }
+      Spacer(Modifier.height(12.dp))
+      Text("M U T Q I N", color = gold, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
     }
-    Text(
-      "رفيق القرآن",
-      modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 22.dp),
-      color = ink.copy(alpha = 0.65f),
-      fontSize = 13.sp
-    )
+    Column(
+      Modifier.align(Alignment.BottomCenter).padding(bottom=17.dp),
+      horizontalAlignment=Alignment.CenterHorizontally,
+      verticalArrangement=Arrangement.spacedBy(5.dp)
+    ) {
+      Box(Modifier.width(28.dp).height(1.dp).background(gold.copy(alpha=.55f),RoundedCornerShape(2.dp)))
+      Text("رفيق القرآن",color=ink.copy(alpha=.65f),fontSize=12.sp,fontWeight=FontWeight.Medium)
+    }
   }
 }
