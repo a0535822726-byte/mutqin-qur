@@ -327,19 +327,33 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
   val publishedTotal=hadithEntries.size+tajweedLessons.size+fiqhEntries.size+quranStories.size+mutqinQuizQuestions.size
   val sectionIcons=mapOf("التجويد" to "۞","الحديث" to "❖","الفقه" to "⚖","السيرة والصحابة" to "✧","القصص الإسلامية" to "❈","الاختبارات" to "؟","الأذكار والأدعية" to "◉")
   Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
-    Row(Modifier.fillMaxWidth().padding(horizontal=14.dp, vertical=8.dp),verticalAlignment=Alignment.CenterVertically) {
-      TextButton(onClick=onBack){Text("‹  الرئيسية")}
+    Row(Modifier.fillMaxWidth().padding(horizontal=16.dp, vertical=10.dp)
+      .background(c.surface,RoundedCornerShape(18.dp))
+      .border(1.dp,c.outline.copy(alpha=.22f),RoundedCornerShape(18.dp))
+      .padding(horizontal=11.dp, vertical=7.dp),verticalAlignment=Alignment.CenterVertically) {
+      Surface(onClick=onBack,shape=RoundedCornerShape(12.dp),color=c.primary.copy(alpha=.09f)) {
+        Text("‹",Modifier.padding(horizontal=14.dp,vertical=5.dp),fontSize=22.sp,fontWeight=FontWeight.Bold,color=c.primary)
+      }
       Spacer(Modifier.weight(1f))
-      Text("مكتبة متقن",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+      Column(horizontalAlignment=Alignment.End,verticalArrangement=Arrangement.spacedBy(1.dp)) {
+        Text("مُتْقِن  •  مَسَارُ الْعِلْم",fontSize=9.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+        Text("المكتبة العلمية",fontSize=15.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
+      }
     }
     LazyColumn(contentPadding=PaddingValues(start=16.dp,end=16.dp,top=5.dp,bottom=28.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
       item {
         Card(shape=RoundedCornerShape(27.dp),colors=CardDefaults.cardColors(containerColor=c.primary),
           border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
-          Column(Modifier.fillMaxWidth().padding(21.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
-            Text("مَسَارُ التَّعَلُّم",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
-            Text("تعلّمٌ موثوق، خطوةً بخطوة",fontSize=23.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
-            Text("القرآن وعلومه والسنة والسيرة والفقه في مكتبة واحدة، بواجهة موحدة ومصادر ظاهرة.",fontSize=12.sp,lineHeight=20.sp,color=c.onPrimary.copy(alpha=.82f))
+          Column(Modifier.fillMaxWidth().padding(horizontal=22.dp,vertical=23.dp),verticalArrangement=Arrangement.spacedBy(11.dp)) {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+              Text("۞",fontSize=22.sp,color=c.secondary)
+              Spacer(Modifier.width(7.dp))
+              Text("مَسَارُ التَّعَلُّم",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+              Spacer(Modifier.weight(1f))
+              Text("مُتْقِن",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.onPrimary.copy(alpha=.7f))
+            }
+            Text("مكتبةٌ للعلم والنور",fontSize=25.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+            Text("القرآن وعلومه والسنة والسيرة والفقه؛ تصفّح أبواب المعرفة في تجربة واحدة هادئة وواضحة.",fontSize=12.sp,lineHeight=21.sp,color=c.onPrimary.copy(alpha=.86f))
             Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(8.dp)) {
               Surface(shape=RoundedCornerShape(12.dp),color=c.onPrimary.copy(alpha=.12f)) {
                 Text("${toArabic(learningSections.size)} أقسام",Modifier.padding(horizontal=11.dp,vertical=8.dp),fontSize=11.sp,color=c.onPrimary,fontWeight=FontWeight.Bold)
@@ -368,11 +382,12 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
         val status=if(publishedCount>0) "متاح: ${toArabic(publishedCount)} مادة" else "قيد البناء"
         Card(
           Modifier.fillMaxWidth().clickable { onOpen(item.title) },
-          shape=RoundedCornerShape(21.dp),
+          shape=RoundedCornerShape(24.dp),
           colors=CardDefaults.cardColors(containerColor=c.surface),
-          border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.65f))
+          border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.24f)),
+          elevation=CardDefaults.cardElevation(defaultElevation=2.dp)
         ) {
-          Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+          Column(Modifier.fillMaxWidth().padding(horizontal=17.dp,vertical=16.dp),verticalArrangement=Arrangement.spacedBy(13.dp)) {
             Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
               Box(Modifier.size(48.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(16.dp)),contentAlignment=Alignment.Center) {
                 Text(sectionIcons[item.title] ?: "✦",fontSize=24.sp,fontWeight=FontWeight.Bold,color=c.secondary)
