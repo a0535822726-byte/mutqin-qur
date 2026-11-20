@@ -211,8 +211,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view latest >/dev/null 2>&1; then
-            gh release upload latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --clobber
-          else
-            gh release create latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "مُتقن" --notes "أحدث نسخة من تطبيق متقن"
-          fi
+          TAG="mutqin-build-${GITHUB_RUN_NUMBER}"
+          gh release create "$TAG" Mutqin/app/build/outputs/apk/debug/app-debug.apk \
+            --title "مُتقن - البناء ${GITHUB_RUN_NUMBER}" \
+            --notes "نسخة مرتبطة بالالتزام البرمجي: ${GITHUB_SHA}" \
+            --target "${GITHUB_SHA}"
