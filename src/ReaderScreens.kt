@@ -51,13 +51,23 @@ fun RangeScreen(
 
   val c = MaterialTheme.colorScheme
   Column(
-    modifier = Modifier.fillMaxSize().background(c.background).safeDrawingPadding().padding(18.dp),
-    verticalArrangement = Arrangement.spacedBy(15.dp)
+    modifier = Modifier.fillMaxSize().background(c.background).safeDrawingPadding().padding(horizontal = 18.dp, vertical = 14.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp)
   ) {
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-      TextButton(onClick = onBack) { Text("‹  رجوع") }
+    Row(
+      Modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(18.dp))
+        .border(1.dp, c.outline.copy(alpha = .22f), RoundedCornerShape(18.dp))
+        .padding(horizontal = 12.dp, vertical = 8.dp),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      Surface(onClick = onBack, shape = RoundedCornerShape(12.dp), color = c.primary.copy(alpha = .09f)) {
+        Text("‹", modifier = Modifier.padding(horizontal = 14.dp, vertical = 5.dp), color = c.primary, fontSize = 23.sp, fontWeight = FontWeight.Bold)
+      }
       Spacer(Modifier.weight(1f))
-      Text("المصحف الشريف", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = c.secondary)
+      Column(horizontalAlignment = Alignment.End) {
+        Text("مُتْقِن  •  المصحف", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = c.secondary)
+        Text("إعداد القراءة", fontSize = 15.sp, fontWeight = FontWeight.ExtraBold, color = c.onSurface)
+      }
     }
     Card(
       modifier = Modifier.fillMaxWidth(),
@@ -65,17 +75,36 @@ fun RangeScreen(
       colors = CardDefaults.cardColors(containerColor = c.primary),
       border = androidx.compose.foundation.BorderStroke(1.dp, c.secondary.copy(alpha=.65f))
     ) {
-      Column(Modifier.fillMaxWidth().padding(22.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
-        Text("۞  تهيئة جلسة القراءة", fontSize = 11.sp, color = c.secondary, fontWeight = FontWeight.Bold)
-        Text(SURAH_NAMES[surah - 1], fontSize = 31.sp, fontWeight = FontWeight.ExtraBold, color = c.onPrimary)
-        Text("سورة رقم ${toArabic(surah)}  •  ${toArabic(count)} آية", fontSize = 12.sp, color = c.onPrimary.copy(alpha=.78f))
-        Divider(color = c.onPrimary.copy(alpha=.18f))
-        Text("اختر المقطع الذي تريد قراءته أو مراجعته", fontSize = 13.sp, color = c.onPrimary)
+      Column(Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 20.dp), verticalArrangement = Arrangement.spacedBy(11.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+          Text("۞", fontSize = 19.sp, color = c.secondary)
+          Text("وَرْدُكَ الْقُرْآنِيّ", fontSize = 11.sp, color = c.secondary, fontWeight = FontWeight.Bold)
+          Spacer(Modifier.weight(1f))
+          Surface(shape = RoundedCornerShape(30.dp), color = c.onPrimary.copy(alpha = .12f)) {
+            Text("سورة ${toArabic(surah)}", modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp), fontSize = 10.sp, color = c.onPrimary)
+          }
+        }
+        Text(SURAH_NAMES[surah - 1], fontSize = 34.sp, fontWeight = FontWeight.ExtraBold, color = c.onPrimary)
+        Text("${toArabic(count)} آية  •  اختر موضع البداية والنهاية", fontSize = 12.sp, color = c.onPrimary.copy(alpha=.82f))
+        Divider(color = c.secondary.copy(alpha=.55f), thickness = 1.dp)
+        Text("اجعل قراءتك على مهل، واختر المقطع المناسب لجلسة اليوم", fontSize = 12.sp, color = c.onPrimary.copy(alpha=.92f))
       }
     }
-    Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = c.surface)) {
-      Column(Modifier.fillMaxWidth().padding(17.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
-        Text("نطاق الآيات", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = c.primary)
+    Card(
+      shape = RoundedCornerShape(24.dp),
+      colors = CardDefaults.cardColors(containerColor = c.surface),
+      border = androidx.compose.foundation.BorderStroke(1.dp, c.outline.copy(alpha = .25f))
+    ) {
+      Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          Column(Modifier.weight(1f)) {
+            Text("حدّد مقطعك", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = c.onSurface)
+            Text("من آية إلى آية", fontSize = 11.sp, color = c.secondary)
+          }
+          Surface(shape = RoundedCornerShape(12.dp), color = c.secondary.copy(alpha = .13f)) {
+            Text("﴿ ﴾", modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp), color = c.secondary, fontSize = 17.sp)
+          }
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
           OutlinedTextField(
             value = fromText, onValueChange = { fromText = it.filter(Char::isDigit).take(4) },
@@ -106,9 +135,14 @@ fun RangeScreen(
     Spacer(Modifier.weight(1f))
     Button(
       onClick = { if (a != null && b != null && valid) onStart(a, b) },
-      enabled = valid, modifier = Modifier.fillMaxWidth().height(54.dp),
-      shape = RoundedCornerShape(17.dp)
-    ) { Text("افتح صفحات المصحف  ←", fontSize = 15.sp, fontWeight = FontWeight.Bold) }
+      enabled = valid, modifier = Modifier.fillMaxWidth().height(58.dp),
+      shape = RoundedCornerShape(18.dp),
+      elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
+    ) {
+      Text("ابدأ القراءة", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
+      Spacer(Modifier.width(9.dp))
+      Text("←", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+    }
   }
 }
 
