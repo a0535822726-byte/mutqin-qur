@@ -123,7 +123,24 @@ private fun FeatureCard(emoji:String,title:String,desc:String,onClick:()->Unit) 
 fun AdhkarScreen(onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
   var category by remember { mutableStateOf("عام") }
-  val adhkarCounts = remember { mutableStateMapOf<String, Int>() }
+  val context = LocalContext.current
+  val adhkarPrefs = remember { context.getSharedPreferences("mutqin_adhkar", android.content.Context.MODE_PRIVATE) }
+  val adhkarCounts = remember {
+    mutableStateMapOf<String, Int>().apply {
+      listOf("عام", "الصباح", "المساء", "النوم").forEach { section ->
+        val sectionItems = when (section) {
+          "عام" -> 5
+          "الصباح" -> 4
+          "المساء" -> 4
+          else -> 3
+        }
+        repeat(sectionItems) { index ->
+          val key = section + "-" + index
+          this[key] = adhkarPrefs.getInt(key, 0)
+        }
+      }
+    }
+  }
   val categories=listOf("عام","الصباح","المساء","النوم")
   val adhkar=mapOf(
     "عام" to listOf(
@@ -162,7 +179,7 @@ fun AdhkarScreen(onBack:()->Unit) {
     }
     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
       Text("اضغط على الذكر لزيادة عدّاده",fontSize=11.sp,color=c.onSurfaceVariant)
-      TextButton(onClick={ adhkarCounts.keys.filter { it.startsWith(category + "-") }.forEach { adhkarCounts[it]=0 } }) {
+      TextButton(onClick={ adhkarCounts.keys.filter { it.startsWith(category + "-") }.forEach { key -> adhkarCounts[key]=0; adhkarPrefs.edit().putInt(key,0).apply() } }) {
         Text("تصفير القسم")
       }
     }
@@ -171,7 +188,7 @@ fun AdhkarScreen(onBack:()->Unit) {
         val countKey = category + "-" + i
         val count = adhkarCounts[countKey] ?: 0
         Card(
-          modifier = Modifier.fillMaxWidth().clickable { adhkarCounts[countKey] = count + 1 },
+          modifier = Modifier.fillMaxWidth().clickable { adhkarCounts[countKey] = count + 1; adhkarPrefs.edit().putInt(countKey,count+1).apply() },
           colors=CardDefaults.cardColors(containerColor=c.surface),
           shape=RoundedCornerShape(18.dp)
         ) {
