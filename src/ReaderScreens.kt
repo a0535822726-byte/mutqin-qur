@@ -217,11 +217,22 @@ fun ReaderScreen(
       .map { normalizeSpeech(it) }.filter { it.isNotBlank() }
   }
   val spokenWords = remember(transcript) { normalizeSpeech(transcript).split(Regex("\\s+")).filter { it.isNotBlank() } }
-  val matchStart = spokenWords.firstOrNull()?.let { first ->
-    targetWords.indexOfFirst { it == first }
-  }?.coerceAtLeast(0) ?: 0
-  val matchedWords = spokenWords.zip(targetWords.drop(matchStart))
-    .takeWhile { (spoken, target) -> spoken == target }.size
+  // Align the recognized phrase to the best matching position within the selected passage.
+  val alignment = remember(spokenWords, targetWords) {
+    var bestStart = 0
+    var bestCount = 0
+    if (spokenWords.isNotEmpty()) {
+      targetWords.indices.forEach { start ->
+        var count = 0
+        while (count < spokenWords.size && start + count < targetWords.size &&
+          spokenWords[count] == targetWords[start + count]) count++
+        if (count > bestCount) { bestStart = start; bestCount = count }
+      }
+    }
+    bestStart to bestCount
+  }
+  val matchStart = alignment.first
+  val matchedWords = alignment.second
   val expectedWord = targetWords.getOrNull(matchStart + matchedWords)
   val hasMismatch = spokenWords.isNotEmpty() && matchedWords < spokenWords.size
 
