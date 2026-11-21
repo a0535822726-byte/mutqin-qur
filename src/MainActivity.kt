@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.LayoutDirection
 private val Green = Color(0xFF064E3B)
 private val Gold = Color(0xFFD6B56D)
 private val LightColors = lightColorScheme(
-  primary=Color(0xFF064E3B), onPrimary=Color(0xFFF8F6EF,
+  primary=Color(0xFF064E3B), onPrimary=Color(0xFFF8F6EF),
   secondary=Color(0xFFC69B52), onSecondary=Color(0xFF171D19),
   tertiary=Color(0xFF43866B), onTertiary=Color(0xFFFFFFFF),
   background=Color(0xFFF1F0E8), onBackground=Color(0xFF17251E),
