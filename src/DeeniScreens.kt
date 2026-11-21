@@ -20,8 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecitation:()->Unit,onAdhkar:()->Unit,onTasbih:()->Unit,onLearning:()->Unit) {
+fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onResumeReading:()->Unit,onRecitation:()->Unit,onAdhkar:()->Unit,onTasbih:()->Unit,onLearning:()->Unit) {
   val c=MaterialTheme.colorScheme
+  val homeContext=LocalContext.current
+  val lastReading=remember { AppPrefs(homeContext).lastPosition() }
   val hadithCount=hadithEntries.size
   val lessonCount=tajweedLessons.size
   val storyCount=quranStories.size
@@ -75,6 +77,27 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
                 Text("ابدأ التسميع",fontWeight=FontWeight.Bold,fontSize=12.sp)
               }
             }
+          }
+        }
+      }
+    }
+    if (lastReading != null) {
+      item {
+        Card(
+          modifier=Modifier.fillMaxWidth().clickable(onClick=onResumeReading),
+          shape=RoundedCornerShape(20.dp),
+          colors=CardDefaults.cardColors(containerColor=c.surface),
+          border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.55f))
+        ) {
+          Row(Modifier.fillMaxWidth().padding(horizontal=15.dp,vertical=13.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+            Box(Modifier.size(44.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(14.dp)),contentAlignment=Alignment.Center) {
+              Text("↶",fontSize=25.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+            }
+            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
+              Text("أكمل من حيث توقفت",fontSize=14.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
+              Text("سورة ${SURAH_NAMES[lastReading.first-1]} • الآيات ${toArabic(lastReading.second)}–${toArabic(lastReading.third)}",fontSize=11.sp,color=c.onSurfaceVariant)
+            }
+            Text("متابعة  ‹",fontSize=11.sp,color=c.secondary,fontWeight=FontWeight.Bold)
           }
         }
       }
@@ -493,7 +516,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
     query.isBlank() || normalizeAr(listOf(f.title,f.question,f.ruling,f.evidence,f.explanation,f.scope,f.references).joinToString(" ")).contains(query)
   }
   val filteredStories = quranStories.filter { story ->
-    query.isBlank() || normalizeAr(listOf(story.title,story.summary,story.verses,story.lessons.joinToString(" "),story.sourceNote).joinToString(" ")).contains(query)
+    query.isBlank() || normalizeAr(listOf(story.title,story.summary,story.verses,story.lessons.joinToString(" "),story.sourceNote,story.chapters.joinToString(" ")).joinToString(" ")).contains(query)
   }
   LazyColumn(
     Modifier.fillMaxSize().background(c.background).safeDrawingPadding(),
@@ -802,7 +825,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
                 }
               }
             } else {
-              Text("هذه بطاقة موجزة؛ النسخة المطوّلة ذات عشرة فصول لم تُستكمل لهذه القصة بعد.",fontSize=12.sp,lineHeight=19.sp,color=c.error)
+              Text("هذه القصة لم تُضف إليها فصول مطوّلة بعد؛ سيظهر محتواها المتاح فقط دون ادعاء اكتمالها.",fontSize=12.sp,lineHeight=19.sp,color=c.error)
             }
             Text("الدروس المستفادة:",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.primary)
             story.lessons.forEach { lesson -> Text("• $lesson",fontSize=13.sp,color=c.onSurface) }
