@@ -143,7 +143,7 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
 
   val colors = MaterialTheme.colorScheme
   Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().verticalScroll(rememberScrollState())) {
-    Column(Modifier.fillMaxWidth().background(colors.primary).padding(horizontal=20.dp,vertical=18.dp)) {
+    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF092E24)).padding(horizontal=20.dp,vertical=20.dp)) {
       Row(verticalAlignment=Alignment.CenterVertically) {
         Surface(onClick=onBack,shape=CircleShape,color=colors.onPrimary.copy(alpha=.12f)) { Text("‹",Modifier.padding(horizontal=15.dp,vertical=7.dp),fontSize=24.sp,color=colors.onPrimary) }
         Spacer(Modifier.width(12.dp))
@@ -154,8 +154,8 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         Text("◉",fontSize=30.sp,color=colors.secondary)
       }
       Spacer(Modifier.height(22.dp))
-      Text("جَلْسَةُ تِلَاوَةٍ",fontSize=10.sp,color=colors.secondary,fontWeight=FontWeight.Bold,letterSpacing=2.sp)
-      Text("أنصت إلى تلاوتك.",fontSize=29.sp,color=colors.onPrimary,fontWeight=FontWeight.Black)
+      Text("DEENI  •  RECITATION",fontSize=10.sp,color=androidx.compose.ui.graphics.Color(0xFFD6B56D),fontWeight=FontWeight.Bold,letterSpacing=2.sp)
+      Text("أنصت إلى تلاوتك.",fontSize=29.sp,color=androidx.compose.ui.graphics.Color(0xFFF6F0E1),fontWeight=FontWeight.Black)
       Text("حدّد مقطعك، سجّل قراءتك، ثم استمع إلى مراجعتك.",fontSize=12.sp,color=colors.onPrimary.copy(alpha=.78f))
       Spacer(Modifier.height(13.dp))
       Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
@@ -189,7 +189,7 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         }
       }
     }
-    Card(shape = RoundedCornerShape(28.dp), colors = CardDefaults.cardColors(containerColor = colors.surfaceVariant), border=androidx.compose.foundation.BorderStroke(1.dp,colors.secondary.copy(alpha=.42f)), elevation=CardDefaults.cardElevation(defaultElevation=3.dp)) {
+    Card(shape = RoundedCornerShape(30.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), border=androidx.compose.foundation.BorderStroke(1.dp,androidx.compose.ui.graphics.Color(0xFFB8954B).copy(alpha=.55f)), elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
       Column(Modifier.fillMaxWidth().padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(13.dp)) {
         Box(Modifier.size(104.dp).clip(CircleShape).background(if (recording) colors.error.copy(alpha = .13f) else colors.primary.copy(alpha = .10f)).then(Modifier.padding(5.dp)).border(1.dp,if(recording) colors.error.copy(alpha=.55f) else colors.secondary.copy(alpha=.65f),CircleShape), contentAlignment = Alignment.Center) {
           Text(if (recording) "●" else "🎙", color = if (recording) colors.error else colors.primary, fontSize = 35.sp)
