@@ -596,15 +596,34 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
     } else if(section=="الحديث") {
       item {
-        Text("الأحاديث المنشورة: ${hadithEntries.size} — نتائج البحث: ${filteredHadith.size}.",fontSize=13.sp,color=c.onSurfaceVariant)
+        Card(colors=CardDefaults.cardColors(containerColor=c.primary),shape=RoundedCornerShape(22.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
+          Column(Modifier.fillMaxWidth().padding(horizontal=17.dp,vertical=16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+              Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
+                Text("مِنْ هَدْيِ النَّبِي ﷺ",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+                Text("مكتبة الحديث الشريف",fontSize=19.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+              }
+              Text("۞",fontSize=29.sp,color=c.secondary)
+            }
+            Text("الأحاديث المنشورة: ${hadithEntries.size}  •  نتائج البحث: ${filteredHadith.size}",fontSize=11.sp,fontWeight=FontWeight.SemiBold,color=c.onPrimary.copy(alpha=.86f))
+            Text("اقرأ الحديث، وتعرّف على راويه ومصدره ودرجته وشرحه.",fontSize=11.sp,color=c.onPrimary.copy(alpha=.78f))
+          }
+        }
         if(filteredHadith.isEmpty()) Text("لا توجد أحاديث تطابق عبارة البحث.",fontSize=13.sp,color=c.onSurfaceVariant)
       }
       items(filteredHadith.size) { index ->
         val h=filteredHadith[index]
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(20.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
-          Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
-            Text("الحديث ${h.id}: ${h.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
-            Text(h.text,fontSize=19.sp,lineHeight=31.sp,color=c.onSurface,textAlign=TextAlign.Center)
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(21.dp),border=androidx.compose.foundation.BorderStroke(1.1.dp,c.secondary.copy(alpha=.38f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
+          Column(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(9.dp)) {
+              Box(Modifier.size(34.dp).background(c.primary.copy(alpha=.09f),RoundedCornerShape(11.dp)).border(1.dp,c.secondary.copy(alpha=.4f),RoundedCornerShape(11.dp)),contentAlignment=Alignment.Center) {
+                Text(toArabic(h.id),fontSize=11.sp,fontWeight=FontWeight.ExtraBold,color=c.secondary)
+              }
+              Text(h.title,fontSize=16.sp,fontWeight=FontWeight.ExtraBold,color=c.primary,modifier=Modifier.weight(1f))
+              Text("حديث",fontSize=9.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            }
+            Divider(color=c.outlineVariant.copy(alpha=.7f),thickness=.8.dp)
+            Text(h.text,fontSize=19.sp,lineHeight=33.sp,color=c.onSurface,textAlign=TextAlign.Center)
             if(h.text.contains("...")) Text("تنبيه: هذا النص معروض كمقتطف، ويحتاج استكمال النص قبل اعتماده.",fontSize=11.sp,color=c.error)
             Text("الصحابي الراوي: ${h.narrator}",fontSize=12.sp,color=c.onSurfaceVariant)
             Text("المصدر: ${h.source} — ${h.reference}",fontSize=12.sp,color=c.secondary)
