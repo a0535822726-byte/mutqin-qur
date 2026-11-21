@@ -71,11 +71,12 @@ fun RangeScreen(
     }
     Card(
       modifier = Modifier.fillMaxWidth(),
-      shape = RoundedCornerShape(28.dp),
+      shape = RoundedCornerShape(22.dp),
       colors = CardDefaults.cardColors(containerColor = c.primary),
-      border = androidx.compose.foundation.BorderStroke(1.dp, c.secondary.copy(alpha=.65f))
+      border = androidx.compose.foundation.BorderStroke(1.5.dp, c.secondary.copy(alpha=.82f)),
+      elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-      Column(Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 20.dp), verticalArrangement = Arrangement.spacedBy(11.dp)) {
+      Column(Modifier.fillMaxWidth().background(c.onPrimary.copy(alpha=.035f), RoundedCornerShape(22.dp)).padding(horizontal = 22.dp, vertical = 22.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
           Text("۞", fontSize = 19.sp, color = c.secondary)
           Text("وَرْدُكَ الْقُرْآنِيّ", fontSize = 11.sp, color = c.secondary, fontWeight = FontWeight.Bold)
@@ -91,9 +92,10 @@ fun RangeScreen(
       }
     }
     Card(
-      shape = RoundedCornerShape(24.dp),
+      shape = RoundedCornerShape(20.dp),
       colors = CardDefaults.cardColors(containerColor = c.surface),
-      border = androidx.compose.foundation.BorderStroke(1.dp, c.outline.copy(alpha = .25f))
+      border = androidx.compose.foundation.BorderStroke(1.2.dp, c.secondary.copy(alpha = .38f)),
+      elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
       Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
