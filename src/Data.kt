@@ -115,6 +115,17 @@ class AppPrefs(context: Context) {
       .apply()
   }
   fun quizLastTotal(): Int = p.getInt("quiz_last_total", 0)
+  fun saveQuizMistakes(items: List<String>) {
+    val encoded = org.json.JSONArray().apply { items.take(25).forEach { put(it) } }.toString()
+    p.edit().putString("quiz_last_mistakes", encoded).apply()
+  }
+  fun quizLastMistakes(): List<String> {
+    val raw = p.getString("quiz_last_mistakes", "[]") ?: "[]"
+    return try {
+      val array = org.json.JSONArray(raw)
+      (0 until array.length()).mapNotNull { array.optString(it).takeIf { value -> value.isNotBlank() } }
+    } catch (_: Exception) { emptyList() }
+  }
 
   fun tasbihCount(): Int = p.getInt("tasbih_count", 0)
   fun setTasbihCount(value: Int) { p.edit().putInt("tasbih_count", value.coerceAtLeast(0)).apply() }
