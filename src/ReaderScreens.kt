@@ -434,11 +434,11 @@ fun ReaderScreen(
         // Printed-page treatment: square paper edges and a fine double-rule frame.
         Column(Modifier.fillMaxSize().border(1.4.dp, androidx.compose.ui.graphics.Color(0xFFB8954B), RoundedCornerShape(2.dp)).padding(3.dp).border(1.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(1.dp)).padding(horizontal = 17.dp, vertical = 14.dp)) {
           Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text("الْجُزْءُ", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
+            Text("مُتْقِن", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1f))
-            Text("الْقُرْآنُ الْكَرِيمُ", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
+            Text("الْمُصْحَفُ الشَّرِيف", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
             Spacer(Modifier.weight(1f))
-            Text("حِفْظٌ وَتِلَاوَة", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
+            Text("تِلَاوَةٌ وَتَدَبُّر", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
           }
           Row(Modifier.fillMaxWidth().padding(top = 7.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             Box(Modifier.weight(1f).height(1.dp).background(androidx.compose.ui.graphics.Color(0xFFD6BD83)))
@@ -460,13 +460,26 @@ fun ReaderScreen(
             Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 7.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
           ) {
-            Text("۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 26.sp)
-            Text("سُورَةُ ${SURAH_NAMES[surah - 1]}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            if (pageIndex == 0 && from == 1) {
+              Text("۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 26.sp)
+              Text("سُورَةُ ${SURAH_NAMES[surah - 1]}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            }
             if (from == 1 && pageIndex == 0 && surah != 1 && surah != 9) {
               Text("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", modifier = Modifier.padding(top = 10.dp, bottom = 8.dp), color = androidx.compose.ui.graphics.Color(0xFF30291F), fontSize = (size * 0.92f).sp, textAlign = TextAlign.Center)
             }
+            val visiblePageAyahs = mushafPages.getOrNull(pageIndex).orEmpty()
+            if (visiblePageAyahs.isNotEmpty()) {
+              Text(
+                "الآيات ${toArabic(visiblePageAyahs.first())} – ${toArabic(visiblePageAyahs.last())}",
+                color = androidx.compose.ui.graphics.Color(0xFF98783B),
+                fontSize = 9.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
+                textAlign = TextAlign.Center
+              )
+            }
             Spacer(Modifier.height(8.dp))
-            mushafPages.getOrNull(pageIndex).orEmpty().forEach { n ->
+            visiblePageAyahs.forEach { n ->
               val verse = repo.ayah(surah, n)
               val shown = !hide || n in revealed
               val body = if (shown) verse else verse.substringBefore(' ') + " …"
