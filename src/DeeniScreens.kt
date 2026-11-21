@@ -471,13 +471,20 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       if(section=="التجويد" || section=="الحديث" || section=="الفقه" || section=="القصص الإسلامية") {
         val total=when(section){"التجويد"->tajweedLessons.size;"الحديث"->hadithEntries.size;"الفقه"->fiqhEntries.size;else->quranStories.size}
         val done=completedIds.size
-        Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.65f))) {
-          Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
-            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
-              Text("تقدمك في هذا القسم",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.primary)
-              Text("${toArabic(done)} / ${toArabic(total)}",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+        Card(shape=RoundedCornerShape(20.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.58f)),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
+          Column(Modifier.fillMaxWidth().background(c.surfaceVariant.copy(alpha=.30f),RoundedCornerShape(20.dp)).padding(horizontal=16.dp,vertical=15.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
+              Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                Box(Modifier.size(30.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(10.dp)),contentAlignment=Alignment.Center) {
+                  Text("۞",fontSize=18.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+                }
+                Text("تقدمك في هذا القسم",fontSize=12.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+              }
+              Surface(shape=RoundedCornerShape(10.dp),color=c.secondary.copy(alpha=.13f)) {
+                Text("${toArabic(done)} / ${toArabic(total)}",Modifier.padding(horizontal=10.dp,vertical=6.dp),fontSize=11.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+              }
             }
-            LinearProgressIndicator(progress={if(total==0)0f else done.toFloat()/total},modifier=Modifier.fillMaxWidth())
+            LinearProgressIndicator(progress={if(total==0)0f else done.toFloat()/total},modifier=Modifier.fillMaxWidth().height(7.dp),color=c.secondary,trackColor=c.outlineVariant,strokeCap=androidx.compose.ui.graphics.StrokeCap.Round)
             Text("ضع علامة بعد إكمال المادة؛ سيُحفظ تقدمك على هذا الجهاز.",fontSize=10.sp,color=c.onSurfaceVariant)
           }
         }
