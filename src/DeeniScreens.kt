@@ -27,10 +27,10 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
   val storyCount=quranStories.size
   LazyColumn(Modifier.fillMaxSize().background(c.background),contentPadding=PaddingValues(bottom=34.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
     item {
-      Column(Modifier.fillMaxWidth().background(c.primary).padding(horizontal=22.dp,vertical=24.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
+      Column(Modifier.fillMaxWidth().background(Color(0xFF092E24)).padding(horizontal=22.dp,vertical=28.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment=Alignment.CenterVertically) {
           Column(Modifier.weight(1f)) {
-            Text("مُتْقِن",fontSize=30.sp,fontWeight=FontWeight.Black,color=c.onPrimary)
+            Text("مُتْقِن",fontSize=34.sp,fontWeight=FontWeight.Black,color=Color(0xFFF5F0E4))
             Text("رفيق رحلتك مع القرآن",fontSize=11.sp,color=c.onPrimary.copy(alpha=.72f))
           }
           Surface(shape=RoundedCornerShape(30.dp),color=c.onPrimary.copy(alpha=.08f),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.5f))) {
