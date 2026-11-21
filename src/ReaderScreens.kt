@@ -14,6 +14,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.rememberScrollState
@@ -163,6 +164,7 @@ fun ReaderScreen(
   val revealed = remember { mutableStateListOf<Int>() }
   var showBookmarks by remember { mutableStateOf(false) }
   var showTools by remember { mutableStateOf(false) }
+  var showMicMenu by remember { mutableStateOf(false) }
   var selectedAyah by remember { mutableIntStateOf(0) }
   var bookmarkVersion by remember { mutableIntStateOf(0) }
   val bookmarks = remember(bookmarkVersion) { prefs.bookmarks() }
@@ -307,11 +309,44 @@ fun ReaderScreen(
           Text(SURAH_NAMES[surah-1],fontSize=22.sp,color=androidx.compose.ui.graphics.Color(0xFFFFF8E8),fontWeight=FontWeight.ExtraBold)
           Text("سُورَةٌ مِنْ كِتَابِ الله",fontSize=9.sp,color=androidx.compose.ui.graphics.Color(0xFFCFDCD4))
         }
-        Surface(shape=RoundedCornerShape(13.dp),color=if(isListening) androidx.compose.ui.graphics.Color(0xFF9D342D) else androidx.compose.ui.graphics.Color(0xFF174B3B),border=androidx.compose.foundation.BorderStroke(1.dp,androidx.compose.ui.graphics.Color(0xFFE0BD72).copy(alpha=.65f)),onClick={
-          if(isListening){recognizer?.cancel();isListening=false;speechError="تم إيقاف التسميع."}
-          else if(ContextCompat.checkSelfPermission(context,Manifest.permission.RECORD_AUDIO)==PackageManager.PERMISSION_GRANTED) beginRecognition()
-          else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-        }) { Text(if(isListening) "■" else "🎙",Modifier.padding(horizontal=12.dp,vertical=10.dp),fontSize=16.sp,color=androidx.compose.ui.graphics.Color(0xFFFFF8E8)) }
+        Box {
+          Surface(
+            shape=RoundedCornerShape(16.dp),
+            color=if(isListening) androidx.compose.ui.graphics.Color(0xFF9D342D) else androidx.compose.ui.graphics.Color(0xFF35D58A),
+            border=androidx.compose.foundation.BorderStroke(1.5.dp,androidx.compose.ui.graphics.Color(0xFFE0BD72)),
+            modifier=Modifier.combinedClickable(
+              onClick={
+                if(isListening){recognizer?.cancel();isListening=false;speechError="تم إيقاف التسميع."}
+                else if(ContextCompat.checkSelfPermission(context,Manifest.permission.RECORD_AUDIO)==PackageManager.PERMISSION_GRANTED) beginRecognition()
+                else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+              },
+              onLongClick={showMicMenu=true}
+            )
+          ) {
+            Text(if(isListening) "■" else "🎙",Modifier.padding(horizontal=15.dp,vertical=11.dp),fontSize=18.sp,color=androidx.compose.ui.graphics.Color(0xFF073B2A))
+          }
+          DropdownMenu(expanded=showMicMenu,onDismissRequest={showMicMenu=false}) {
+            DropdownMenuItem(
+              text={Text("تلاوة وتسميع")},
+              onClick={
+                showMicMenu=false
+                if(ContextCompat.checkSelfPermission(context,Manifest.permission.RECORD_AUDIO)==PackageManager.PERMISSION_GRANTED) beginRecognition()
+                else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+              },
+              leadingIcon={Text("🎙")}
+            )
+            DropdownMenuItem(
+              text={Text("اختبار الحفظ")},
+              onClick={showMicMenu=false;hide=true;revealed.clear();showTools=false},
+              leadingIcon={Text("◉")}
+            )
+            DropdownMenuItem(
+              text={Text("إعدادات القراءة")},
+              onClick={showMicMenu=false;showTools=true},
+              leadingIcon={Text("Aa")}
+            )
+          }
+        }
         Surface(shape=RoundedCornerShape(13.dp),color=androidx.compose.ui.graphics.Color(0xFF174B3B),border=androidx.compose.foundation.BorderStroke(1.dp,androidx.compose.ui.graphics.Color(0xFFE0BD72).copy(alpha=.65f)),onClick={
           val current=mushafPages.getOrNull(pageIndex)
           if(!current.isNullOrEmpty()){prefs.toggleBookmark(surah,current.first());bookmarkVersion++;android.widget.Toast.makeText(context,"تم حفظ موضع الصفحة",android.widget.Toast.LENGTH_SHORT).show()}
@@ -482,7 +517,7 @@ fun ReaderScreen(
             visiblePageAyahs.forEach { n ->
               val verse = repo.ayah(surah, n)
               val shown = !hide || n in revealed
-              val body = if (shown) verse else verse.substringBefore(' ') + " …"
+              val body = if (shown) verse else verse.split(Regex("\\s+")).joinToString("  ") { "ــــــ" }
               Text(
                 body + " ۞" + toArabic(n) + "۞",
                 modifier = Modifier.fillMaxWidth().clickable {
