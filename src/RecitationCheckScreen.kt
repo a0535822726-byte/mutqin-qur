@@ -220,9 +220,21 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
         }, enabled = !recording && savedFile?.exists() == true, modifier = Modifier.fillMaxWidth()) { Text("▶ استمع إلى تلاوتك") }
       }
     }
-    Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), border=androidx.compose.foundation.BorderStroke(1.dp,colors.outline.copy(alpha=.28f)), elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
-      Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("سجل جلسات التسميع", fontWeight = FontWeight.ExtraBold, fontSize=16.sp, color = colors.onSurface)
+    Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), border=androidx.compose.foundation.BorderStroke(1.2.dp,colors.secondary.copy(alpha=.48f)), elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
+      Column(Modifier.padding(horizontal=16.dp,vertical=16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(9.dp)) {
+          Box(Modifier.size(34.dp).background(colors.primary.copy(alpha=.09f),RoundedCornerShape(11.dp)),contentAlignment=Alignment.Center) {
+            Text("◷",fontSize=20.sp,fontWeight=FontWeight.Bold,color=colors.secondary)
+          }
+          Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(2.dp)) {
+            Text("سجل جلسات التسميع", fontWeight = FontWeight.ExtraBold, fontSize=16.sp, color = colors.primary)
+            Text("تسجيلاتك السابقة على هذا الجهاز",fontSize=10.sp,color=colors.onSurfaceVariant)
+          }
+          Surface(shape=RoundedCornerShape(10.dp),color=colors.secondary.copy(alpha=.13f)) {
+            Text(toArabic(sessionHistory.size),Modifier.padding(horizontal=9.dp,vertical=6.dp),fontSize=11.sp,fontWeight=FontWeight.Bold,color=colors.primary)
+          }
+        }
+        Divider(color=colors.secondary.copy(alpha=.32f),thickness=1.dp)
         if (sessionHistory.isEmpty()) Text("لا توجد جلسات محفوظة بعد.", fontSize = 12.sp, color = colors.onSurfaceVariant) else sessionHistory.take(8).forEach { entry ->
           val parts = entry.split(":")
           if (parts.size >= 5) {
@@ -231,13 +243,16 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
             val t = parts[2].toIntOrNull() ?: f
             val sec = parts[3].toIntOrNull() ?: 0
             val recordingFile = File(File(context.filesDir, "mutqin_sessions"), parts.drop(4).joinToString(":"))
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-              Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text("${SURAH_NAMES[s-1]} • الآيات ${toArabic(f)}–${toArabic(t)}", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = colors.onSurface)
+            Row(Modifier.fillMaxWidth().background(colors.surfaceVariant.copy(alpha=.42f),RoundedCornerShape(15.dp)).border(1.dp,colors.outlineVariant.copy(alpha=.55f),RoundedCornerShape(15.dp)).padding(horizontal=11.dp,vertical=9.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+              Box(Modifier.size(32.dp).background(colors.primary.copy(alpha=.09f),RoundedCornerShape(10.dp)),contentAlignment=Alignment.Center) {
+                Text("♫",fontSize=16.sp,color=colors.secondary,fontWeight=FontWeight.Bold)
+              }
+              Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                Text("${SURAH_NAMES[s-1]} • الآيات ${toArabic(f)}–${toArabic(t)}", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = colors.onSurface)
                 Text("المدة ${toArabic(sec/60)}:${toArabic(sec%60)}", fontSize = 10.sp, color = colors.onSurfaceVariant)
               }
-              OutlinedButton(onClick = { playSavedRecording(recordingFile) }, enabled = !recording && recordingFile.exists()) {
-                Text("▶ تشغيل")
+              OutlinedButton(onClick = { playSavedRecording(recordingFile) }, enabled = !recording && recordingFile.exists(),contentPadding=PaddingValues(horizontal=11.dp,vertical=6.dp)) {
+                Text("▶ تشغيل",fontSize=11.sp,fontWeight=FontWeight.Bold)
               }
             }
           }
