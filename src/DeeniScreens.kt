@@ -312,9 +312,9 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
   val sectionIcons=mapOf("التجويد" to "۞","الحديث" to "❖","الفقه" to "⚖","السيرة والصحابة" to "✧","القصص الإسلامية" to "❈","الاختبارات" to "؟","الأذكار والأدعية" to "◉")
   Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
     Row(Modifier.fillMaxWidth().padding(horizontal=16.dp, vertical=10.dp)
-      .background(c.surface,RoundedCornerShape(18.dp))
-      .border(1.dp,c.outline.copy(alpha=.22f),RoundedCornerShape(18.dp))
-      .padding(horizontal=11.dp, vertical=7.dp),verticalAlignment=Alignment.CenterVertically) {
+      .background(c.surface,RoundedCornerShape(20.dp))
+      .border(1.dp,c.secondary.copy(alpha=.3f),RoundedCornerShape(20.dp))
+      .padding(horizontal=12.dp, vertical=9.dp),verticalAlignment=Alignment.CenterVertically) {
       Surface(onClick=onBack,shape=RoundedCornerShape(12.dp),color=c.primary.copy(alpha=.09f)) {
         Text("‹",Modifier.padding(horizontal=14.dp,vertical=5.dp),fontSize=22.sp,fontWeight=FontWeight.Bold,color=c.primary)
       }
@@ -326,9 +326,9 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
     }
     LazyColumn(contentPadding=PaddingValues(start=16.dp,end=16.dp,top=5.dp,bottom=28.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
       item {
-        Card(shape=RoundedCornerShape(27.dp),colors=CardDefaults.cardColors(containerColor=c.primary),
-          border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
-          Column(Modifier.fillMaxWidth().padding(horizontal=22.dp,vertical=23.dp),verticalArrangement=Arrangement.spacedBy(11.dp)) {
+        Card(shape=RoundedCornerShape(30.dp),colors=CardDefaults.cardColors(containerColor=c.primary),
+          border=androidx.compose.foundation.BorderStroke(1.4.dp,c.secondary.copy(alpha=.78f))) {
+          Column(Modifier.fillMaxWidth().padding(horizontal=24.dp,vertical=25.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
             Row(verticalAlignment=Alignment.CenterVertically) {
               Text("۞",fontSize=22.sp,color=c.secondary)
               Spacer(Modifier.width(7.dp))
@@ -366,12 +366,12 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
         val status=if(publishedCount>0) "متاح: ${toArabic(publishedCount)} مادة" else "قيد البناء"
         Card(
           Modifier.fillMaxWidth().clickable { onOpen(item.title) },
-          shape=RoundedCornerShape(20.dp),
+          shape=RoundedCornerShape(24.dp),
           colors=CardDefaults.cardColors(containerColor=c.surface),
-          border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.34f)),
+          border=androidx.compose.foundation.BorderStroke(1.2.dp,c.secondary.copy(alpha=.42f)),
           elevation=CardDefaults.cardElevation(defaultElevation=0.dp)
         ) {
-          Column(Modifier.fillMaxWidth().padding(horizontal=17.dp,vertical=17.dp),verticalArrangement=Arrangement.spacedBy(13.dp)) {
+          Column(Modifier.fillMaxWidth().padding(horizontal=18.dp,vertical=19.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
             Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
               Box(Modifier.size(52.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(17.dp)).border(1.dp,c.secondary.copy(alpha=.32f),RoundedCornerShape(17.dp)),contentAlignment=Alignment.Center) {
                 Text(sectionIcons[item.title] ?: "✦",fontSize=25.sp,fontWeight=FontWeight.Bold,color=c.secondary)
