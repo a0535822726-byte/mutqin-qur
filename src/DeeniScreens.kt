@@ -517,6 +517,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
   var quizScore by remember(section) { mutableStateOf(0) }
   var showQuizResult by remember(section) { mutableStateOf(false) }
   val quizMistakes = remember(section) { mutableStateListOf<String>() }
+  var savedQuizMistakes by remember(section) { mutableStateOf(progressPrefs.quizLastMistakes()) }
   val query = normalizeAr(searchQuery.trim())
   val filteredTajweed = tajweedLessons.filter { lesson ->
     query.isBlank() || normalizeAr(listOf(lesson.title,lesson.objective,lesson.definition,lesson.rule,lesson.examples.joinToString(" "),lesson.practice,lesson.commonMistake,lesson.references).joinToString(" ")).contains(query)
@@ -610,6 +611,18 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
                 }
               }
             }
+            if(savedQuizMistakes.isNotEmpty()) {
+              Card(modifier=Modifier.fillMaxWidth(),shape=RoundedCornerShape(16.dp),colors=CardDefaults.cardColors(containerColor=c.errorContainer.copy(alpha=.35f)),border=androidx.compose.foundation.BorderStroke(1.dp,c.error.copy(alpha=.25f))) {
+                Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
+                  Text("مراجعة أخطاء آخر محاولة محفوظة",fontSize=13.sp,fontWeight=FontWeight.ExtraBold,color=c.error)
+                  savedQuizMistakes.forEachIndexed { index, mistake ->
+                    Text(mistake,fontSize=11.sp,lineHeight=18.sp,color=c.onSurface)
+                    if(index<savedQuizMistakes.lastIndex) Divider(color=c.outlineVariant)
+                  }
+                  TextButton(onClick={progressPrefs.saveQuizMistakes(emptyList());savedQuizMistakes=emptyList()}) { Text("مسح سجل الأخطاء") }
+                }
+              }
+            }
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
               Text("السؤال ${toArabic(quizIndex+1)} من ${toArabic(mutqinQuizQuestions.size)}",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
               Text("نتيجتك: ${toArabic(quizScore)}",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.primary)
@@ -644,7 +657,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
                 Button(
                   onClick={
                     if(quizIndex<mutqinQuizQuestions.lastIndex) { quizIndex++; quizSelected=null }
-                    else { progressPrefs.saveQuizResult(quizScore,mutqinQuizQuestions.size); showQuizResult=true }
+                    else { progressPrefs.saveQuizResult(quizScore,mutqinQuizQuestions.size); progressPrefs.saveQuizMistakes(quizMistakes.toList()); savedQuizMistakes=quizMistakes.toList(); showQuizResult=true }
                   },
                   enabled=quizSelected!=null,
                   modifier=Modifier.weight(1f)
