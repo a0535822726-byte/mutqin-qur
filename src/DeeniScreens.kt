@@ -568,6 +568,13 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
           Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
             Text("اختبر معلوماتك",fontSize=22.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
             Text("بنك الأسئلة المنشور: ${mutqinQuizQuestions.size} سؤالًا من أصل 7,000 مستهدف.",fontSize=12.sp,color=c.onSurfaceVariant)
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+              listOf("محاولات: ${toArabic(progressPrefs.quizAttempts())}","أفضل نتيجة: ${toArabic(progressPrefs.quizBestScore())}","آخر نتيجة: ${toArabic(progressPrefs.quizLastScore())}/${toArabic(progressPrefs.quizLastTotal())}").forEach { stat ->
+                Surface(modifier=Modifier.weight(1f),shape=RoundedCornerShape(12.dp),color=c.surfaceVariant) {
+                  Text(stat,modifier=Modifier.padding(horizontal=8.dp,vertical=9.dp),fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.primary,textAlign=TextAlign.Center)
+                }
+              }
+            }
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
               Text("السؤال ${toArabic(quizIndex+1)} من ${toArabic(mutqinQuizQuestions.size)}",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
               Text("نتيجتك: ${toArabic(quizScore)}",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.primary)
@@ -602,7 +609,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
                 Button(
                   onClick={
                     if(quizIndex<mutqinQuizQuestions.lastIndex) { quizIndex++; quizSelected=null }
-                    else { quizIndex=0; quizSelected=null; quizScore=0 }
+                    else { progressPrefs.saveQuizResult(quizScore,mutqinQuizQuestions.size); quizIndex=0; quizSelected=null; quizScore=0 }
                   },
                   enabled=quizSelected!=null,
                   modifier=Modifier.weight(1f)
