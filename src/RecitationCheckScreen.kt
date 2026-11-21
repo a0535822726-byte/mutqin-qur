@@ -143,7 +143,7 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
 
   val colors = MaterialTheme.colorScheme
   Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().verticalScroll(rememberScrollState())) {
-    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF092E24)).padding(horizontal=20.dp,vertical=20.dp)) {
+    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF062A20)).padding(horizontal=22.dp,vertical=24.dp)) {
       Row(verticalAlignment=Alignment.CenterVertically) {
         Surface(onClick=onBack,shape=CircleShape,color=colors.onPrimary.copy(alpha=.12f)) { Text("‹",Modifier.padding(horizontal=15.dp,vertical=7.dp),fontSize=24.sp,color=colors.onPrimary) }
         Spacer(Modifier.width(12.dp))
@@ -164,8 +164,8 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
       }
     }
     Column(Modifier.padding(horizontal=16.dp).offset(y=(-12).dp),verticalArrangement=Arrangement.spacedBy(13.dp)) {
-    Card(shape = RoundedCornerShape(25.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), border=androidx.compose.foundation.BorderStroke(1.dp,colors.outlineVariant), elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
-      Column(Modifier.fillMaxWidth().padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Card(shape = RoundedCornerShape(28.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), border=androidx.compose.foundation.BorderStroke(1.dp,colors.secondary.copy(alpha=.35f)), elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
+      Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
           Text("موضع المراجعة", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp,color=colors.primary)
           Spacer(Modifier.weight(1f))
