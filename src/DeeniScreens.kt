@@ -516,6 +516,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
   var quizSelected by remember(section) { mutableStateOf<Int?>(null) }
   var quizScore by remember(section) { mutableStateOf(0) }
   var showQuizResult by remember(section) { mutableStateOf(false) }
+  val quizMistakes = remember(section) { mutableStateListOf<String>() }
   val query = normalizeAr(searchQuery.trim())
   val filteredTajweed = tajweedLessons.filter { lesson ->
     query.isBlank() || normalizeAr(listOf(lesson.title,lesson.objective,lesson.definition,lesson.rule,lesson.examples.joinToString(" "),lesson.practice,lesson.commonMistake,lesson.references).joinToString(" ")).contains(query)
@@ -623,7 +624,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
                 Surface(
                   modifier=Modifier.fillMaxWidth().clickable(enabled=quizSelected==null) {
                     quizSelected=choiceIndex
-                    if(correct) quizScore++
+                    if(correct) quizScore++ else quizMistakes.add("س${toArabic(quizIndex+1)}: ${question.question}\nالإجابة الصحيحة: ${question.choices[question.correctIndex]}\nالتوضيح: ${question.explanation}")
                   },
                   shape=RoundedCornerShape(14.dp),
                   color=bg,
@@ -639,7 +640,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
                 Text("المرجع: ${question.reference}",fontSize=11.sp,lineHeight=17.sp,color=c.onSurfaceVariant)
               }
               Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick={quizIndex=0;quizSelected=null;quizScore=0;showQuizResult=false},modifier=Modifier.weight(1f)) { Text("إعادة الاختبار") }
+                OutlinedButton(onClick={quizIndex=0;quizSelected=null;quizScore=0;quizMistakes.clear();showQuizResult=false},modifier=Modifier.weight(1f)) { Text("إعادة الاختبار") }
                 Button(
                   onClick={
                     if(quizIndex<mutqinQuizQuestions.lastIndex) { quizIndex++; quizSelected=null }
@@ -871,8 +872,8 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
         LinearProgressIndicator(progress={percent/100f},modifier=Modifier.fillMaxWidth())
         Text(when { percent>=90 -> "ممتاز! إتقان رائع، واصل المراجعة."; percent>=70 -> "أحسنت! بقيت نقاط قليلة لتتقنها."; percent>=50 -> "بداية جيدة؛ راجع الإجابات والمراجع."; else -> "لا بأس، أعد المحاولة بعد مراجعة الشرح." },fontSize=13.sp,lineHeight=21.sp)
         Text("أفضل نتيجة محفوظة: ${toArabic(progressPrefs.quizBestScore())}",fontSize=11.sp,color=c.onSurfaceVariant)
-      }},
-      confirmButton={TextButton(onClick={quizIndex=0;quizSelected=null;quizScore=0;showQuizResult=false}){Text("اختبار جديد")}},
+        if(quizMistakes.isNotEmpty()) {\n          Text("مراجعة الإجابات التي أخطأت فيها",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.error)\n          quizMistakes.forEach { mistake -> Text(mistake,fontSize=11.sp,lineHeight=18.sp,color=c.onSurface) }\n        } else Text("أجبت عن جميع الأسئلة إجابة صحيحة في هذه المحاولة.",fontSize=12.sp,color=c.tertiary)\n      }},
+      confirmButton={TextButton(onClick={quizIndex=0;quizSelected=null;quizScore=0;quizMistakes.clear();showQuizResult=false}){Text("اختبار جديد")}},
       dismissButton={TextButton(onClick={showQuizResult=false}){Text("إغلاق")}}
     )
   }
