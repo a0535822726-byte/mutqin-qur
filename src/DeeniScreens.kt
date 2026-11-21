@@ -275,7 +275,7 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
   val initialPhraseIndex=remember { phrasePrefs.getInt("selected_phrase",0).coerceIn(0,4) }
   var phraseIndex by remember { mutableIntStateOf(initialPhraseIndex) }
   var count by remember { mutableIntStateOf(phrasePrefs.getInt("phrase_$initialPhraseIndex",if(initialPhraseIndex==0)prefs.tasbihCount() else 0)) }
-  var target by remember { mutableIntStateOf(33) }
+  var target by remember { mutableIntStateOf(phrasePrefs.getInt("target",33).let { if(it in listOf(33,100,500,1000)) it else 33 }) }
   var showReset by remember { mutableStateOf(false) }
   val phrases=listOf("سُبْحَانَ اللَّهِ","الْحَمْدُ لِلَّهِ","اللَّهُ أَكْبَرُ","أَسْتَغْفِرُ اللَّهَ","أَذْكَرُ اللَّهَ")
   val targets=listOf(33,100,500,1000)
@@ -334,7 +334,7 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
           Text("الهدف  ${toArabic(target)}     •     المتبقي  ${toArabic((target-count).coerceAtLeast(0))}",fontSize=12.sp,color=c.secondary,fontWeight=FontWeight.Bold)
           LinearProgressIndicator(progress={progress},modifier=Modifier.fillMaxWidth().height(7.dp))
           Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(7.dp)) {
-            targets.forEach{t->FilterChip(selected=target==t,onClick={target=t},label={Text(toArabic(t),fontSize=10.sp)},modifier=Modifier.weight(1f))}
+            targets.forEach{t->FilterChip(selected=target==t,onClick={target=t;phrasePrefs.edit().putInt("target",t).apply()},label={Text(toArabic(t),fontSize=10.sp)},modifier=Modifier.weight(1f))}
           }
           Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)) {
             Button(onClick={count+=1;phrasePrefs.edit().putInt("phrase_$phraseIndex",count).apply();prefs.setTasbihCount(count)},modifier=Modifier.weight(1f).height(49.dp),shape=RoundedCornerShape(15.dp)){Text("تسبيح +١",fontWeight=FontWeight.Bold)}
