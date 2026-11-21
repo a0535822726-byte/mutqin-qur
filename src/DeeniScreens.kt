@@ -682,15 +682,34 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
     } else if(section=="القصص الإسلامية") {
       item {
-        Text("القصص المنشورة: ${quranStories.size} — نتائج البحث: ${filteredStories.size}. ملخصات مستندة إلى آيات القرآن الكريم.",fontSize=13.sp,color=c.onSurfaceVariant)
+        Card(colors=CardDefaults.cardColors(containerColor=c.primary),shape=RoundedCornerShape(22.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
+          Column(Modifier.fillMaxWidth().padding(horizontal=17.dp,vertical=16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+              Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
+                Text("عِبَرٌ وَآيَات",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+                Text("رحاب القصص الإسلامية",fontSize=19.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+              }
+              Text("۞",fontSize=29.sp,color=c.secondary)
+            }
+            Text("القصص المنشورة: ${quranStories.size}  •  نتائج البحث: ${filteredStories.size}",fontSize=11.sp,fontWeight=FontWeight.SemiBold,color=c.onPrimary.copy(alpha=.88f))
+            Text("تأمل الملخص والآيات والدروس المستفادة، وتحقق من الروايات من مصادرها.",fontSize=11.sp,lineHeight=17.sp,color=c.onPrimary.copy(alpha=.8f))
+          }
+        }
         if(filteredStories.isEmpty()) Text("لا توجد قصص تطابق عبارة البحث.",fontSize=13.sp,color=c.onSurfaceVariant)
       }
       items(filteredStories.size) { index ->
         val story=filteredStories[index]
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(20.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
-          Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
-            Text("القصة ${story.id}: ${story.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
-            Text(story.summary,fontSize=14.sp,lineHeight=23.sp,color=c.onSurface)
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(21.dp),border=androidx.compose.foundation.BorderStroke(1.1.dp,c.secondary.copy(alpha=.38f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
+          Column(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(9.dp)) {
+              Box(Modifier.size(35.dp).background(c.primary.copy(alpha=.09f),RoundedCornerShape(12.dp)).border(1.dp,c.secondary.copy(alpha=.4f),RoundedCornerShape(12.dp)),contentAlignment=Alignment.Center) {
+                Text("${story.id}",fontSize=11.sp,fontWeight=FontWeight.ExtraBold,color=c.secondary)
+              }
+              Text(story.title,fontSize=16.sp,fontWeight=FontWeight.ExtraBold,color=c.primary,modifier=Modifier.weight(1f))
+              Text("قصة",fontSize=9.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            }
+            Divider(color=c.outlineVariant.copy(alpha=.7f),thickness=.8.dp)
+            Text(story.summary,fontSize=14.sp,lineHeight=25.sp,color=c.onSurface)
             Text("مواضع القصة: ${story.verses}",fontSize=13.sp,fontWeight=FontWeight.SemiBold,color=c.secondary)
             if(story.chapters.isNotEmpty()) {
               Text("النسخة المطوّلة: ${story.chapters.size} فصول",fontSize=14.sp,fontWeight=FontWeight.Bold,color=c.primary)
