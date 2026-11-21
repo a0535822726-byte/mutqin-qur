@@ -193,6 +193,7 @@ private fun HomeTile(title:String,subtitle:String,symbol:String,modifier:Modifie
 fun AdhkarScreen(onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
   var category by remember { mutableStateOf("عام") }
+  var showResetAdhkar by remember { mutableStateOf(false) }
   val context=LocalContext.current
   val store=remember { context.getSharedPreferences("mutqin_adhkar",android.content.Context.MODE_PRIVATE) }
   val dayKey=remember { java.text.SimpleDateFormat("yyyyMMdd",java.util.Locale.US).format(java.util.Date()) }
@@ -259,12 +260,19 @@ fun AdhkarScreen(onBack:()->Unit) {
           Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(5.dp)) {
             Text("تنبيه توثيقي",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.primary)
             Text("هذه مجموعة مختارة. ينبغي مراجعة النصوص والأعداد والأوقات على مصادر الأذكار المعتمدة قبل اعتمادها كمكتبة موثقة.",fontSize=11.sp,lineHeight=18.sp,color=c.onSurfaceVariant)
-            TextButton(onClick={counts.keys.filter{it.startsWith("$dayKey-$category-")}.forEach{key->counts[key]=0;store.edit().putInt(key,0).apply()}}){Text("تصفير عدادات هذا القسم")}
+            TextButton(onClick={showResetAdhkar=true}){Text("تصفير عدادات هذا القسم")}
           }
         }
       }
     }
   }
+  if(showResetAdhkar) AlertDialog(
+    onDismissRequest={showResetAdhkar=false},
+    title={Text("تصفير عدادات هذا القسم؟")},
+    text={Text("سيتم تصفير تكرارات قسم $category لهذا اليوم فقط، ولن تتأثر بقية الأقسام أو الأيام.")},
+    confirmButton={TextButton(onClick={counts.keys.filter{it.startsWith("$dayKey-$category-")}.forEach{key->counts[key]=0;store.edit().putInt(key,0).apply()};showResetAdhkar=false}){Text("تصفير")}},
+    dismissButton={TextButton(onClick={showResetAdhkar=false}){Text("إلغاء")}}
+  )
 }
 
 @Composable
