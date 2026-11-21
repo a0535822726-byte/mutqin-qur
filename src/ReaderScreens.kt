@@ -545,8 +545,28 @@ fun ReaderScreen(
       }
     }
 
-    // Fixed bottom page navigator with progress and direct previous/next actions.
-    Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).border(1.4.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.48f), RoundedCornerShape(topStart=22.dp, topEnd=22.dp)).padding(horizontal = 20.dp, vertical = 13.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+    // Fixed bottom toolbar: quick review controls stay within the Mushaf.
+    Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).border(1.4.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.48f), RoundedCornerShape(topStart=22.dp, topEnd=22.dp)).padding(horizontal = 14.dp, vertical = 9.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+      Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(7.dp), verticalAlignment = Alignment.CenterVertically) {
+        Surface(
+          modifier=Modifier.weight(1f).clickable { hide = !hide; revealed.clear() },
+          shape=RoundedCornerShape(13.dp),
+          color=if(hide) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary.copy(alpha=.08f),
+          border=androidx.compose.foundation.BorderStroke(1.dp,MaterialTheme.colorScheme.secondary.copy(alpha=.55f))
+        ) { Text(if(hide) "◉  إظهار الآيات" else "◉  إخفاء الآيات",Modifier.fillMaxWidth().padding(vertical=10.dp),textAlign=TextAlign.Center,fontSize=10.sp,fontWeight=FontWeight.Bold,color=if(hide) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.primary) }
+        Surface(
+          modifier=Modifier.weight(1f).clickable { showTools = !showTools },
+          shape=RoundedCornerShape(13.dp),
+          color=MaterialTheme.colorScheme.primary.copy(alpha=.08f),
+          border=androidx.compose.foundation.BorderStroke(1.dp,MaterialTheme.colorScheme.secondary.copy(alpha=.35f))
+        ) { Text("Aa  إعدادات",Modifier.fillMaxWidth().padding(vertical=10.dp),textAlign=TextAlign.Center,fontSize=10.sp,fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary) }
+        Surface(
+          modifier=Modifier.weight(1f).clickable { showBookmarks = true },
+          shape=RoundedCornerShape(13.dp),
+          color=MaterialTheme.colorScheme.primary.copy(alpha=.08f),
+          border=androidx.compose.foundation.BorderStroke(1.dp,MaterialTheme.colorScheme.secondary.copy(alpha=.35f))
+        ) { Text("☆  المحفوظات",Modifier.fillMaxWidth().padding(vertical=10.dp),textAlign=TextAlign.Center,fontSize=10.sp,fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary) }
+      }
       Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         TextButton(onClick = { pageIndex = (pageIndex - 1).coerceAtLeast(0) }, enabled = pageIndex > 0) { Text("‹  السابق", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold) }
         Surface(shape = RoundedCornerShape(13.dp), color = MaterialTheme.colorScheme.primary.copy(alpha=.08f), border = androidx.compose.foundation.BorderStroke(1.dp,MaterialTheme.colorScheme.secondary.copy(alpha=.28f))) {
