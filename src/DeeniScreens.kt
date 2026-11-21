@@ -272,8 +272,9 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
   val context=LocalContext.current
   val phrasePrefs=remember { context.getSharedPreferences("mutqin_tasbih_phrases",android.content.Context.MODE_PRIVATE) }
-  var phraseIndex by remember { mutableIntStateOf(phrasePrefs.getInt("selected_phrase",0).coerceIn(0,4)) }
-  var count by remember { mutableIntStateOf(phrasePrefs.getInt("phrase_0",prefs.tasbihCount())) }
+  val initialPhraseIndex=remember { phrasePrefs.getInt("selected_phrase",0).coerceIn(0,4) }
+  var phraseIndex by remember { mutableIntStateOf(initialPhraseIndex) }
+  var count by remember { mutableIntStateOf(phrasePrefs.getInt("phrase_$initialPhraseIndex",if(initialPhraseIndex==0)prefs.tasbihCount() else 0)) }
   var target by remember { mutableIntStateOf(33) }
   var showReset by remember { mutableStateOf(false) }
   val phrases=listOf("سُبْحَانَ اللَّهِ","الْحَمْدُ لِلَّهِ","اللَّهُ أَكْبَرُ","أَسْتَغْفِرُ اللَّهَ","أَذْكَرُ اللَّهَ")
