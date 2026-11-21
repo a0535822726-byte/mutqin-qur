@@ -429,8 +429,10 @@ fun ReaderScreen(
             Spacer(Modifier.weight(1f))
             Text("حِفْظٌ وَتِلَاوَة", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
           }
-          androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().padding(top = 7.dp).height(2.dp)) {
-            drawLine(color = androidx.compose.ui.graphics.Color(0xFFB8954B), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(this.size.width, 0f), strokeWidth = 1.dp.toPx())
+          Row(Modifier.fillMaxWidth().padding(top = 7.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+            Box(Modifier.weight(1f).height(1.dp).background(androidx.compose.ui.graphics.Color(0xFFD6BD83)))
+            Text("  ۞  ", color = androidx.compose.ui.graphics.Color(0xFFB8954B), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+            Box(Modifier.weight(1f).height(1.dp).background(androidx.compose.ui.graphics.Color(0xFFD6BD83)))
           }
           Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Surface(shape = RoundedCornerShape(20.dp), color = androidx.compose.ui.graphics.Color(0xFF174B3B).copy(alpha=.08f), border = androidx.compose.foundation.BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFFB8954B).copy(alpha=.45f))) {
