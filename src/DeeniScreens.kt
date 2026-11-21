@@ -27,7 +27,7 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
   val storyCount=quranStories.size
   LazyColumn(Modifier.fillMaxSize().background(c.background),contentPadding=PaddingValues(bottom=34.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
     item {
-      Column(Modifier.fillMaxWidth().background(Color(0xFF062A20)).padding(horizontal=24.dp,vertical=30.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
+      Column(Modifier.fillMaxWidth().background(Color(0xFF062A20)).padding(horizontal=24.dp,vertical=34.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         Row(verticalAlignment=Alignment.CenterVertically) {
           Column(Modifier.weight(1f)) {
             Text("مُتْقِن",fontSize=34.sp,fontWeight=FontWeight.Black,color=Color(0xFFF5F0E4))
@@ -41,7 +41,7 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
           }
         }
         Box(Modifier.fillMaxWidth().height(1.dp).background(c.secondary.copy(alpha=.35f)))
-        Text("وَرْدُكَ اليومي",fontSize=11.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+        Text("وَرْدُكَ اليومي",fontSize=12.sp,color=c.secondary,fontWeight=FontWeight.Bold,letterSpacing=1.1.sp)
         Text("أنِسْ قلبك\nبكلام الله.",fontSize=32.sp,lineHeight=41.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
         Text("اقرأ، استمع، وتابع مراجعتك في مساحة تجمع جمال المصحف وسلاسة التفاعل.",fontSize=12.sp,lineHeight=21.sp,color=c.onPrimary.copy(alpha=.78f))
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
@@ -68,7 +68,7 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
         Text("بوابتك إلى القرآن",fontSize=20.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground)
         Text("واجهة هادئة، وأدواتك في مكان واحد.",fontSize=11.sp,color=c.onSurfaceVariant)
       }
-      Card(Modifier.fillMaxWidth().padding(horizontal=16.dp).clickable(onClick=onQuran),shape=RoundedCornerShape(27.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.55f))) {
+      Card(Modifier.fillMaxWidth().padding(horizontal=16.dp).clickable(onClick=onQuran),shape=RoundedCornerShape(29.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.2.dp,c.secondary.copy(alpha=.55f))) {
         Column(Modifier.fillMaxWidth().background(c.primary.copy(alpha=.025f)).padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
           Row(verticalAlignment=Alignment.CenterVertically) {
             Box(Modifier.size(64.dp).background(c.primary,RoundedCornerShape(20.dp)),contentAlignment=Alignment.Center){Text("۞",fontSize=37.sp,color=c.secondary)}
