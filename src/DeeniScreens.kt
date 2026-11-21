@@ -714,8 +714,18 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
             if(story.chapters.isNotEmpty()) {
               Text("النسخة المطوّلة: ${story.chapters.size} فصول",fontSize=14.sp,fontWeight=FontWeight.Bold,color=c.primary)
               story.chapters.forEachIndexed { chapterIndex, chapter ->
-                Card(colors=CardDefaults.cardColors(containerColor=c.surfaceVariant),shape=RoundedCornerShape(18.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outline.copy(alpha=.25f))) {
-                  Text(chapter,Modifier.fillMaxWidth().padding(14.dp),fontSize=14.sp,lineHeight=25.sp,color=c.onSurface)
+                Card(colors=CardDefaults.cardColors(containerColor=c.surfaceVariant),shape=RoundedCornerShape(19.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.24f))) {
+                  Column(Modifier.fillMaxWidth().padding(horizontal=15.dp,vertical=13.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
+                    Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+                      Surface(shape=RoundedCornerShape(10.dp),color=c.primary.copy(alpha=.10f)) {
+                        Text("الفصل " + toArabic(chapterIndex+1),Modifier.padding(horizontal=11.dp,vertical=6.dp),fontSize=10.sp,fontWeight=FontWeight.ExtraBold,color=c.secondary)
+                      }
+                      Spacer(Modifier.weight(1f))
+                      Text("من رحاب القصة",fontSize=10.sp,fontWeight=FontWeight.SemiBold,color=c.onSurfaceVariant)
+                    }
+                    Box(Modifier.fillMaxWidth().height(1.dp).background(c.outlineVariant.copy(alpha=.75f)))
+                    Text(chapter,Modifier.fillMaxWidth(),fontSize=14.sp,lineHeight=26.sp,color=c.onSurface)
+                  }
                 }
               }
             } else {
