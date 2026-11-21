@@ -68,7 +68,20 @@ Text("فتح الموضع  ‹",fontSize=10.sp,fontWeight=FontWeight.Bold,color=
 Divider(color=c.outlineVariant.copy(alpha=.7f),thickness=.7.dp)
 Text(repo.ayah(s,a),fontSize=19.sp,lineHeight=35.sp,color=c.onSurface,textAlign=TextAlign.Start)
 } } } }
-      else { item { Text("فهرس السور",fontSize=18.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground,modifier=Modifier.padding(vertical=5.dp)) }; if(filtered.isEmpty()) item { Text("لا توجد سورة بهذا الاسم أو الرقم",fontSize=12.sp,color=c.onSurfaceVariant) }; items(filtered) { n -> Card(Modifier.fillMaxWidth().clickable { onOpenSurah(n) },shape=androidx.compose.foundation.shape.RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.15.dp,c.secondary.copy(alpha=.36f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) { Row(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=15.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) { Box(Modifier.size(49.dp).background(c.primary,androidx.compose.foundation.shape.RoundedCornerShape(16.dp)).border(1.dp,c.secondary.copy(alpha=.55f),androidx.compose.foundation.shape.RoundedCornerShape(16.dp)),contentAlignment=Alignment.Center){Text(toArabic(n),fontSize=15.sp,fontWeight=FontWeight.ExtraBold,color=c.secondary)}; Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) { Text(SURAH_NAMES[n-1],fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.onSurface); Text("${toArabic(repo.ayahCount(n))} آية",fontSize=10.sp,color=c.onSurfaceVariant) }; Text("‹",fontSize=27.sp,color=c.secondary,fontWeight=FontWeight.Bold) } } } }
+      else { item {
+        Row(Modifier.fillMaxWidth().padding(top=7.dp,bottom=5.dp),verticalAlignment=Alignment.CenterVertically) {
+          Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
+            Text("فهرس السور",fontSize=19.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground)
+            Text("رحلة بين سور القرآن الكريم",fontSize=10.sp,color=c.onSurfaceVariant)
+          }
+          Surface(shape=androidx.compose.foundation.shape.RoundedCornerShape(13.dp),color=c.primary.copy(alpha=.09f),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.38f))) {
+            Row(Modifier.padding(horizontal=12.dp,vertical=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+              Text("۞",fontSize=13.sp,color=c.secondary)
+              Text("${toArabic(repo.surahCount())} سورة",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.primary)
+            }
+          }
+        }
+      }; if(filtered.isEmpty()) item { Text("لا توجد سورة بهذا الاسم أو الرقم",fontSize=12.sp,color=c.onSurfaceVariant) }; items(filtered) { n -> Card(Modifier.fillMaxWidth().clickable { onOpenSurah(n) },shape=androidx.compose.foundation.shape.RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.15.dp,c.secondary.copy(alpha=.36f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) { Row(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=15.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) { Box(Modifier.size(49.dp).background(c.primary,androidx.compose.foundation.shape.RoundedCornerShape(16.dp)).border(1.dp,c.secondary.copy(alpha=.55f),androidx.compose.foundation.shape.RoundedCornerShape(16.dp)),contentAlignment=Alignment.Center){Text(toArabic(n),fontSize=15.sp,fontWeight=FontWeight.ExtraBold,color=c.secondary)}; Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) { Text(SURAH_NAMES[n-1],fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.onSurface); Text("${toArabic(repo.ayahCount(n))} آية",fontSize=10.sp,color=c.onSurfaceVariant) }; Text("‹",fontSize=27.sp,color=c.secondary,fontWeight=FontWeight.Bold) } } } }
       item { Text("نص القرآن بالرسم العثماني • مصدر النص موضح داخل التطبيق",fontSize=9.sp,color=c.onSurfaceVariant,textAlign=TextAlign.Center,modifier=Modifier.fillMaxWidth().padding(top=12.dp)) }
     }
   }
