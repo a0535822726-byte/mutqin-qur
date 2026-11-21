@@ -872,7 +872,13 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
         LinearProgressIndicator(progress={percent/100f},modifier=Modifier.fillMaxWidth())
         Text(when { percent>=90 -> "ممتاز! إتقان رائع، واصل المراجعة."; percent>=70 -> "أحسنت! بقيت نقاط قليلة لتتقنها."; percent>=50 -> "بداية جيدة؛ راجع الإجابات والمراجع."; else -> "لا بأس، أعد المحاولة بعد مراجعة الشرح." },fontSize=13.sp,lineHeight=21.sp)
         Text("أفضل نتيجة محفوظة: ${toArabic(progressPrefs.quizBestScore())}",fontSize=11.sp,color=c.onSurfaceVariant)
-        if(quizMistakes.isNotEmpty()) {\n          Text("مراجعة الإجابات التي أخطأت فيها",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.error)\n          quizMistakes.forEach { mistake -> Text(mistake,fontSize=11.sp,lineHeight=18.sp,color=c.onSurface) }\n        } else Text("أجبت عن جميع الأسئلة إجابة صحيحة في هذه المحاولة.",fontSize=12.sp,color=c.tertiary)\n      }},
+        if(quizMistakes.isNotEmpty()) {
+          Text("مراجعة الإجابات التي أخطأت فيها",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.error)
+          quizMistakes.forEach { mistake -> Text(mistake,fontSize=11.sp,lineHeight=18.sp,color=c.onSurface) }
+        } else {
+          Text("أجبت عن جميع الأسئلة إجابة صحيحة في هذه المحاولة.",fontSize=12.sp,color=c.tertiary)
+        }
+      }},
       confirmButton={TextButton(onClick={quizIndex=0;quizSelected=null;quizScore=0;quizMistakes.clear();showQuizResult=false}){Text("اختبار جديد")}},
       dismissButton={TextButton(onClick={showQuizResult=false}){Text("إغلاق")}}
     )
