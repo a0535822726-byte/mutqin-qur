@@ -478,16 +478,16 @@ fun ReaderScreen(
     }
 
     // Fixed bottom page navigator with progress and direct previous/next actions.
-    Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = 14.dp, vertical = 8.dp)) {
+    Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha=.55f)).padding(horizontal = 18.dp, vertical = 10.dp)) {
       Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         TextButton(onClick = { pageIndex = (pageIndex - 1).coerceAtLeast(0) }, enabled = pageIndex > 0) { Text("السابق", color = MaterialTheme.colorScheme.secondary) }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-          Text("${toArabic(pageIndex + 1)} / ${toArabic(mushafPages.size)}", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-          Text("${toArabic(((pageIndex + 1f) / mushafPages.size.coerceAtLeast(1) * 100).toInt())}% من المقطع", color = MaterialTheme.colorScheme.secondary, fontSize = 9.sp)
+          Text("الصفحة ${toArabic(pageIndex + 1)} من ${toArabic(mushafPages.size)}", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = 13.sp)
+          Text("تقدّم القراءة", color = MaterialTheme.colorScheme.secondary, fontSize = 10.sp)
         }
         TextButton(onClick = { pageIndex = (pageIndex + 1).coerceAtMost(mushafPages.lastIndex) }, enabled = pageIndex < mushafPages.lastIndex) { Text("التالي", color = MaterialTheme.colorScheme.secondary) }
       }
-      Slider(value = pageIndex.toFloat(), onValueChange = { pageIndex = it.toInt().coerceIn(0, mushafPages.lastIndex) }, valueRange = 0f..mushafPages.lastIndex.coerceAtLeast(1).toFloat(), steps = (mushafPages.size - 2).coerceAtLeast(0), modifier = Modifier.fillMaxWidth())
+      Slider(value = pageIndex.toFloat(), onValueChange = { pageIndex = it.toInt().coerceIn(0, mushafPages.lastIndex) }, valueRange = 0f..mushafPages.lastIndex.coerceAtLeast(1).toFloat(), steps = (mushafPages.size - 2).coerceAtLeast(0), modifier = Modifier.fillMaxWidth().height(30.dp))
     }
   }
   if (selectedAyah > 0) {
