@@ -350,6 +350,10 @@ private val learningSections = listOf(
 fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
   val c=MaterialTheme.colorScheme
   val publishedTotal=hadithEntries.size+tajweedLessons.size+fiqhEntries.size+quranStories.size+mutqinQuizQuestions.size
+  val progressContext=LocalContext.current
+  val progressPrefs=remember { AppPrefs(progressContext) }
+  val completedTotal=learningSections.sumOf { progressPrefs.completedLearningIds(it.title).size }
+  val studyProgress=if(publishedTotal>0) (completedTotal.toFloat()/publishedTotal).coerceIn(0f,1f) else 0f
   val sectionIcons=mapOf("التجويد" to "۞","الحديث" to "❖","الفقه" to "⚖","السيرة والصحابة" to "✧","القصص الإسلامية" to "❈","الاختبارات" to "؟","الأذكار والأدعية" to "◉")
   Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
     Row(Modifier.fillMaxWidth().padding(horizontal=16.dp, vertical=10.dp)
@@ -387,6 +391,27 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
                 Text("${toArabic(publishedTotal)} مادة منشورة",Modifier.padding(horizontal=11.dp,vertical=8.dp),fontSize=11.sp,color=c.onPrimary,fontWeight=FontWeight.Bold)
               }
             }
+          }
+        }
+      }
+      item {
+        Card(shape=RoundedCornerShape(23.dp),colors=CardDefaults.cardColors(containerColor=c.surface),
+          border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.42f))) {
+          Column(Modifier.fillMaxWidth().padding(17.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+              Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
+                Text("مِرْصَادُ التَّقَدُّم",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary,letterSpacing=1.sp)
+                Text("خطواتك في طلب العلم",fontSize=17.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
+              }
+              Text("✦",fontSize=25.sp,color=c.secondary)
+            }
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.Bottom,horizontalArrangement=Arrangement.SpaceBetween) {
+              Text("${toArabic(completedTotal)} مادة تمت مراجعتها",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.primary)
+              Text("من ${toArabic(publishedTotal)}",fontSize=11.sp,color=c.onSurfaceVariant)
+            }
+            LinearProgressIndicator(progress={studyProgress},modifier=Modifier.fillMaxWidth().height(7.dp),
+              color=c.secondary,trackColor=c.surfaceVariant)
+            Text(if(completedTotal==0) "ابدأ بأول درس أو حديث، وسيظهر تقدمك هنا تلقائيًا." else "واصل على مهل؛ تقدمك محفوظ على هذا الجهاز.",fontSize=11.sp,lineHeight=18.sp,color=c.onSurfaceVariant)
           }
         }
       }
