@@ -432,9 +432,13 @@ fun ReaderScreen(
           androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().padding(top = 7.dp).height(2.dp)) {
             drawLine(color = androidx.compose.ui.graphics.Color(0xFFB8954B), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(this.size.width, 0f), strokeWidth = 1.dp.toPx())
           }
-          Row(Modifier.fillMaxWidth().padding(vertical = 7.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("سورة ${SURAH_NAMES[surah - 1]}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-            Text("صفحة ${toArabic(pageIndex + 1)} من ${toArabic(mushafPages.size)}", color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 10.sp)
+          Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Surface(shape = RoundedCornerShape(20.dp), color = androidx.compose.ui.graphics.Color(0xFF174B3B).copy(alpha=.08f), border = androidx.compose.foundation.BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFFB8954B).copy(alpha=.45f))) {
+              Text("سورة ${SURAH_NAMES[surah - 1]}", modifier = Modifier.padding(horizontal=11.dp, vertical=6.dp), color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            }
+            Surface(shape = RoundedCornerShape(20.dp), color = androidx.compose.ui.graphics.Color(0xFFB8954B).copy(alpha=.12f)) {
+              Text("صفحة ${toArabic(pageIndex + 1)} / ${toArabic(mushafPages.size)}", modifier = Modifier.padding(horizontal=11.dp, vertical=6.dp), color = androidx.compose.ui.graphics.Color(0xFF92733B), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            }
           }
           androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height(1.dp)) {
             drawLine(color = androidx.compose.ui.graphics.Color(0xFFD6BD83), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(this.size.width, 0f), strokeWidth = 1.dp.toPx())
