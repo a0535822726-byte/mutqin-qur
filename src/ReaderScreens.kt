@@ -380,8 +380,8 @@ fun ReaderScreen(
           }
           if (transcript.isNotBlank()) {
             Text("النص الذي التقطه الجهاز: $transcript", color = androidx.compose.ui.graphics.Color(0xFF243B32), fontSize = 12.sp)
-            Text("تطابق نصي تقريبي: ${toArabic(matchedWords)} / ${toArabic(targetWords.size)}", color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 11.sp)
-            LinearProgressIndicator(progress = { if (targetWords.isEmpty()) 0f else (matchedWords.toFloat() / targetWords.size).coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth(), color = androidx.compose.ui.graphics.Color(0xFF17664E), trackColor = androidx.compose.ui.graphics.Color(0xFFD7E5DC))
+            Text("تطابق متتابع من الكلمات الملتقطة: ${toArabic(matchedWords)} / ${toArabic(spokenWords.size)}", color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 11.sp)
+            LinearProgressIndicator(progress = { if (spokenWords.isEmpty()) 0f else (matchedWords.toFloat() / spokenWords.size).coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth(), color = androidx.compose.ui.graphics.Color(0xFF17664E), trackColor = androidx.compose.ui.graphics.Color(0xFFD7E5DC))
             if (hasMismatch) {
               Text("موضع اختلاف محتمل — راجع التلاوة يدويًا", color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 12.sp, fontWeight = FontWeight.Bold)
               Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -394,8 +394,8 @@ fun ReaderScreen(
                   Text(expectedWord.orEmpty(), color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
               }
-            } else if (matchedWords == targetWords.size && targetWords.isNotEmpty()) {
-              Text("اكتملت المطابقة النصية للمقطع.", color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 12.sp)
+            } else if (spokenWords.isNotEmpty() && matchedWords == spokenWords.size) {
+              Text("الكلمات التي التقطها الجهاز متوافقة متتابعًا مع موضع في النص.", color = androidx.compose.ui.graphics.Color(0xFF17664E), fontSize = 12.sp)
             }
           }
           if (speechError != null) Text(speechError!!, color = androidx.compose.ui.graphics.Color(0xFFB3261E), fontSize = 11.sp)
