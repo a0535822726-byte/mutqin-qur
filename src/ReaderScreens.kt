@@ -288,14 +288,14 @@ fun ReaderScreen(
   Column(
     modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)
   ) {
-    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF062A20)).padding(horizontal=18.dp,vertical=18.dp)) {
+    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF062A20)).padding(horizontal=20.dp,vertical=22.dp)) {
       Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(9.dp)) {
-        Surface(onClick=onBack,shape=RoundedCornerShape(13.dp),color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.12f)) {
+        Surface(onClick=onBack,shape=RoundedCornerShape(16.dp),color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.12f)) {
           Text("‹",Modifier.padding(horizontal=14.dp,vertical=6.dp),fontSize=23.sp,color=MaterialTheme.colorScheme.onPrimary)
         }
         Column(Modifier.weight(1f),horizontalAlignment=Alignment.CenterHorizontally) {
           Text("مُتْقِن  /  الْمُصْحَف",fontSize=9.sp,color=MaterialTheme.colorScheme.secondary,fontWeight=FontWeight.Bold,letterSpacing=1.sp)
-          Text(SURAH_NAMES[surah-1],fontSize=20.sp,color=MaterialTheme.colorScheme.onPrimary,fontWeight=FontWeight.ExtraBold)
+          Text(SURAH_NAMES[surah-1],fontSize=22.sp,color=MaterialTheme.colorScheme.onPrimary,fontWeight=FontWeight.ExtraBold)
         }
         Surface(shape=RoundedCornerShape(13.dp),color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.12f),onClick={
           if(isListening){recognizer?.cancel();isListening=false;speechError="تم إيقاف التسميع."}
