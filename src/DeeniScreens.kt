@@ -104,17 +104,23 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
 @Composable
 private fun HomeTile(title:String,subtitle:String,symbol:String,modifier:Modifier,onClick:()->Unit) {
   val c=MaterialTheme.colorScheme
-  Card(modifier.clickable(onClick=onClick),shape=RoundedCornerShape(20.dp),
+  Card(modifier.clickable(onClick=onClick),shape=RoundedCornerShape(24.dp),
     colors=CardDefaults.cardColors(containerColor=c.surface),
-    border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.75f)),
+    border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.28f)),
     elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
-    Column(Modifier.fillMaxWidth().padding(horizontal=13.dp,vertical=15.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
-      Box(Modifier.size(39.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(13.dp)),contentAlignment=Alignment.Center) {
-        Text(symbol,fontSize=21.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+    Column(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=17.dp),verticalArrangement=Arrangement.spacedBy(11.dp)) {
+      Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
+        Box(Modifier.size(44.dp).background(c.primary.copy(alpha=.12f),RoundedCornerShape(15.dp)).border(1.dp,c.secondary.copy(alpha=.32f),RoundedCornerShape(15.dp)),contentAlignment=Alignment.Center) {
+          Text(symbol,fontSize=23.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+        }
+        Text("۞",fontSize=17.sp,color=c.secondary.copy(alpha=.72f))
       }
-      Text(title,fontSize=13.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
-      Text(subtitle,fontSize=10.sp,lineHeight=16.sp,color=c.onSurfaceVariant)
-      Text("افتح القسم  ←",fontSize=9.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+      Text(title,fontSize=14.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
+      Text(subtitle,fontSize=10.sp,lineHeight=17.sp,color=c.onSurfaceVariant)
+      Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+        Box(Modifier.weight(1f).height(1.dp).background(c.outlineVariant))
+        Text("  افتح القسم  ←",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+      }
     }
   }
 }
