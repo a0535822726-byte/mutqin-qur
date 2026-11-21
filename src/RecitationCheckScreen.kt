@@ -55,6 +55,10 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
 
   fun startCapture() {
     try {
+      // Stop any previous playback before taking microphone control.
+      try { player?.stop() } catch (_: Exception) {}
+      try { player?.release() } catch (_: Exception) {}
+      player = null
       val folder = File(context.filesDir, "mutqin_sessions").apply { mkdirs() }
       val file = File(folder, "recitation_${System.currentTimeMillis()}.m4a")
       val r = if (Build.VERSION.SDK_INT >= 31) MediaRecorder(context) else MediaRecorder()
