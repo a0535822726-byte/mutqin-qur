@@ -47,7 +47,19 @@ fun SurahListScreen(
     }
     OutlinedTextField(value=query,onValueChange={query=it},placeholder={Text("ابحث عن سورة أو كلمة من آية",fontSize=12.sp)},leadingIcon={Text("⌕",fontSize=25.sp,color=c.secondary)},singleLine=true,shape=androidx.compose.foundation.shape.RoundedCornerShape(20.dp),colors=OutlinedTextFieldDefaults.colors(focusedBorderColor=c.secondary,unfocusedBorderColor=c.outlineVariant,focusedContainerColor=c.surface,unfocusedContainerColor=c.surface),modifier=Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=12.dp))
     LazyColumn(contentPadding=PaddingValues(start=16.dp,end=16.dp,top=3.dp,bottom=28.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
-      if(searchText.length>=2) { item { Text("نتائج الآيات  •  ${toArabic(ayahMatches.size)}",fontSize=13.sp,fontWeight=FontWeight.Bold,color=c.onBackground,modifier=Modifier.padding(vertical=5.dp)) }; if(ayahMatches.isEmpty()) item { Text("لم نعثر على آية تطابق البحث.",fontSize=12.sp,color=c.onSurfaceVariant) }; items(ayahMatches) { match -> val (s,a)=match; Card(Modifier.fillMaxWidth().clickable { onResume(s,a,a) },shape=androidx.compose.foundation.shape.RoundedCornerShape(19.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.1.dp,c.secondary.copy(alpha=.38f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) { Column(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=14.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+      if(searchText.length>=2) { item {
+        Surface(Modifier.fillMaxWidth().padding(vertical=5.dp),shape=androidx.compose.foundation.shape.RoundedCornerShape(17.dp),color=c.primary.copy(alpha=.08f),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.35f))) {
+          Row(Modifier.fillMaxWidth().padding(horizontal=15.dp,vertical=12.dp),verticalAlignment=Alignment.CenterVertically) {
+            Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
+              Text("نتائج البحث في القرآن",fontSize=14.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+              Text("اضغط على الآية للانتقال إلى موضعها في المصحف",fontSize=10.sp,color=c.onSurfaceVariant)
+            }
+            Surface(shape=androidx.compose.foundation.shape.RoundedCornerShape(12.dp),color=c.primary) {
+              Text(toArabic(ayahMatches.size),Modifier.padding(horizontal=12.dp,vertical=7.dp),fontSize=13.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+            }
+          }
+        }
+      }; if(ayahMatches.isEmpty()) item { Text("لم نعثر على آية تطابق البحث.",fontSize=12.sp,color=c.onSurfaceVariant) }; items(ayahMatches) { match -> val (s,a)=match; Card(Modifier.fillMaxWidth().clickable { onResume(s,a,a) },shape=androidx.compose.foundation.shape.RoundedCornerShape(19.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.1.dp,c.secondary.copy(alpha=.38f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) { Column(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=14.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
 Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(8.dp)) {
 Box(Modifier.size(31.dp).background(c.primary.copy(alpha=.09f),androidx.compose.foundation.shape.RoundedCornerShape(10.dp)).border(1.dp,c.secondary.copy(alpha=.42f),androidx.compose.foundation.shape.RoundedCornerShape(10.dp)),contentAlignment=Alignment.Center) { Text(toArabic(a),fontSize=11.sp,fontWeight=FontWeight.ExtraBold,color=c.secondary) }
 Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(2.dp)) { Text(SURAH_NAMES[s-1],fontSize=12.sp,fontWeight=FontWeight.ExtraBold,color=c.primary); Text("نتيجة من الآية " + toArabic(a),fontSize=9.sp,color=c.onSurfaceVariant) }
