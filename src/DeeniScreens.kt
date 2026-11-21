@@ -166,7 +166,7 @@ fun AdhkarScreen(onBack:()->Unit) {
       items(itemsNow.size) { i ->
         val key="$category-$i"
         val n=counts[key] ?: 0
-        Card(shape=RoundedCornerShape(27.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.22f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
+        Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.18f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
               Text("الذِّكر  ${toArabic(i+1)}",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary)
@@ -233,15 +233,15 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
           }
         }
       }
-      Card(shape=RoundedCornerShape(32.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.48f)),elevation=CardDefaults.cardElevation(defaultElevation=4.dp)) {
+      Card(shape=RoundedCornerShape(26.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.34f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
         Column(Modifier.fillMaxWidth().padding(20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(10.dp)) {
           Text("الذكر المختار",fontSize=10.sp,color=c.onSurfaceVariant,fontWeight=FontWeight.Bold)
           Text(phrases[phraseIndex],fontSize=21.sp,fontWeight=FontWeight.Bold,color=c.primary,textAlign=TextAlign.Center)
-          Box(Modifier.size(218.dp).background(c.primary.copy(alpha=.06f),RoundedCornerShape(120.dp)).padding(9.dp).background(c.surfaceVariant,RoundedCornerShape(120.dp)).border(2.dp,c.secondary.copy(alpha=.9f),RoundedCornerShape(120.dp)).clickable{
+          Box(Modifier.size(204.dp).background(c.primary.copy(alpha=.04f),RoundedCornerShape(120.dp)).padding(8.dp).background(c.surfaceVariant,RoundedCornerShape(120.dp)).border(1.5.dp,c.secondary.copy(alpha=.8f),RoundedCornerShape(120.dp)).clickable{
             count+=1;phrasePrefs.edit().putInt("phrase_$phraseIndex",count).apply();prefs.setTasbihCount(count)
           },contentAlignment=Alignment.Center) {
             Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(2.dp)) {
-              Text(toArabic(count),fontSize=47.sp,fontWeight=FontWeight.Black,color=c.primary)
+              Text(toArabic(count),fontSize=43.sp,fontWeight=FontWeight.Black,color=c.primary)
               Text("لِلْعَدِّ اضْغَطْ هُنَا",fontSize=10.sp,color=c.onSurfaceVariant,fontWeight=FontWeight.Bold)
             }
           }
