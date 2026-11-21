@@ -399,7 +399,7 @@ fun ReaderScreen(
     }
 
     Surface(
-      modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 10.dp, vertical = 5.dp)
+      modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 7.dp, vertical = 3.dp)
         .pointerInput(pageIndex, mushafPages.size) {
           var drag = 0f
           detectHorizontalDragGestures(
@@ -412,13 +412,13 @@ fun ReaderScreen(
           )
         },
       color = androidx.compose.ui.graphics.Color(0xFFFFFCF4),
-      shape = RoundedCornerShape(22.dp),
-      border = androidx.compose.foundation.BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFFC6A765)),
-      shadowElevation = 7.dp
+      shape = RoundedCornerShape(4.dp),
+      border = androidx.compose.foundation.BorderStroke(1.5.dp, androidx.compose.ui.graphics.Color(0xFFB8954B)),
+      shadowElevation = 2.dp
     ) {
-      Column(Modifier.fillMaxSize().padding(7.dp).background(androidx.compose.ui.graphics.Color(0xFFFFFCF4)).padding(7.dp)) {
-        // Double-rule page ornament gives the reader a recognizable printed-mushaf frame.
-        Column(Modifier.fillMaxSize().border(1.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(14.dp)).padding(horizontal = 14.dp, vertical = 11.dp)) {
+      Column(Modifier.fillMaxSize().padding(5.dp).background(androidx.compose.ui.graphics.Color(0xFFFFFCF4)).padding(4.dp)) {
+        // Printed-page treatment: square paper edges and a fine double-rule frame.
+        Column(Modifier.fillMaxSize().border(1.dp, androidx.compose.ui.graphics.Color(0xFFB8954B), RoundedCornerShape(2.dp)).padding(2.dp).border(0.7.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(1.dp)).padding(horizontal = 13.dp, vertical = 10.dp)) {
           Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text("الْجُزْءُ", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
             Spacer(Modifier.weight(1f))
