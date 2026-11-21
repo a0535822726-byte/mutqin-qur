@@ -207,7 +207,7 @@ fun AdhkarScreen(onBack:()->Unit) {
     "النوم" to listOf("باسمك اللهم أموت وأحيا.","اللهم قني عذابك يوم تبعث عبادك.","سبحان الله، والحمد لله، والله أكبر.")
   )
   val itemsNow=adhkar[category].orEmpty()
-  val total=itemsNow.indices.sumOf { counts["$category-$it"] ?: 0 }
+  val total=itemsNow.indices.sumOf { counts["$dayKey-$category-$it"] ?: 0 }
   Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
     Row(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=9.dp).background(c.surface,RoundedCornerShape(18.dp)).border(1.dp,c.secondary.copy(alpha=.24f),RoundedCornerShape(18.dp)).padding(horizontal=11.dp,vertical=5.dp),verticalAlignment=Alignment.CenterVertically) {
       TextButton(onClick=onBack){Text("‹  الرئيسية",fontWeight=FontWeight.Bold)}
