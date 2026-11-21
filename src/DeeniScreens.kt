@@ -638,16 +638,37 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
     } else if(section=="الفقه") {
       item {
-        Text("المسائل المنشورة: ${fiqhEntries.size} — نتائج البحث: ${filteredFiqh.size}. هذه مداخل تأسيسية وليست فتاوى شخصية.",fontSize=13.sp,color=c.onSurfaceVariant)
+        Card(colors=CardDefaults.cardColors(containerColor=c.primary),shape=RoundedCornerShape(22.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
+          Column(Modifier.fillMaxWidth().padding(horizontal=17.dp,vertical=16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+              Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
+                Text("فَهْمٌ وَعَمَل",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+                Text("دليل الفقه الميسّر",fontSize=19.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+              }
+              Text("۩",fontSize=29.sp,color=c.secondary)
+            }
+            Text("المسائل: ${fiqhEntries.size}  •  نتائج البحث: ${filteredFiqh.size}",fontSize=11.sp,fontWeight=FontWeight.SemiBold,color=c.onPrimary.copy(alpha=.88f))
+            Text("مداخل تعليمية عامة، وليست فتاوى شخصية؛ راجع أهل العلم فيما يستجد.",fontSize=11.sp,color=c.onPrimary.copy(alpha=.8f),lineHeight=17.sp)
+          }
+        }
         if(filteredFiqh.isEmpty()) Text("لا توجد مسائل تطابق عبارة البحث.",fontSize=13.sp,color=c.onSurfaceVariant)
       }
       items(filteredFiqh.size) { index ->
         val f=filteredFiqh[index]
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(20.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
-          Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
-            Text("المسألة ${f.id}: ${f.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
-            Text("السؤال: ${f.question}",fontSize=14.sp,fontWeight=FontWeight.SemiBold,color=c.onSurface)
-            Text("الخلاصة: ${f.ruling}",fontSize=14.sp,lineHeight=22.sp,color=c.onSurface)
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(21.dp),border=androidx.compose.foundation.BorderStroke(1.1.dp,c.secondary.copy(alpha=.38f)),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
+          Column(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(9.dp)) {
+              Box(Modifier.size(34.dp).background(c.primary.copy(alpha=.09f),RoundedCornerShape(11.dp)).border(1.dp,c.secondary.copy(alpha=.4f),RoundedCornerShape(11.dp)),contentAlignment=Alignment.Center) {
+                Text(toArabic(f.id),fontSize=11.sp,fontWeight=FontWeight.ExtraBold,color=c.secondary)
+              }
+              Text(f.title,fontSize=16.sp,fontWeight=FontWeight.ExtraBold,color=c.primary,modifier=Modifier.weight(1f))
+              Text("فقه",fontSize=9.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            }
+            Divider(color=c.outlineVariant.copy(alpha=.7f),thickness=.8.dp)
+            Text("السؤال",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            Text(f.question,fontSize=14.sp,fontWeight=FontWeight.SemiBold,color=c.onSurface)
+            Text("الخلاصة",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            Text(f.ruling,fontSize=14.sp,lineHeight=23.sp,color=c.onSurface)
             Text("الدليل: ${f.evidence}",fontSize=13.sp,lineHeight=20.sp,color=c.secondary)
             Text("الشرح والتنبيه: ${f.explanation}",fontSize=13.sp,lineHeight=21.sp,color=c.onSurface)
             Text("النطاق: ${f.scope}",fontSize=12.sp,lineHeight=19.sp,color=c.error)
