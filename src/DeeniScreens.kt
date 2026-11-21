@@ -525,8 +525,8 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
       items(filteredTajweed.size) { index ->
         val lesson=filteredTajweed[index]
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(24.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
-          Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(20.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
+          Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
             Text("الدرس ${lesson.id}: ${lesson.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
             Text("الهدف: ${lesson.objective}",fontSize=13.sp,color=c.onSurface)
             Text("التعريف: ${lesson.definition}",fontSize=13.sp,lineHeight=20.sp,color=c.onSurface)
@@ -554,8 +554,8 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
       items(filteredHadith.size) { index ->
         val h=filteredHadith[index]
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(24.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
-          Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(20.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
+          Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
             Text("الحديث ${h.id}: ${h.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
             Text(h.text,fontSize=19.sp,lineHeight=31.sp,color=c.onSurface,textAlign=TextAlign.Center)
             if(h.text.contains("...")) Text("تنبيه: هذا النص معروض كمقتطف، ويحتاج استكمال النص قبل اعتماده.",fontSize=11.sp,color=c.error)
@@ -577,8 +577,8 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
       items(filteredFiqh.size) { index ->
         val f=filteredFiqh[index]
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(24.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
-          Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(20.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
+          Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
             Text("المسألة ${f.id}: ${f.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
             Text("السؤال: ${f.question}",fontSize=14.sp,fontWeight=FontWeight.SemiBold,color=c.onSurface)
             Text("الخلاصة: ${f.ruling}",fontSize=14.sp,lineHeight=22.sp,color=c.onSurface)
@@ -600,8 +600,8 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
       items(filteredStories.size) { index ->
         val story=filteredStories[index]
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(24.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
-          Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(20.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant.copy(alpha=.7f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
+          Column(Modifier.fillMaxWidth().padding(15.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
             Text("القصة ${story.id}: ${story.title}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
             Text(story.summary,fontSize=14.sp,lineHeight=23.sp,color=c.onSurface)
             Text("مواضع القصة: ${story.verses}",fontSize=13.sp,fontWeight=FontWeight.SemiBold,color=c.secondary)
@@ -627,7 +627,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
     } else {
       item {
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(20.dp)) {
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp),border=androidx.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.22f))) {
           Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Text("نطاق القسم",fontWeight=FontWeight.Bold,color=c.primary)
             if(info!=null) Text(info.scope,fontSize=14.sp,lineHeight=23.sp,color=c.onSurface)
