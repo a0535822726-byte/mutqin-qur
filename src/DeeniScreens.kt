@@ -144,10 +144,13 @@ fun AdhkarScreen(onBack:()->Unit) {
   val itemsNow=adhkar[category].orEmpty()
   val total=itemsNow.indices.sumOf { counts["$category-$it"] ?: 0 }
   Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
-    Row(Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically) {
-      TextButton(onClick=onBack){Text("‹  الرئيسية")}
+    Row(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=9.dp).background(c.surface,RoundedCornerShape(18.dp)).border(1.dp,c.secondary.copy(alpha=.24f),RoundedCornerShape(18.dp)).padding(horizontal=11.dp,vertical=5.dp),verticalAlignment=Alignment.CenterVertically) {
+      TextButton(onClick=onBack){Text("‹  الرئيسية",fontWeight=FontWeight.Bold)}
       Spacer(Modifier.weight(1f))
-      Text("مَجْلِسُ الذِّكْر",fontSize=15.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+      Column(horizontalAlignment=Alignment.End,verticalArrangement=Arrangement.spacedBy(1.dp)) {
+        Text("مُتْقِن  •  الْوِرْدُ الْيَوْمِي",fontSize=9.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+        Text("مَجْلِسُ الذِّكْر",fontSize=15.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+      }
     }
     LazyColumn(contentPadding=PaddingValues(start=16.dp,end=16.dp,top=4.dp,bottom=28.dp),verticalArrangement=Arrangement.spacedBy(13.dp)) {
       item {
