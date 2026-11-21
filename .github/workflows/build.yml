@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: mutqin-apk-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - name: Check sources
@@ -52,6 +56,9 @@ jobs:
           cat > settings.gradle.kts <<'EOT'
           pluginManagement {
               repositories {
+                  maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
+                  maven { url = uri("https://maven.aliyun.com/repository/google") }
+                  maven { url = uri("https://maven.aliyun.com/repository/central") }
                   google()
                   mavenCentral()
                   gradlePluginPortal()
@@ -59,6 +66,8 @@ jobs:
           }
           dependencyResolutionManagement {
               repositories {
+                  maven { url = uri("https://maven.aliyun.com/repository/google") }
+                  maven { url = uri("https://maven.aliyun.com/repository/central") }
                   google()
                   mavenCentral()
               }
@@ -115,7 +124,8 @@ jobs:
           EOT
           cat > app/src/main/AndroidManifest.xml <<'EOT'
           <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">\n              <uses-permission android:name="android.permission.RECORD_AUDIO" />
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.RECORD_AUDIO" />
               <application
                   android:allowBackup="true"
                   android:icon="@drawable/ic_launcher"
@@ -200,13 +210,22 @@ jobs:
         run: |
           cd Mutqin
           gradle assembleDebug --no-daemon
-      - name: Publish
+      - name: Publish APK artifact
         if: steps.check.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutqin-apk-${{ github.run_number }}
+          path: Mutqin/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish public APK release
+        if: steps.check.outputs.ready == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: mutqin-build-${{ github.run_number }}
+          name: Mutqin APK build ${{ github.run_number }}
+          prerelease: true
+          generate_release_notes: false
+          files: Mutqin/app/build/outputs/apk/debug/app-debug.apk
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          if gh release view latest >/dev/null 2>&1; then
-            gh release upload latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --clobber
-          else
-            gh release create latest Mutqin/app/build/outputs/apk/debug/app-debug.apk --title "مُتقن" --notes "أحدث نسخة من تطبيق متقن"
-          fi
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
