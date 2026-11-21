@@ -513,6 +513,8 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
   val info=learningSections.firstOrNull { it.title==section }
   var searchQuery by remember(section) { mutableStateOf("") }
   var quizIndex by remember(section) { mutableStateOf(0) }
+  var quizLength by remember(section) { mutableStateOf(10) }
+  val activeQuizQuestions = remember(quizLength) { if (quizLength == 0) mutqinQuizQuestions else mutqinQuizQuestions.shuffled().take(quizLength.coerceAtMost(mutqinQuizQuestions.size)) }
   var quizSelected by remember(section) { mutableStateOf<Int?>(null) }
   var quizScore by remember(section) { mutableStateOf(0) }
   var showQuizResult by remember(section) { mutableStateOf(false) }
@@ -594,7 +596,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
     }
     if(section=="الاختبارات") {
       item {
-        val question = mutqinQuizQuestions.getOrNull(quizIndex)
+        val question = activeQuizQuestions.getOrNull(quizIndex)
         Card(
           modifier=Modifier.fillMaxWidth(),
           shape=RoundedCornerShape(22.dp),
@@ -603,7 +605,19 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
         ) {
           Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
             Text("اختبر معلوماتك",fontSize=22.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
-            Text("بنك الأسئلة المنشور: ${mutqinQuizQuestions.size} سؤالًا من أصل 7,000 مستهدف.",fontSize=12.sp,color=c.onSurfaceVariant)
+            Text("بنك الأسئلة المنشور: ${activeQuizQuestions.size} سؤالًا من أصل 7,000 مستهدف.",fontSize=12.sp,color=c.onSurfaceVariant)
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+              FilterChip(
+                selected=quizLength==10,
+                onClick={quizLength=10;quizIndex=0;quizSelected=null;quizScore=0;quizMistakes.clear();showQuizResult=false},
+                label={Text("اختبار سريع • ١٠ أسئلة")}
+              )
+              FilterChip(
+                selected=quizLength==0,
+                onClick={quizLength=0;quizIndex=0;quizSelected=null;quizScore=0;quizMistakes.clear();showQuizResult=false},
+                label={Text("البنك الكامل")}
+              )
+            }
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
               listOf("محاولات: ${toArabic(progressPrefs.quizAttempts())}","أفضل نتيجة: ${toArabic(progressPrefs.quizBestScore())}","آخر نتيجة: ${toArabic(progressPrefs.quizLastScore())}/${toArabic(progressPrefs.quizLastTotal())}").forEach { stat ->
                 Surface(modifier=Modifier.weight(1f),shape=RoundedCornerShape(12.dp),color=c.surfaceVariant) {
@@ -624,10 +638,10 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
               }
             }
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
-              Text("السؤال ${toArabic(quizIndex+1)} من ${toArabic(mutqinQuizQuestions.size)}",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+              Text("السؤال ${toArabic(quizIndex+1)} من ${toArabic(activeQuizQuestions.size)}",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.secondary)
               Text("نتيجتك: ${toArabic(quizScore)}",fontSize=12.sp,fontWeight=FontWeight.Bold,color=c.primary)
             }
-            LinearProgressIndicator(progress={ (quizIndex+1).toFloat()/mutqinQuizQuestions.size.coerceAtLeast(1) },modifier=Modifier.fillMaxWidth())
+            LinearProgressIndicator(progress={ (quizIndex+1).toFloat()/activeQuizQuestions.size.coerceAtLeast(1) },modifier=Modifier.fillMaxWidth())
             if(question!=null) {
               Text(question.question,fontSize=18.sp,fontWeight=FontWeight.Bold,lineHeight=27.sp,color=c.onSurface)
               question.choices.forEachIndexed { choiceIndex, choice ->
@@ -656,12 +670,12 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
                 OutlinedButton(onClick={quizIndex=0;quizSelected=null;quizScore=0;quizMistakes.clear();showQuizResult=false},modifier=Modifier.weight(1f)) { Text("إعادة الاختبار") }
                 Button(
                   onClick={
-                    if(quizIndex<mutqinQuizQuestions.lastIndex) { quizIndex++; quizSelected=null }
-                    else { progressPrefs.saveQuizResult(quizScore,mutqinQuizQuestions.size); progressPrefs.saveQuizMistakes(quizMistakes.toList()); savedQuizMistakes=quizMistakes.toList(); showQuizResult=true }
+                    if(quizIndex<activeQuizQuestions.lastIndex) { quizIndex++; quizSelected=null }
+                    else { progressPrefs.saveQuizResult(quizScore,activeQuizQuestions.size); progressPrefs.saveQuizMistakes(quizMistakes.toList()); savedQuizMistakes=quizMistakes.toList(); showQuizResult=true }
                   },
                   enabled=quizSelected!=null,
                   modifier=Modifier.weight(1f)
-                ) { Text(if(quizIndex==mutqinQuizQuestions.lastIndex) "إنهاء وبدء من جديد" else "السؤال التالي") }
+                ) { Text(if(quizIndex==activeQuizQuestions.lastIndex) "إنهاء وبدء من جديد" else "السؤال التالي") }
               }
             }
           }
@@ -875,12 +889,12 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
     }
   }
   if(section=="الاختبارات" && showQuizResult) {
-    val percent=(quizScore*100f/mutqinQuizQuestions.size.coerceAtLeast(1)).toInt()
+    val percent=(quizScore*100f/activeQuizQuestions.size.coerceAtLeast(1)).toInt()
     AlertDialog(
       onDismissRequest={showQuizResult=false},
       title={Text("اكتمل الاختبار",fontWeight=FontWeight.ExtraBold)},
       text={Column(verticalArrangement=Arrangement.spacedBy(9.dp)) {
-        Text("نتيجتك: ${toArabic(quizScore)} من ${toArabic(mutqinQuizQuestions.size)}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
+        Text("نتيجتك: ${toArabic(quizScore)} من ${toArabic(activeQuizQuestions.size)}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
         Text("النسبة: ${toArabic(percent)}٪",fontSize=15.sp,fontWeight=FontWeight.Bold)
         LinearProgressIndicator(progress={percent/100f},modifier=Modifier.fillMaxWidth())
         Text(when { percent>=90 -> "ممتاز! إتقان رائع، واصل المراجعة."; percent>=70 -> "أحسنت! بقيت نقاط قليلة لتتقنها."; percent>=50 -> "بداية جيدة؛ راجع الإجابات والمراجع."; else -> "لا بأس، أعد المحاولة بعد مراجعة الشرح." },fontSize=13.sp,lineHeight=21.sp)
