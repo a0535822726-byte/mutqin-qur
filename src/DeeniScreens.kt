@@ -27,7 +27,7 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onRecit
   val storyCount=quranStories.size
   LazyColumn(Modifier.fillMaxSize().background(c.background),contentPadding=PaddingValues(bottom=34.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
     item {
-      Column(Modifier.fillMaxWidth().background(Color(0xFF092E24)).padding(horizontal=22.dp,vertical=28.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
+      Column(Modifier.fillMaxWidth().background(Color(0xFF062A20)).padding(horizontal=24.dp,vertical=30.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         Row(verticalAlignment=Alignment.CenterVertically) {
           Column(Modifier.weight(1f)) {
             Text("مُتْقِن",fontSize=34.sp,fontWeight=FontWeight.Black,color=Color(0xFFF5F0E4))
