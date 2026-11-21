@@ -160,6 +160,23 @@ private fun DeeniSplashScreen() {
         Text("مُتْقِن", color = ink, fontSize = 43.sp, fontWeight = FontWeight.ExtraBold, textAlign = TextAlign.Center)
       }
       Spacer(Modifier.height(12.dp))
+      Text(
+        "MUTQIN",
+        color = ink.copy(alpha = .82f),
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 4.sp,
+        textAlign = TextAlign.Center
+      )
+      Spacer(Modifier.height(5.dp))
+      Text(
+        "QURAN COMPANION",
+        color = gold,
+        fontSize = 9.sp,
+        fontWeight = FontWeight.SemiBold,
+        letterSpacing = 2.2.sp,
+        textAlign = TextAlign.Center
+      )
     }
   }
 }
