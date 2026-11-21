@@ -98,6 +98,21 @@ class AppPrefs(context: Context) {
     p.edit().putStringSet("learning_done_" + section, values.map { it.toString() }.toSet()).apply()
   }
 
+  fun quizAttempts(): Int = p.getInt("quiz_attempts", 0)
+  fun quizBestScore(): Int = p.getInt("quiz_best_score", 0)
+  fun quizLastScore(): Int = p.getInt("quiz_last_score", 0)
+  fun saveQuizResult(score: Int, total: Int) {
+    val safeTotal = total.coerceAtLeast(0)
+    val safeScore = score.coerceIn(0, safeTotal)
+    p.edit()
+      .putInt("quiz_attempts", quizAttempts() + 1)
+      .putInt("quiz_best_score", maxOf(quizBestScore(), safeScore))
+      .putInt("quiz_last_score", safeScore)
+      .putInt("quiz_last_total", safeTotal)
+      .apply()
+  }
+  fun quizLastTotal(): Int = p.getInt("quiz_last_total", 0)
+
   fun tasbihCount(): Int = p.getInt("tasbih_count", 0)
   fun setTasbihCount(value: Int) { p.edit().putInt("tasbih_count", value.coerceAtLeast(0)).apply() }
 }
