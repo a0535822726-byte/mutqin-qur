@@ -33,14 +33,14 @@ fun SurahListScreen(
   val filtered=remember(q) { (1..repo.surahCount()).filter { n -> q.isEmpty() || n.toString()==q || normalizeAr(SURAH_NAMES[n-1]).contains(q) } }
   val c=MaterialTheme.colorScheme
   Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
-    Row(Modifier.fillMaxWidth().padding(horizontal=18.dp,vertical=14.dp),verticalAlignment=Alignment.CenterVertically) {
-      Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) { Text("مُتْقِن  •  الْمُصْحَف",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary); Text("المصحف الشريف",fontSize=24.sp,fontWeight=FontWeight.Black,color=c.onBackground) }
+    Row(Modifier.fillMaxWidth().padding(horizontal=20.dp,vertical=17.dp),verticalAlignment=Alignment.CenterVertically) {
+      Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) { Text("مُتْقِن  •  الْمُصْحَف",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary); Text("المصحف الشريف",fontSize=26.sp,fontWeight=FontWeight.Black,color=c.onBackground) }
       Switch(checked=dark,onCheckedChange=onDark)
     }
     Card(Modifier.fillMaxWidth().padding(horizontal=16.dp),shape=androidx.compose.foundation.shape.RoundedCornerShape(25.dp),colors=CardDefaults.cardColors(containerColor=c.primary),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.55f))) {
-      Column(Modifier.fillMaxWidth().padding(horizontal=19.dp,vertical=20.dp),verticalArrangement=Arrangement.spacedBy(11.dp)) {
+      Column(Modifier.fillMaxWidth().padding(horizontal=22.dp,vertical=23.dp),verticalArrangement=Arrangement.spacedBy(11.dp)) {
         Row(verticalAlignment=Alignment.CenterVertically) { Text("۞",fontSize=34.sp,color=c.secondary); Spacer(Modifier.weight(1f)); Text("الْقُرْآنُ الْكَرِيم",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary) }
-        Text("اقرأ بقلب حاضر",fontSize=26.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+        Text("اقرأ بقلب حاضر",fontSize=28.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
         Text("فهرس السور • البحث في الآيات • حفظ موضع القراءة",fontSize=11.sp,lineHeight=20.sp,color=c.onPrimary.copy(alpha=.8f))
         if(last!=null) Surface(Modifier.fillMaxWidth().clickable { onResume(last.first,last.second,last.third) },shape=androidx.compose.foundation.shape.RoundedCornerShape(18.dp),color=c.onPrimary.copy(alpha=.09f)) { Row(Modifier.padding(15.dp),verticalAlignment=Alignment.CenterVertically) { Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) { Text("متابعة التلاوة",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary); Text("سورة ${SURAH_NAMES[last.first-1]} • الآية ${toArabic(last.second)}",fontSize=12.sp,color=c.onPrimary) }; Text("←",fontSize=23.sp,color=c.secondary) } }
       }
