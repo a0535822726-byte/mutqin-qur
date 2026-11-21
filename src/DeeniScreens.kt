@@ -272,7 +272,7 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
   val c=MaterialTheme.colorScheme
   val context=LocalContext.current
   val phrasePrefs=remember { context.getSharedPreferences("mutqin_tasbih_phrases",android.content.Context.MODE_PRIVATE) }
-  var phraseIndex by remember { mutableIntStateOf(0) }
+  var phraseIndex by remember { mutableIntStateOf(phrasePrefs.getInt("selected_phrase",0).coerceIn(0,4)) }
   var count by remember { mutableIntStateOf(phrasePrefs.getInt("phrase_0",prefs.tasbihCount())) }
   var target by remember { mutableIntStateOf(33) }
   var showReset by remember { mutableStateOf(false) }
@@ -310,7 +310,7 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
           Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
             rowPhrases.forEach { phrase ->
               val index=phrases.indexOf(phrase)
-              Surface(modifier=Modifier.weight(1f).clickable{phraseIndex=index;count=phrasePrefs.getInt("phrase_$index",if(index==0)prefs.tasbihCount() else 0)},shape=RoundedCornerShape(17.dp),color=if(phraseIndex==index)c.primary else c.surface,border=androidx.compose.foundation.BorderStroke(if(phraseIndex==index)1.5.dp else 1.dp,if(phraseIndex==index)c.secondary else c.outlineVariant)) {
+              Surface(modifier=Modifier.weight(1f).clickable{phraseIndex=index;phrasePrefs.edit().putInt("selected_phrase",index).apply();count=phrasePrefs.getInt("phrase_$index",if(index==0)prefs.tasbihCount() else 0)},shape=RoundedCornerShape(17.dp),color=if(phraseIndex==index)c.primary else c.surface,border=androidx.compose.foundation.BorderStroke(if(phraseIndex==index)1.5.dp else 1.dp,if(phraseIndex==index)c.secondary else c.outlineVariant)) {
                 Text(phrase,Modifier.fillMaxWidth().padding(horizontal=7.dp,vertical=13.dp),fontSize=10.sp,textAlign=TextAlign.Center,fontWeight=FontWeight.Bold,color=if(phraseIndex==index)c.onPrimary else c.onSurface,maxLines=2)
               }
             }
