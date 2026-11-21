@@ -288,7 +288,7 @@ fun ReaderScreen(
   Column(
     modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)
   ) {
-    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF062A20)).padding(horizontal=22.dp,vertical=20.dp)) {
+    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF062A20)).padding(horizontal=23.dp,vertical=22.dp)) {
       Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(9.dp)) {
         Surface(onClick=onBack,shape=RoundedCornerShape(16.dp),color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.12f)) {
           Text("‹",Modifier.padding(horizontal=14.dp,vertical=6.dp),fontSize=23.sp,color=MaterialTheme.colorScheme.onPrimary)
@@ -318,18 +318,19 @@ fun ReaderScreen(
     ) {
       Surface(
         modifier = Modifier.weight(1f).clickable { showTools = !showTools },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(18.dp),
         color = if (showTools) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha=.45f))
+        border = androidx.compose.foundation.BorderStroke(1.2.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.42f))
       ) { Text("Aa  إعدادات القراءة", modifier = Modifier.padding(vertical = 12.dp), textAlign = TextAlign.Center, color = if (showTools) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontWeight = FontWeight.Bold) }
       Surface(
         modifier = Modifier.weight(1f).clickable { showTools = true; hide = !hide; revealed.clear() },
-        shape = RoundedCornerShape(14.dp),
-        color = if (hide) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+        shape = RoundedCornerShape(18.dp),
+        color = if (hide) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.5f))
       ) { Text(if (hide) "إظهار الحفظ" else "اختبار الحفظ", modifier = Modifier.padding(vertical = 11.dp), textAlign = TextAlign.Center, color = if (hide) androidx.compose.ui.graphics.Color(0xFF17251D) else androidx.compose.ui.graphics.Color(0xFFF4E8C9), fontSize = 11.sp, fontWeight = FontWeight.Bold) }
       Surface(
         modifier = Modifier.weight(1f).clickable { showBookmarks = true },
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(18.dp),
         color = MaterialTheme.colorScheme.primary,
         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.55f))
       ) { Text("☆  المحفوظات", modifier = Modifier.padding(vertical = 12.dp), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold) }
@@ -339,8 +340,8 @@ fun ReaderScreen(
       Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 2.dp),
         colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFFF5EEDC)),
-        shape = RoundedCornerShape(18.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFFB8954B))
+        shape = RoundedCornerShape(20.dp),
+        border = androidx.compose.foundation.BorderStroke(1.4.dp, androidx.compose.ui.graphics.Color(0xFFB8954B))
       ) {
         Column(Modifier.fillMaxWidth().padding(13.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
           Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
@@ -418,7 +419,7 @@ fun ReaderScreen(
     ) {
       Column(Modifier.fillMaxSize().padding(6.dp).background(androidx.compose.ui.graphics.Color(0xFFFFFCF4)).padding(5.dp)) {
         // Printed-page treatment: square paper edges and a fine double-rule frame.
-        Column(Modifier.fillMaxSize().border(1.dp, androidx.compose.ui.graphics.Color(0xFFB8954B), RoundedCornerShape(2.dp)).padding(2.dp).border(0.7.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(1.dp)).padding(horizontal = 15.dp, vertical = 12.dp)) {
+        Column(Modifier.fillMaxSize().border(1.4.dp, androidx.compose.ui.graphics.Color(0xFFB8954B), RoundedCornerShape(2.dp)).padding(3.dp).border(1.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(1.dp)).padding(horizontal = 17.dp, vertical = 14.dp)) {
           Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text("الْجُزْءُ", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
             Spacer(Modifier.weight(1f))
@@ -478,7 +479,7 @@ fun ReaderScreen(
     }
 
     // Fixed bottom page navigator with progress and direct previous/next actions.
-    Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha=.55f)).padding(horizontal = 18.dp, vertical = 10.dp)) {
+    Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).border(1.2.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.3f), RoundedCornerShape(topStart=20.dp, topEnd=20.dp)).padding(horizontal = 20.dp, vertical = 12.dp)) {
       Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         TextButton(onClick = { pageIndex = (pageIndex - 1).coerceAtLeast(0) }, enabled = pageIndex > 0) { Text("السابق", color = MaterialTheme.colorScheme.secondary) }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
