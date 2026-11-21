@@ -25,23 +25,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 
-private val Green = Color(0xFF174B3E)
-private val Gold = Color(0xFFB18A4A)
+private val Green = Color(0xFF064E3B)
+private val Gold = Color(0xFFD6B56D)
 private val LightColors = lightColorScheme(
-  primary=Color(0xFF174B3E), onPrimary=Color(0xFFF8F6EF),
-  secondary=Color(0xFFAD8545), onSecondary=Color(0xFF171D19),
+  primary=Color(0xFF064E3B), onPrimary=Color(0xFFF8F6EF,
+  secondary=Color(0xFFC69B52), onSecondary=Color(0xFF171D19),
   tertiary=Color(0xFF43866B), onTertiary=Color(0xFFFFFFFF),
-  background=Color(0xFFF4F3EE), onBackground=Color(0xFF18251F),
-  surface=Color(0xFFFFFEFA), onSurface=Color(0xFF18251F),
+  background=Color(0xFFF1F0E8), onBackground=Color(0xFF17251E),
+  surface=Color(0xFFFFFCF5), onSurface=Color(0xFF17251E),
   surfaceVariant=Color(0xFFE8EEE8), onSurfaceVariant=Color(0xFF617168),
   outline=Color(0xFFB9C5BB)
 )
 private val DarkColors = darkColorScheme(
-  primary=Color(0xFF153D32), onPrimary=Color(0xFFF5F1E7),
-  secondary=Color(0xFFD2B477), onSecondary=Color(0xFF202016),
+  primary=Color(0xFF0B3328), onPrimary=Color(0xFFF5F1E7),
+  secondary=Color(0xFFE1BD73), onSecondary=Color(0xFF202016),
   tertiary=Color(0xFF78B99A), onTertiary=Color(0xFF10251D),
-  background=Color(0xFF081511), onBackground=Color(0xFFF1EFE6),
-  surface=Color(0xFF11231D), onSurface=Color(0xFFF1EFE6),
+  background=Color(0xFF07110F), onBackground=Color(0xFFF1EFE6),
+  surface=Color(0xFF10231C), onSurface=Color(0xFFF1EFE6),
   surfaceVariant=Color(0xFF1A3028), onSurfaceVariant=Color(0xFFB4C4B9),
   outline=Color(0xFF3A5B4B)
 )
