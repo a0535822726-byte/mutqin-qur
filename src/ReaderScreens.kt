@@ -149,6 +149,7 @@ fun RangeScreen(
   }
 }
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun ReaderScreen(
   repo: QuranRepository,
