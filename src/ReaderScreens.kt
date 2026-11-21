@@ -187,7 +187,14 @@ fun ReaderScreen(
     if (current.isNotEmpty()) groups.add(current.toList())
     groups
   }
-  var pageIndex by remember(surah, from, to) { mutableIntStateOf(0) }
+  val savedReadingPosition = remember(surah, from, to) {
+    prefs.lastPosition()?.takeIf { it.first == surah && it.second in from..to }?.second
+  }
+  var pageIndex by remember(surah, from, to) {
+    mutableIntStateOf(mushafPages.indexOfFirst { page -> savedReadingPosition != null && savedReadingPosition in page }.coerceAtLeast(0))
+  }
+  var showPageJump by remember(surah, from, to) { mutableStateOf(false) }
+  var jumpPageText by remember(surah, from, to) { mutableStateOf("") }
   LaunchedEffect(pageIndex, mushafPages) {
     val currentPage = mushafPages.getOrNull(pageIndex)
     if (!currentPage.isNullOrEmpty()) {
@@ -439,7 +446,7 @@ fun ReaderScreen(
             Box(Modifier.weight(1f).height(1.dp).background(androidx.compose.ui.graphics.Color(0xFFD6BD83)))
           }
           Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Surface(shape = RoundedCornerShape(20.dp), color = androidx.compose.ui.graphics.Color(0xFF174B3B).copy(alpha=.08f), border = androidx.compose.foundation.BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFFB8954B).copy(alpha=.45f))) {
+            Surface(onClick = { jumpPageText = (pageIndex + 1).toString(); showPageJump = true }, shape = RoundedCornerShape(20.dp), color = androidx.compose.ui.graphics.Color(0xFF174B3B).copy(alpha=.08f), border = androidx.compose.foundation.BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFFB8954B).copy(alpha=.45f))) {
               Text("سورة ${SURAH_NAMES[surah - 1]}", modifier = Modifier.padding(horizontal=11.dp, vertical=6.dp), color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 11.sp, fontWeight = FontWeight.Bold)
             }
             Surface(shape = RoundedCornerShape(20.dp), color = androidx.compose.ui.graphics.Color(0xFFB8954B).copy(alpha=.12f)) {
@@ -455,7 +462,7 @@ fun ReaderScreen(
           ) {
             Text("۞", color = androidx.compose.ui.graphics.Color(0xFFB28A3B), fontSize = 26.sp)
             Text("سُورَةُ ${SURAH_NAMES[surah - 1]}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            if (from == 1 && surah != 1 && surah != 9) {
+            if (from == 1 && pageIndex == 0 && surah != 1 && surah != 9) {
               Text("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", modifier = Modifier.padding(top = 10.dp, bottom = 8.dp), color = androidx.compose.ui.graphics.Color(0xFF30291F), fontSize = (size * 0.92f).sp, textAlign = TextAlign.Center)
             }
             Spacer(Modifier.height(8.dp))
@@ -504,6 +511,33 @@ fun ReaderScreen(
       }
       Slider(value = pageIndex.toFloat(), onValueChange = { pageIndex = it.toInt().coerceIn(0, mushafPages.lastIndex) }, valueRange = 0f..mushafPages.lastIndex.coerceAtLeast(1).toFloat(), steps = (mushafPages.size - 2).coerceAtLeast(0), modifier = Modifier.fillMaxWidth().height(32.dp))
     }
+  }
+  if (showPageJump) {
+    val requestedPage = jumpPageText.toIntOrNull()
+    AlertDialog(
+      onDismissRequest = { showPageJump = false },
+      title = { Text("الانتقال إلى صفحة") },
+      text = {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          Text("اختر صفحة من صفحات المقطع المحدد في هذه القراءة.")
+          OutlinedTextField(
+            value = jumpPageText,
+            onValueChange = { jumpPageText = it.filter(Char::isDigit).take(4) },
+            singleLine = true,
+            label = { Text("رقم الصفحة") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+          )
+          Text("عدد صفحات هذا المقطع: ${toArabic(mushafPages.size)}", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+      },
+      confirmButton = {
+        TextButton(
+          enabled = requestedPage != null && requestedPage in 1..mushafPages.size,
+          onClick = { pageIndex = (requestedPage!! - 1); showPageJump = false }
+        ) { Text("انتقال") }
+      },
+      dismissButton = { TextButton(onClick = { showPageJump = false }) { Text("إلغاء") } }
+    )
   }
   if (selectedAyah > 0) {
     val selectedText = repo.ayah(surah, selectedAyah)
