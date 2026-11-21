@@ -416,9 +416,9 @@ fun ReaderScreen(
       border = androidx.compose.foundation.BorderStroke(1.5.dp, androidx.compose.ui.graphics.Color(0xFFB8954B)),
       shadowElevation = 2.dp
     ) {
-      Column(Modifier.fillMaxSize().padding(5.dp).background(androidx.compose.ui.graphics.Color(0xFFFFFCF4)).padding(4.dp)) {
+      Column(Modifier.fillMaxSize().padding(6.dp).background(androidx.compose.ui.graphics.Color(0xFFFFFCF4)).padding(5.dp)) {
         // Printed-page treatment: square paper edges and a fine double-rule frame.
-        Column(Modifier.fillMaxSize().border(1.dp, androidx.compose.ui.graphics.Color(0xFFB8954B), RoundedCornerShape(2.dp)).padding(2.dp).border(0.7.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(1.dp)).padding(horizontal = 13.dp, vertical = 10.dp)) {
+        Column(Modifier.fillMaxSize().border(1.dp, androidx.compose.ui.graphics.Color(0xFFB8954B), RoundedCornerShape(2.dp)).padding(2.dp).border(0.7.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(1.dp)).padding(horizontal = 15.dp, vertical = 12.dp)) {
           Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text("الْجُزْءُ", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
             Spacer(Modifier.weight(1f))
