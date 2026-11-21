@@ -212,17 +212,28 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
   val targets=listOf(33,100,500,1000)
   val progress=(count.toFloat()/target).coerceIn(0f,1f)
   Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
-    Row(Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=7.dp),verticalAlignment=Alignment.CenterVertically) {
-      TextButton(onClick=onBack){Text("‹  الرئيسية")}
+    Row(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=9.dp).background(c.surface,RoundedCornerShape(18.dp)).border(1.dp,c.secondary.copy(alpha=.24f),RoundedCornerShape(18.dp)).padding(horizontal=11.dp,vertical=5.dp),verticalAlignment=Alignment.CenterVertically) {
+      TextButton(onClick=onBack){Text("‹  الرئيسية",fontWeight=FontWeight.Bold)}
       Spacer(Modifier.weight(1f))
-      Text("مِسْبَاحُ مُتْقِن",fontSize=15.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+      Column(horizontalAlignment=Alignment.End,verticalArrangement=Arrangement.spacedBy(1.dp)) {
+        Text("مُتْقِن  •  وِرْدُ الذِّكْر",fontSize=9.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+        Text("مِسْبَاحُ مُتْقِن",fontSize=15.sp,fontWeight=FontWeight.ExtraBold,color=c.primary)
+      }
     }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal=18.dp,vertical=8.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(14.dp)) {
-      Card(shape=RoundedCornerShape(26.dp),colors=CardDefaults.cardColors(containerColor=c.primary),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.65f))) {
-        Column(Modifier.fillMaxWidth().padding(19.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
-          Text("لَا تَغْفُلْ عَنِ الذِّكْر",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary,letterSpacing=1.1.sp)
-          Text("مسبحة متقن",fontSize=23.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
-          Text("اختر الذكر والهدف، ثم تابع عدّك بهدوء. يُحفظ كل عدّاد تلقائيًا.",fontSize=11.sp,lineHeight=18.sp,color=c.onPrimary.copy(alpha=.82f))
+      Card(shape=RoundedCornerShape(30.dp),colors=CardDefaults.cardColors(containerColor=c.primary),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.78f))) {
+        Column(Modifier.fillMaxWidth().padding(horizontal=21.dp,vertical=22.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
+          Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+            Text("۞",fontSize=23.sp,color=c.secondary)
+            Spacer(Modifier.width(8.dp))
+            Text("لَا تَغْفُلْ عَنِ الذِّكْر",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary,letterSpacing=1.1.sp)
+            Spacer(Modifier.weight(1f))
+            Text("مُتْقِن",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.onPrimary.copy(alpha=.7f))
+          }
+          Text("مسبحة متقن",fontSize=26.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+          Text("اختر الذكر والهدف، ثم تابع عدّك بهدوء. يُحفظ كل عدّاد تلقائيًا.",fontSize=12.sp,lineHeight=20.sp,color=c.onPrimary.copy(alpha=.84f))
+          Box(Modifier.fillMaxWidth().height(1.dp).background(c.secondary.copy(alpha=.42f)))
+          Text("ذِكْرٌ يَسْكُنُ بِهِ الْقَلْب",fontSize=10.sp,color=c.secondary,fontWeight=FontWeight.Bold,letterSpacing=1.sp)
         }
       }
       Text("اختر الذكر",Modifier.fillMaxWidth(),fontSize=15.sp,fontWeight=FontWeight.Bold,color=c.onBackground)
@@ -231,7 +242,7 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
           Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
             rowPhrases.forEach { phrase ->
               val index=phrases.indexOf(phrase)
-              Surface(modifier=Modifier.weight(1f).clickable{phraseIndex=index;count=phrasePrefs.getInt("phrase_$index",if(index==0)prefs.tasbihCount() else 0)},shape=RoundedCornerShape(15.dp),color=if(phraseIndex==index)c.primary else c.surface,border=androidx.compose.foundation.BorderStroke(1.dp,if(phraseIndex==index)c.secondary else c.outlineVariant)) {
+              Surface(modifier=Modifier.weight(1f).clickable{phraseIndex=index;count=phrasePrefs.getInt("phrase_$index",if(index==0)prefs.tasbihCount() else 0)},shape=RoundedCornerShape(17.dp),color=if(phraseIndex==index)c.primary else c.surface,border=androidx.compose.foundation.BorderStroke(if(phraseIndex==index)1.5.dp else 1.dp,if(phraseIndex==index)c.secondary else c.outlineVariant)) {
                 Text(phrase,Modifier.fillMaxWidth().padding(horizontal=7.dp,vertical=13.dp),fontSize=10.sp,textAlign=TextAlign.Center,fontWeight=FontWeight.Bold,color=if(phraseIndex==index)c.onPrimary else c.onSurface,maxLines=2)
               }
             }
