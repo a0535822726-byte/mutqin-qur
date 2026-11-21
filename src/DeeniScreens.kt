@@ -195,8 +195,9 @@ fun AdhkarScreen(onBack:()->Unit) {
   var category by remember { mutableStateOf("عام") }
   val context=LocalContext.current
   val store=remember { context.getSharedPreferences("mutqin_adhkar",android.content.Context.MODE_PRIVATE) }
-  val counts=remember { mutableStateMapOf<String,Int>().apply {
-    listOf("عام" to 5,"الصباح" to 4,"المساء" to 4,"النوم" to 3).forEach { pair -> repeat(pair.second) { i -> val k="${pair.first}-$i"; this[k]=store.getInt(k,0) } }
+  val dayKey=remember { java.text.SimpleDateFormat("yyyyMMdd",java.util.Locale.US).format(java.util.Date()) }
+  val counts=remember(dayKey) { mutableStateMapOf<String,Int>().apply {
+    listOf("عام" to 5,"الصباح" to 4,"المساء" to 4,"النوم" to 3).forEach { pair -> repeat(pair.second) { i -> val k="$dayKey-${pair.first}-$i"; this[k]=store.getInt(k,0) } }
   } }
   val categories=listOf("عام","الصباح","المساء","النوم")
   val adhkar=mapOf(
@@ -222,7 +223,7 @@ fun AdhkarScreen(onBack:()->Unit) {
           Column(Modifier.fillMaxWidth().padding(21.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
             Text("وَرْدٌ يُنِيرُ الْيَوْم",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary,letterSpacing=1.2.sp)
             Text("اذكر الله بقلب حاضر",fontSize=24.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
-            Text("مساحة هادئة لأذكارك اليومية، مع عدّاد يحفظ تقدمك على هذا الجهاز.",fontSize=12.sp,lineHeight=20.sp,color=c.onPrimary.copy(alpha=.82f))
+            Text("مساحة هادئة لأذكارك اليومية، مع عدّاد مستقل لكل يوم يُحفظ على هذا الجهاز.",fontSize=12.sp,lineHeight=20.sp,color=c.onPrimary.copy(alpha=.82f))
             Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
               Surface(shape=RoundedCornerShape(12.dp),color=c.onPrimary.copy(alpha=.12f)){Text("${toArabic(itemsNow.size)} أذكار",Modifier.padding(horizontal=10.dp,vertical=8.dp),fontSize=10.sp,color=c.onPrimary,fontWeight=FontWeight.Bold)}
               Surface(shape=RoundedCornerShape(12.dp),color=c.secondary.copy(alpha=.18f)){Text("مجموع تكراراتك: ${toArabic(total)}",Modifier.padding(horizontal=10.dp,vertical=8.dp),fontSize=10.sp,color=c.onPrimary,fontWeight=FontWeight.Bold)}
@@ -237,7 +238,7 @@ fun AdhkarScreen(onBack:()->Unit) {
         }
       }
       items(itemsNow.size) { i ->
-        val key="$category-$i"
+        val key="$dayKey-$category-$i"
         val n=counts[key] ?: 0
         Card(shape=RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.18f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
           Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
@@ -258,7 +259,7 @@ fun AdhkarScreen(onBack:()->Unit) {
           Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(5.dp)) {
             Text("تنبيه توثيقي",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.primary)
             Text("هذه مجموعة مختارة. ينبغي مراجعة النصوص والأعداد والأوقات على مصادر الأذكار المعتمدة قبل اعتمادها كمكتبة موثقة.",fontSize=11.sp,lineHeight=18.sp,color=c.onSurfaceVariant)
-            TextButton(onClick={counts.keys.filter{it.startsWith("$category-")}.forEach{key->counts[key]=0;store.edit().putInt(key,0).apply()}}){Text("تصفير عدادات هذا القسم")}
+            TextButton(onClick={counts.keys.filter{it.startsWith("$dayKey-$category-")}.forEach{key->counts[key]=0;store.edit().putInt(key,0).apply()}}){Text("تصفير عدادات هذا القسم")}
           }
         }
       }
