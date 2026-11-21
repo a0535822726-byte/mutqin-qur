@@ -253,7 +253,7 @@ fun TasbihScreen(prefs:AppPrefs,onBack:()->Unit) {
           }
         }
       }
-      Card(shape=RoundedCornerShape(26.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.34f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
+      Card(shape=RoundedCornerShape(26.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.34f)),elevation=CardDefaults.cardElevation(defaultElevation=0.dp)) {
         Column(Modifier.fillMaxWidth().padding(20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(10.dp)) {
           Text("الذكر المختار",fontSize=10.sp,color=c.onSurfaceVariant,fontWeight=FontWeight.Bold)
           Text(phrases[phraseIndex],fontSize=21.sp,fontWeight=FontWeight.Bold,color=c.primary,textAlign=TextAlign.Center)
@@ -743,7 +743,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
       }
     } else {
       item {
-        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp),border=androidx.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.22f))) {
+        Card(colors=CardDefaults.cardColors(containerColor=c.surface),shape=RoundedCornerShape(18.dp),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.22f))) {
           Column(Modifier.fillMaxWidth().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Text("نطاق القسم",fontWeight=FontWeight.Bold,color=c.primary)
             if(info!=null) Text(info.scope,fontSize=14.sp,lineHeight=23.sp,color=c.onSurface)
