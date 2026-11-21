@@ -346,12 +346,12 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
         val status=if(publishedCount>0) "متاح: ${toArabic(publishedCount)} مادة" else "قيد البناء"
         Card(
           Modifier.fillMaxWidth().clickable { onOpen(item.title) },
-          shape=RoundedCornerShape(24.dp),
+          shape=RoundedCornerShape(20.dp),
           colors=CardDefaults.cardColors(containerColor=c.surface),
-          border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.24f)),
-          elevation=CardDefaults.cardElevation(defaultElevation=2.dp)
+          border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.34f)),
+          elevation=CardDefaults.cardElevation(defaultElevation=0.dp)
         ) {
-          Column(Modifier.fillMaxWidth().padding(horizontal=17.dp,vertical=16.dp),verticalArrangement=Arrangement.spacedBy(13.dp)) {
+          Column(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=15.dp),verticalArrangement=Arrangement.spacedBy(11.dp)) {
             Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
               Box(Modifier.size(48.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(16.dp)),contentAlignment=Alignment.Center) {
                 Text(sectionIcons[item.title] ?: "✦",fontSize=24.sp,fontWeight=FontWeight.Bold,color=c.secondary)
