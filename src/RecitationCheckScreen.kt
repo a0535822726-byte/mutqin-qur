@@ -254,6 +254,18 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
               OutlinedButton(onClick = { playSavedRecording(recordingFile) }, enabled = !recording && recordingFile.exists(),contentPadding=PaddingValues(horizontal=11.dp,vertical=6.dp)) {
                 Text("▶ تشغيل",fontSize=11.sp,fontWeight=FontWeight.Bold)
               }
+              TextButton(onClick = {
+                if (player != null) {
+                  try { player?.stop(); player?.release() } catch (_: Exception) {}
+                  player = null
+                }
+                recordingFile.delete()
+                prefs.removeRecitationSession(entry)
+                sessionHistory = prefs.recitationSessions()
+                status = "تم حذف الجلسة وتسجيلها من هذا الجهاز."
+              }, enabled = !recording) {
+                Text("حذف",fontSize=11.sp,color=colors.error)
+              }
             }
           }
         }
