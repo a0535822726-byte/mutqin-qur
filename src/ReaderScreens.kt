@@ -290,27 +290,31 @@ fun ReaderScreen(
   Column(
     modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)
   ) {
-    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF062A20)).padding(horizontal=23.dp,vertical=22.dp)) {
-      Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(9.dp)) {
-        Surface(onClick=onBack,shape=RoundedCornerShape(16.dp),color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.12f)) {
-          Text("‹",Modifier.padding(horizontal=14.dp,vertical=6.dp),fontSize=23.sp,color=MaterialTheme.colorScheme.onPrimary)
+    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF062A20)).padding(horizontal=17.dp,vertical=13.dp)) {
+      Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+        Surface(onClick=onBack,shape=RoundedCornerShape(13.dp),color=androidx.compose.ui.graphics.Color(0xFFE0BD72)) {
+          Text("‹",Modifier.padding(horizontal=14.dp,vertical=5.dp),fontSize=24.sp,color=androidx.compose.ui.graphics.Color(0xFF10291F),fontWeight=FontWeight.Bold)
         }
-        Column(Modifier.weight(1f),horizontalAlignment=Alignment.CenterHorizontally) {
-          Text("مُتْقِن  /  الْمُصْحَف",fontSize=9.sp,color=MaterialTheme.colorScheme.secondary,fontWeight=FontWeight.Bold,letterSpacing=1.sp)
-          Text(SURAH_NAMES[surah-1],fontSize=24.sp,color=MaterialTheme.colorScheme.onPrimary,fontWeight=FontWeight.ExtraBold)
+        Column(Modifier.weight(1f),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(2.dp)) {
+          Text("مُتْقِن  •  الْمُصْحَفُ الشَّرِيف",fontSize=9.sp,color=androidx.compose.ui.graphics.Color(0xFFE0BD72),fontWeight=FontWeight.Bold,letterSpacing=1.sp)
+          Text(SURAH_NAMES[surah-1],fontSize=22.sp,color=androidx.compose.ui.graphics.Color(0xFFFFF8E8),fontWeight=FontWeight.ExtraBold)
+          Text("سُورَةٌ مِنْ كِتَابِ الله",fontSize=9.sp,color=androidx.compose.ui.graphics.Color(0xFFCFDCD4))
         }
-        Surface(shape=RoundedCornerShape(13.dp),color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.12f),onClick={
+        Surface(shape=RoundedCornerShape(13.dp),color=if(isListening) androidx.compose.ui.graphics.Color(0xFF9D342D) else androidx.compose.ui.graphics.Color(0xFF174B3B),border=androidx.compose.foundation.BorderStroke(1.dp,androidx.compose.ui.graphics.Color(0xFFE0BD72).copy(alpha=.65f)),onClick={
           if(isListening){recognizer?.cancel();isListening=false;speechError="تم إيقاف التسميع."}
           else if(ContextCompat.checkSelfPermission(context,Manifest.permission.RECORD_AUDIO)==PackageManager.PERMISSION_GRANTED) beginRecognition()
           else permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-        }) { Text(if(isListening) "■" else "🎙",Modifier.padding(horizontal=13.dp,vertical=10.dp),fontSize=16.sp,color=if(isListening) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimary) }
-        Surface(shape=RoundedCornerShape(13.dp),color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.12f),onClick={
+        }) { Text(if(isListening) "■" else "🎙",Modifier.padding(horizontal=12.dp,vertical=10.dp),fontSize=16.sp,color=androidx.compose.ui.graphics.Color(0xFFFFF8E8)) }
+        Surface(shape=RoundedCornerShape(13.dp),color=androidx.compose.ui.graphics.Color(0xFF174B3B),border=androidx.compose.foundation.BorderStroke(1.dp,androidx.compose.ui.graphics.Color(0xFFE0BD72).copy(alpha=.65f)),onClick={
           val current=mushafPages.getOrNull(pageIndex)
           if(!current.isNullOrEmpty()){prefs.toggleBookmark(surah,current.first());bookmarkVersion++;android.widget.Toast.makeText(context,"تم حفظ موضع الصفحة",android.widget.Toast.LENGTH_SHORT).show()}
-        }) { Text("⚑",Modifier.padding(horizontal=13.dp,vertical=9.dp),fontSize=18.sp,color=MaterialTheme.colorScheme.secondary) }
+        }) { Text("⚑",Modifier.padding(horizontal=12.dp,vertical=9.dp),fontSize=18.sp,color=androidx.compose.ui.graphics.Color(0xFFE0BD72)) }
       }
-      Spacer(Modifier.height(9.dp))
-      Text("تِلَاوَةٌ • تَدَبُّرٌ • مُرَاجَعَة",Modifier.align(Alignment.CenterHorizontally),fontSize=10.sp,color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.78f),letterSpacing=1.2.sp)
+      Row(Modifier.fillMaxWidth().padding(top=11.dp),verticalAlignment=Alignment.CenterVertically) {
+        Box(Modifier.weight(1f).height(1.dp).background(androidx.compose.ui.graphics.Color(0xFFE0BD72).copy(alpha=.5f)))
+        Text("  ۞  تِلَاوَةٌ  •  تَدَبُّرٌ  •  مُرَاجَعَة  ۞  ",fontSize=9.sp,color=androidx.compose.ui.graphics.Color(0xFFE0BD72),fontWeight=FontWeight.Bold)
+        Box(Modifier.weight(1f).height(1.dp).background(androidx.compose.ui.graphics.Color(0xFFE0BD72).copy(alpha=.5f)))
+      }
     }
 
     // Reading modes are explicit and remain accessible without opening a separate screen.
