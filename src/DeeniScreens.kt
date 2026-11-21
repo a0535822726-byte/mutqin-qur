@@ -357,22 +357,23 @@ fun LearningHubScreen(onBack:()->Unit,onOpen:(String)->Unit) {
           border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.34f)),
           elevation=CardDefaults.cardElevation(defaultElevation=0.dp)
         ) {
-          Column(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=15.dp),verticalArrangement=Arrangement.spacedBy(11.dp)) {
-            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-              Box(Modifier.size(48.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(16.dp)),contentAlignment=Alignment.Center) {
-                Text(sectionIcons[item.title] ?: "✦",fontSize=24.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+          Column(Modifier.fillMaxWidth().padding(horizontal=17.dp,vertical=17.dp),verticalArrangement=Arrangement.spacedBy(13.dp)) {
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(13.dp)) {
+              Box(Modifier.size(52.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(17.dp)).border(1.dp,c.secondary.copy(alpha=.32f),RoundedCornerShape(17.dp)),contentAlignment=Alignment.Center) {
+                Text(sectionIcons[item.title] ?: "✦",fontSize=25.sp,fontWeight=FontWeight.Bold,color=c.secondary)
               }
-              Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
-                Text(item.title,fontSize=16.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
-                Text(item.subtitle,fontSize=11.sp,color=c.onSurfaceVariant,lineHeight=17.sp)
+              Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                Text(item.title,fontSize=17.sp,fontWeight=FontWeight.ExtraBold,color=c.onSurface)
+                Text(item.subtitle,fontSize=11.sp,color=c.onSurfaceVariant,lineHeight=18.sp)
               }
-              Text("‹",fontSize=24.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+              Text("‹",fontSize=26.sp,color=c.secondary,fontWeight=FontWeight.Bold)
             }
+            Box(Modifier.fillMaxWidth().height(1.dp).background(c.outlineVariant.copy(alpha=.8f)))
             Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.SpaceBetween) {
               Surface(shape=RoundedCornerShape(30.dp),color=if(publishedCount>0)c.tertiary.copy(alpha=.12f) else c.error.copy(alpha=.09f)) {
-                Text(status,Modifier.padding(horizontal=11.dp,vertical=6.dp),fontSize=10.sp,fontWeight=FontWeight.Bold,color=if(publishedCount>0)c.tertiary else c.error)
+                Text(status,Modifier.padding(horizontal=12.dp,vertical=7.dp),fontSize=10.sp,fontWeight=FontWeight.Bold,color=if(publishedCount>0)c.tertiary else c.error)
               }
-              Text("استكشف القسم",fontSize=10.sp,fontWeight=FontWeight.SemiBold,color=c.secondary)
+              Text("استكشف القسم  ←",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary)
             }
           }
         }
