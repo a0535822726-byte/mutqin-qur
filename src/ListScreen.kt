@@ -2,6 +2,7 @@ package com.mutqin.app
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+// Keep the Compose border extension explicitly imported for the UI cards.
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
