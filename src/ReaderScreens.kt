@@ -288,7 +288,7 @@ fun ReaderScreen(
   Column(
     modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)
   ) {
-    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF092E24)).padding(horizontal=18.dp,vertical=16.dp)) {
+    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF062A20)).padding(horizontal=18.dp,vertical=18.dp)) {
       Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(9.dp)) {
         Surface(onClick=onBack,shape=RoundedCornerShape(13.dp),color=MaterialTheme.colorScheme.onPrimary.copy(alpha=.12f)) {
           Text("‹",Modifier.padding(horizontal=14.dp,vertical=6.dp),fontSize=23.sp,color=MaterialTheme.colorScheme.onPrimary)
@@ -416,9 +416,9 @@ fun ReaderScreen(
       border = androidx.compose.foundation.BorderStroke(1.dp, androidx.compose.ui.graphics.Color(0xFFC6A765)),
       shadowElevation = 7.dp
     ) {
-      Column(Modifier.fillMaxSize().padding(5.dp).background(androidx.compose.ui.graphics.Color(0xFFFFFCF4)).padding(6.dp)) {
+      Column(Modifier.fillMaxSize().padding(7.dp).background(androidx.compose.ui.graphics.Color(0xFFFFFCF4)).padding(7.dp)) {
         // Double-rule page ornament gives the reader a recognizable printed-mushaf frame.
-        Column(Modifier.fillMaxSize().border(1.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83)).padding(horizontal = 12.dp, vertical = 9.dp)) {
+        Column(Modifier.fillMaxSize().border(1.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(14.dp)).padding(horizontal = 14.dp, vertical = 11.dp)) {
           Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text("الْجُزْءُ", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
             Spacer(Modifier.weight(1f))
