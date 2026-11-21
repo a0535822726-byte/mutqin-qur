@@ -164,6 +164,22 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onResum
       Text("مُتْقِن  •  عناية بالقرآن علمًا وعملًا",Modifier.fillMaxWidth().padding(top=5.dp),textAlign=TextAlign.Center,fontSize=9.sp,color=c.onSurfaceVariant)
     }
   }
+  if(section=="الاختبارات" && showQuizResult) {
+    val percent=(quizScore*100f/mutqinQuizQuestions.size.coerceAtLeast(1)).toInt()
+    AlertDialog(
+      onDismissRequest={showQuizResult=false},
+      title={Text("اكتمل الاختبار",fontWeight=FontWeight.ExtraBold)},
+      text={Column(verticalArrangement=Arrangement.spacedBy(9.dp)) {
+        Text("نتيجتك: ${toArabic(quizScore)} من ${toArabic(mutqinQuizQuestions.size)}",fontSize=17.sp,fontWeight=FontWeight.Bold,color=c.primary)
+        Text("النسبة: ${toArabic(percent)}٪",fontSize=15.sp,fontWeight=FontWeight.Bold)
+        LinearProgressIndicator(progress={percent/100f},modifier=Modifier.fillMaxWidth())
+        Text(when { percent>=90 -> "ممتاز! إتقان رائع، واصل المراجعة."; percent>=70 -> "أحسنت! بقيت نقاط قليلة لتتقنها."; percent>=50 -> "بداية جيدة؛ راجع الإجابات والمراجع."; else -> "لا بأس، أعد المحاولة بعد مراجعة الشرح." },fontSize=13.sp,lineHeight=21.sp)
+        Text("أفضل نتيجة محفوظة: ${toArabic(progressPrefs.quizBestScore())}",fontSize=11.sp,color=c.onSurfaceVariant)
+      }},
+      confirmButton={TextButton(onClick={quizIndex=0;quizSelected=null;quizScore=0;showQuizResult=false}){Text("اختبار جديد")}},
+      dismissButton={TextButton(onClick={showQuizResult=false}){Text("إغلاق")}}
+    )
+  }
 }
 @Composable
 private fun HomeTile(title:String,subtitle:String,symbol:String,modifier:Modifier,onClick:()->Unit) {
@@ -507,6 +523,7 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
   var quizIndex by remember(section) { mutableStateOf(0) }
   var quizSelected by remember(section) { mutableStateOf<Int?>(null) }
   var quizScore by remember(section) { mutableStateOf(0) }
+  var showQuizResult by remember(section) { mutableStateOf(false) }
   val query = normalizeAr(searchQuery.trim())
   val filteredTajweed = tajweedLessons.filter { lesson ->
     query.isBlank() || normalizeAr(listOf(lesson.title,lesson.objective,lesson.definition,lesson.rule,lesson.examples.joinToString(" "),lesson.practice,lesson.commonMistake,lesson.references).joinToString(" ")).contains(query)
@@ -630,11 +647,11 @@ fun LearningSectionScreen(section:String,onBack:()->Unit) {
                 Text("المرجع: ${question.reference}",fontSize=11.sp,lineHeight=17.sp,color=c.onSurfaceVariant)
               }
               Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick={quizIndex=0;quizSelected=null;quizScore=0},modifier=Modifier.weight(1f)) { Text("إعادة الاختبار") }
+                OutlinedButton(onClick={quizIndex=0;quizSelected=null;quizScore=0;showQuizResult=false},modifier=Modifier.weight(1f)) { Text("إعادة الاختبار") }
                 Button(
                   onClick={
                     if(quizIndex<mutqinQuizQuestions.lastIndex) { quizIndex++; quizSelected=null }
-                    else { progressPrefs.saveQuizResult(quizScore,mutqinQuizQuestions.size); quizIndex=0; quizSelected=null; quizScore=0 }
+                    else { progressPrefs.saveQuizResult(quizScore,mutqinQuizQuestions.size); showQuizResult=true }
                   },
                   enabled=quizSelected!=null,
                   modifier=Modifier.weight(1f)
