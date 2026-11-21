@@ -88,6 +88,9 @@ class AppPrefs(context: Context) {
     val item = listOf(surah, from, to, seconds, fileName).joinToString(":")
     p.edit().putString("recitation_sessions", (listOf(item) + recitationSessions()).take(20).joinToString(";")).apply()
   }
+  fun removeRecitationSession(entry: String) {
+    p.edit().putString("recitation_sessions", recitationSessions().filterNot { it == entry }.joinToString(";")).apply()
+  }
 
 
   fun completedLearningIds(section: String): Set<Int> = p.getStringSet("learning_done_" + section, emptySet())
