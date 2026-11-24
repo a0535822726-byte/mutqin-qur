@@ -111,9 +111,12 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onResum
         Text("إحصاءات",fontSize=10.sp,color=c.secondary,fontWeight=FontWeight.Bold)
       }
       Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-        listOf(Triple(toArabic(hadithCount),"حديث","الحديث"),Triple(toArabic(lessonCount),"درس","التجويد"),Triple(toArabic(storyCount),"قصة","القصص")).forEach { stat ->
-          Card(Modifier.weight(1f),shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant)) {
-            Column(Modifier.fillMaxWidth().padding(vertical=14.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(3.dp)) {
+        listOf(Triple(toArabic(hadithCount),"حديث","الحديث"),Triple(toArabic(lessonCount),"درس","التجويد"),Triple(toArabic(storyCount),"قصة","القصص")).forEachIndexed { index, stat ->
+          Card(Modifier.weight(1f),shape=RoundedCornerShape(topStart=22.dp,topEnd=12.dp,bottomEnd=22.dp,bottomStart=12.dp),colors=CardDefaults.cardColors(containerColor=c.surface),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.30f)),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
+            Column(Modifier.fillMaxWidth().padding(vertical=13.dp,horizontal=5.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(4.dp)) {
+              Box(Modifier.size(29.dp).background(c.primary.copy(alpha=.10f),RoundedCornerShape(10.dp)).border(1.dp,c.secondary.copy(alpha=.28f),RoundedCornerShape(10.dp)),contentAlignment=Alignment.Center) {
+                Text(listOf("◈","✦","۞")[index],fontSize=16.sp,color=c.secondary,fontWeight=FontWeight.Bold)
+              }
               Text(stat.first,fontSize=19.sp,fontWeight=FontWeight.Black,color=c.secondary)
               Text(stat.second,fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.onSurface)
               Text(stat.third,fontSize=9.sp,color=c.onSurfaceVariant)
