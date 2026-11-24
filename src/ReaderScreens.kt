@@ -469,12 +469,15 @@ fun ReaderScreen(
       Column(Modifier.fillMaxSize().padding(6.dp).background(androidx.compose.ui.graphics.Color(0xFFFFFCF4)).padding(5.dp)) {
         // Printed-page treatment: square paper edges and a fine double-rule frame.
         Column(Modifier.fillMaxSize().border(1.4.dp, androidx.compose.ui.graphics.Color(0xFFB8954B), RoundedCornerShape(2.dp)).padding(3.dp).border(1.dp, androidx.compose.ui.graphics.Color(0xFFD6BD83), RoundedCornerShape(1.dp)).padding(horizontal = 17.dp, vertical = 14.dp)) {
-          Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text("مُتْقِن", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp, fontWeight = FontWeight.Bold)
+          Row(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF174B3B),RoundedCornerShape(12.dp)).padding(horizontal=10.dp,vertical=8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Column(verticalArrangement=Arrangement.spacedBy(2.dp)) {
+              Text("مُتْقِن", color = androidx.compose.ui.graphics.Color(0xFFE0BD72), fontSize = 10.sp, fontWeight = FontWeight.ExtraBold)
+              Text("مَسَارُ الْحِفْظ", color = androidx.compose.ui.graphics.Color(0xFFD7EDE3), fontSize = 8.sp)
+            }
             Spacer(Modifier.weight(1f))
-            Text("الْمُصْحَفُ الشَّرِيف", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
+            Text("الْمُصْحَفُ الشَّرِيف", color = androidx.compose.ui.graphics.Color(0xFFFFF8E8), fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
             Spacer(Modifier.weight(1f))
-            Text("حِفْظٌ وَتَسْمِيع", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
+            Text("۞", color = androidx.compose.ui.graphics.Color(0xFFE0BD72), fontSize = 18.sp)
           }
           Row(Modifier.fillMaxWidth().padding(top = 7.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             Box(Modifier.weight(1f).height(1.dp).background(androidx.compose.ui.graphics.Color(0xFFD6BD83)))
