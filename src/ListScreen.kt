@@ -36,18 +36,18 @@ fun SurahListScreen(
   val c=MaterialTheme.colorScheme
   Column(Modifier.fillMaxSize().background(c.background).safeDrawingPadding()) {
     Row(Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=12.dp).background(c.surface,androidx.compose.foundation.shape.RoundedCornerShape(22.dp)).border(1.dp,c.secondary.copy(alpha=.28f),androidx.compose.foundation.shape.RoundedCornerShape(22.dp)).padding(horizontal=16.dp,vertical=11.dp),verticalAlignment=Alignment.CenterVertically) {
-      Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) { Text("مُتْقِن  •  الْمُصْحَف",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary); Text("المصحف الشريف",fontSize=25.sp,fontWeight=FontWeight.Black,color=c.onBackground) }
+      Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) { Text("مِسْبَارُ الْقُرْآن  •  مُتْقِن",fontSize=10.sp,fontWeight=FontWeight.Bold,color=c.secondary); Text("مسار الحفظ والتسميع",fontSize=22.sp,fontWeight=FontWeight.Black,color=c.onBackground) }
       Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(1.dp)) { Text(if(dark) "ليلي" else "نهاري",fontSize=9.sp,fontWeight=FontWeight.Bold,color=c.onSurfaceVariant); Switch(checked=dark,onCheckedChange=onDark) }
     }
     Card(Modifier.fillMaxWidth().padding(horizontal=16.dp),shape=androidx.compose.foundation.shape.RoundedCornerShape(32.dp),colors=CardDefaults.cardColors(containerColor=c.primary),border=androidx.compose.foundation.BorderStroke(1.6.dp,c.secondary.copy(alpha=.82f)),elevation=CardDefaults.cardElevation(defaultElevation=3.dp)) {
       Column(Modifier.fillMaxWidth().padding(horizontal=27.dp,vertical=29.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment=Alignment.CenterVertically) { Text("۞",fontSize=34.sp,color=c.secondary); Spacer(Modifier.weight(1f)); Text("الْقُرْآنُ الْكَرِيم",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary) }
-        Text("اقرأ بقلب حاضر",fontSize=30.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
-        Text("فهرس السور • البحث في الآيات • حفظ موضع القراءة",fontSize=12.sp,lineHeight=21.sp,color=c.onPrimary.copy(alpha=.8f))
-        if(last!=null) Surface(Modifier.fillMaxWidth().clickable { onResume(last.first,last.second,last.third) },shape=androidx.compose.foundation.shape.RoundedCornerShape(18.dp),color=c.onPrimary.copy(alpha=.09f)) { Row(Modifier.padding(15.dp),verticalAlignment=Alignment.CenterVertically) { Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) { Text("متابعة التلاوة",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary); Text("سورة ${SURAH_NAMES[last.first-1]} • الآية ${toArabic(last.second)}",fontSize=12.sp,color=c.onPrimary) }; Text("←",fontSize=23.sp,color=c.secondary) } }
+        Text("ابدأ رحلة حفظك",fontSize=30.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+        Text("اختيار السورة والمقطع • متابعة الحفظ • البحث في آيات القرآن",fontSize=12.sp,lineHeight=21.sp,color=c.onPrimary.copy(alpha=.8f))
+        if(last!=null) Surface(Modifier.fillMaxWidth().clickable { onResume(last.first,last.second,last.third) },shape=androidx.compose.foundation.shape.RoundedCornerShape(18.dp),color=c.onPrimary.copy(alpha=.09f)) { Row(Modifier.padding(15.dp),verticalAlignment=Alignment.CenterVertically) { Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) { Text("متابعة مسارك",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary); Text("سورة ${SURAH_NAMES[last.first-1]} • الآية ${toArabic(last.second)}",fontSize=12.sp,color=c.onPrimary) }; Text("←",fontSize=23.sp,color=c.secondary) } }
       }
     }
-    OutlinedTextField(value=query,onValueChange={query=it},placeholder={Text("ابحث عن سورة أو كلمة من آية",fontSize=12.sp)},leadingIcon={Text("⌕",fontSize=25.sp,color=c.secondary)},singleLine=true,shape=androidx.compose.foundation.shape.RoundedCornerShape(20.dp),colors=OutlinedTextFieldDefaults.colors(focusedBorderColor=c.secondary,unfocusedBorderColor=c.outlineVariant,focusedContainerColor=c.surface,unfocusedContainerColor=c.surface),modifier=Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=12.dp))
+    OutlinedTextField(value=query,onValueChange={query=it},placeholder={Text("ابحث عن سورة أو آية",fontSize=12.sp)},leadingIcon={Text("⌕",fontSize=25.sp,color=c.secondary)},singleLine=true,shape=androidx.compose.foundation.shape.RoundedCornerShape(20.dp),colors=OutlinedTextFieldDefaults.colors(focusedBorderColor=c.secondary,unfocusedBorderColor=c.outlineVariant,focusedContainerColor=c.surface,unfocusedContainerColor=c.surface),modifier=Modifier.fillMaxWidth().padding(horizontal=16.dp,vertical=12.dp))
     LazyColumn(contentPadding=PaddingValues(start=16.dp,end=16.dp,top=3.dp,bottom=28.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
       if(searchText.length>=2) { item {
         Surface(Modifier.fillMaxWidth().padding(vertical=5.dp),shape=androidx.compose.foundation.shape.RoundedCornerShape(17.dp),color=c.primary.copy(alpha=.08f),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.35f))) {
@@ -73,8 +73,8 @@ Text(repo.ayah(s,a),fontSize=19.sp,lineHeight=35.sp,color=c.onSurface,textAlign=
       else { item {
         Row(Modifier.fillMaxWidth().padding(top=7.dp,bottom=5.dp),verticalAlignment=Alignment.CenterVertically) {
           Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(3.dp)) {
-            Text("فهرس السور",fontSize=19.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground)
-            Text("رحلة بين سور القرآن الكريم",fontSize=10.sp,color=c.onSurfaceVariant)
+            Text("اختر سورة الحفظ",fontSize=19.sp,fontWeight=FontWeight.ExtraBold,color=c.onBackground)
+            Text("ابدأ من السورة أو الموضع الذي تريده",fontSize=10.sp,color=c.onSurfaceVariant)
           }
           Surface(shape=androidx.compose.foundation.shape.RoundedCornerShape(13.dp),color=c.primary.copy(alpha=.09f),border=androidx.compose.foundation.BorderStroke(1.dp,c.secondary.copy(alpha=.38f))) {
             Row(Modifier.padding(horizontal=12.dp,vertical=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(6.dp)) {
