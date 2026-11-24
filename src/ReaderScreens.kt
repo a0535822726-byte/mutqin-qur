@@ -300,15 +300,15 @@ fun ReaderScreen(
   Column(
     modifier = Modifier.fillMaxSize().safeDrawingPadding().background(MaterialTheme.colorScheme.background)
   ) {
-    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF062A20)).padding(horizontal=17.dp,vertical=13.dp)) {
+    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF0B5B43)).padding(horizontal=17.dp,vertical=15.dp)) {
       Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(8.dp)) {
         Surface(onClick=onBack,shape=RoundedCornerShape(13.dp),color=androidx.compose.ui.graphics.Color(0xFFE0BD72)) {
           Text("‹",Modifier.padding(horizontal=14.dp,vertical=5.dp),fontSize=24.sp,color=androidx.compose.ui.graphics.Color(0xFF10291F),fontWeight=FontWeight.Bold)
         }
         Column(Modifier.weight(1f),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(2.dp)) {
-          Text("مُتْقِن  •  الْمُصْحَفُ الشَّرِيف",fontSize=9.sp,color=androidx.compose.ui.graphics.Color(0xFFE0BD72),fontWeight=FontWeight.Bold,letterSpacing=1.sp)
-          Text(SURAH_NAMES[surah-1],fontSize=22.sp,color=androidx.compose.ui.graphics.Color(0xFFFFF8E8),fontWeight=FontWeight.ExtraBold)
-          Text("سُورَةٌ مِنْ كِتَابِ الله",fontSize=9.sp,color=androidx.compose.ui.graphics.Color(0xFFCFDCD4))
+          Text("مِسْبَارُ الْقُرْآن  •  مُتْقِن",fontSize=10.sp,color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontWeight=FontWeight.Bold,letterSpacing=1.sp)
+          Text("مسار القرآن: حفظ وتسميع",fontSize=18.sp,color=androidx.compose.ui.graphics.Color(0xFFFFF8E8),fontWeight=FontWeight.ExtraBold)
+          Text("قراءةٌ • مراجعةٌ • تثبيتٌ للحفظ",fontSize=10.sp,color=androidx.compose.ui.graphics.Color(0xFFD7EDE3))
         }
         Box {
           Surface(
@@ -355,7 +355,7 @@ fun ReaderScreen(
       }
       Row(Modifier.fillMaxWidth().padding(top=11.dp),verticalAlignment=Alignment.CenterVertically) {
         Box(Modifier.weight(1f).height(1.dp).background(androidx.compose.ui.graphics.Color(0xFFE0BD72).copy(alpha=.5f)))
-        Text("  ۞  تِلَاوَةٌ  •  تَدَبُّرٌ  •  مُرَاجَعَة  ۞  ",fontSize=9.sp,color=androidx.compose.ui.graphics.Color(0xFFE0BD72),fontWeight=FontWeight.Bold)
+        Text("  ۞  مَسَارُ الْحِفْظِ وَالتَّسْمِيع  ۞  ",fontSize=9.sp,color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontWeight=FontWeight.Bold)
         Box(Modifier.weight(1f).height(1.dp).background(androidx.compose.ui.graphics.Color(0xFFE0BD72).copy(alpha=.5f)))
       }
     }
