@@ -538,9 +538,9 @@ fun ReaderScreen(
             drawLine(color = androidx.compose.ui.graphics.Color(0xFFD6BD83), start = androidx.compose.ui.geometry.Offset(0f, 0f), end = androidx.compose.ui.geometry.Offset(this.size.width, 0f), strokeWidth = 1.dp.toPx())
           }
           Row(Modifier.fillMaxWidth().padding(top = 7.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("مُتْقِن", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontWeight = FontWeight.Bold, fontSize = 10.sp)
-            Text("مسار الحفظ", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
-            Text(toArabic(pageIndex + 1), color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontWeight = FontWeight.Bold, fontSize = 10.sp)
+            Text("مِسْبَارُ الْقُرْآن", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontWeight = FontWeight.Bold, fontSize = 10.sp)
+            Text("حفظ • مراجعة • تسميع", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
+            Text("صفحة ${toArabic(pageIndex + 1)}", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontWeight = FontWeight.Bold, fontSize = 10.sp)
           }
         }
       }
