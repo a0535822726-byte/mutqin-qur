@@ -474,11 +474,11 @@ fun ReaderScreen(
             Spacer(Modifier.weight(1f))
             Text("الْمُصْحَفُ الشَّرِيف", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
             Spacer(Modifier.weight(1f))
-            Text("تِلَاوَةٌ وَتَدَبُّر", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
+            Text("حِفْظٌ وَتَسْمِيع", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
           }
           Row(Modifier.fillMaxWidth().padding(top = 7.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             Box(Modifier.weight(1f).height(1.dp).background(androidx.compose.ui.graphics.Color(0xFFD6BD83)))
-            Text("  ۞  ", color = androidx.compose.ui.graphics.Color(0xFFB8954B), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+            Text("  ❁  مسار الحفظ  ❁  ", color = androidx.compose.ui.graphics.Color(0xFFB8954B), fontSize = 11.sp, fontWeight = FontWeight.Bold)
             Box(Modifier.weight(1f).height(1.dp).background(androidx.compose.ui.graphics.Color(0xFFD6BD83)))
           }
           Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -506,7 +506,7 @@ fun ReaderScreen(
             val visiblePageAyahs = mushafPages.getOrNull(pageIndex).orEmpty()
             if (visiblePageAyahs.isNotEmpty()) {
               Text(
-                "الآيات ${toArabic(visiblePageAyahs.first())} – ${toArabic(visiblePageAyahs.last())}",
+                "مقطع الحفظ  •  ${toArabic(visiblePageAyahs.first())} – ${toArabic(visiblePageAyahs.last())}",
                 color = androidx.compose.ui.graphics.Color(0xFF98783B),
                 fontSize = 9.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -539,7 +539,7 @@ fun ReaderScreen(
           }
           Row(Modifier.fillMaxWidth().padding(top = 7.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text("مُتْقِن", color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontWeight = FontWeight.Bold, fontSize = 10.sp)
-            Text("تصفّح صفحات المصحف", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
+            Text("مسار الحفظ", color = androidx.compose.ui.graphics.Color(0xFF98783B), fontSize = 9.sp)
             Text(toArabic(pageIndex + 1), color = androidx.compose.ui.graphics.Color(0xFF174B3B), fontWeight = FontWeight.Bold, fontSize = 10.sp)
           }
         }
