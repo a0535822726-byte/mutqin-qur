@@ -80,7 +80,7 @@ fun RangeScreen(
       Column(Modifier.fillMaxWidth().background(c.onPrimary.copy(alpha=.035f), RoundedCornerShape(22.dp)).padding(horizontal = 22.dp, vertical = 22.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
           Text("۞", fontSize = 19.sp, color = c.secondary)
-          Text("مَسَارُ الْحِفْظِ", fontSize = 11.sp, color = c.secondary, fontWeight = FontWeight.Bold)
+          Text("مَسَارُ الْحِفْظِ وَالتَّثْبِيت", fontSize = 11.sp, color = c.secondary, fontWeight = FontWeight.Bold)
           Spacer(Modifier.weight(1f))
           Surface(shape = RoundedCornerShape(30.dp), color = c.onPrimary.copy(alpha = .12f)) {
             Text("سورة ${toArabic(surah)}", modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp), fontSize = 10.sp, color = c.onPrimary)
