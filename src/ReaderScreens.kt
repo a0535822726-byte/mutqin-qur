@@ -362,27 +362,30 @@ fun ReaderScreen(
 
     // Reading modes are explicit and remain accessible without opening a separate screen.
     Row(
-      Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
-      horizontalArrangement = Arrangement.spacedBy(8.dp)
+      Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
+      horizontalArrangement = Arrangement.spacedBy(9.dp)
     ) {
       Surface(
         modifier = Modifier.weight(1f).clickable { showTools = !showTools },
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(16.dp),
         color = if (showTools) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surface,
-        border = androidx.compose.foundation.BorderStroke(1.2.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.42f))
-      ) { Text("Aa  إعدادات القراءة", modifier = Modifier.padding(vertical = 12.dp), textAlign = TextAlign.Center, color = if (showTools) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurface, fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+        border = androidx.compose.foundation.BorderStroke(1.4.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.55f)),
+        shadowElevation = if (showTools) 3.dp else 1.dp
+      ) { Column(Modifier.fillMaxWidth().padding(vertical = 11.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(3.dp)) { Text("Aa", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = if (showTools) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.secondary); Text("إعدادات القراءة", textAlign = TextAlign.Center, color = if (showTools) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurface, fontSize = 10.sp, fontWeight = FontWeight.Bold) } }
       Surface(
         modifier = Modifier.weight(1f).clickable { showTools = true; hide = !hide; revealed.clear() },
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(16.dp),
         color = if (hide) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.5f))
-      ) { Text(if (hide) "إظهار الحفظ" else "اختبار الحفظ", modifier = Modifier.padding(vertical = 11.dp), textAlign = TextAlign.Center, color = if (hide) androidx.compose.ui.graphics.Color(0xFF17251D) else androidx.compose.ui.graphics.Color(0xFFF4E8C9), fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+        border = androidx.foundation.BorderStroke(1.3.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.65f)),
+        shadowElevation = 2.dp
+      ) { Column(Modifier.fillMaxWidth().padding(vertical = 11.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(3.dp)) { Text(if (hide) "◉" else "◎", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = if (hide) androidx.compose.ui.graphics.Color(0xFF17251D) else androidx.compose.ui.graphics.Color(0xFFE0BD72)); Text(if (hide) "إظهار الحفظ" else "اختبار الحفظ", textAlign = TextAlign.Center, color = if (hide) androidx.compose.ui.graphics.Color(0xFF17251D) else androidx.compose.ui.graphics.Color(0xFFF4E8C9), fontSize = 10.sp, fontWeight = FontWeight.Bold) } }
       Surface(
         modifier = Modifier.weight(1f).clickable { showBookmarks = true },
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.primary,
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.55f))
-      ) { Text("☆  المحفوظات", modifier = Modifier.padding(vertical = 12.dp), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+        border = androidx.compose.foundation.BorderStroke(1.3.dp, MaterialTheme.colorScheme.secondary.copy(alpha=.65f)),
+        shadowElevation = 2.dp
+      ) { Column(Modifier. fillMaxWidth().padding(vertical = 11.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(3.dp)) { Text("☆", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.secondary); Text("المحفوظات", textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onPrimary, fontSize = 10.sp, fontWeight = FontWeight.Bold) } }
     }
 
     if (showTools) {
