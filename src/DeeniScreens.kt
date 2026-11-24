@@ -35,8 +35,8 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onResum
     item {
       Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
         Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(2.dp)) {
-          Text("السَّلَامُ عَلَيْكَ",fontSize=10.sp,color=c.onSurfaceVariant,fontWeight=FontWeight.SemiBold)
-          Text("مَرْحَبًا بِكَ فِي مُتْقِن",fontSize=18.sp,color=c.onBackground,fontWeight=FontWeight.Black)
+          Text("مسار الحفظ والتسميع",fontSize=10.sp,color=c.secondary,fontWeight=FontWeight.SemiBold)
+          Text("مسبار القرآن • مُتْقِن",fontSize=18.sp,color=c.onBackground,fontWeight=FontWeight.Black)
         }
         Surface(shape=RoundedCornerShape(30.dp),color=c.surface,border=androidx.compose.foundation.BorderStroke(1.dp,c.outlineVariant)) {
           Row(Modifier.padding(start=10.dp,end=4.dp),verticalAlignment=Alignment.CenterVertically) {
@@ -59,16 +59,16 @@ fun DeeniHomeScreen(dark:Boolean,onDark:(Boolean)->Unit,onQuran:()->Unit,onResum
             Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
               Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(2.dp)) {
                 Text("مُتْقِن",fontSize=31.sp,fontWeight=FontWeight.Black,color=Color(0xFFF7F1E4),letterSpacing=1.sp)
-                Text("رفيق رحلتك مع القرآن",fontSize=11.sp,color=Color(0xFFD6B56D))
+                Text("مسار القرآن: حفظ وتسميع",fontSize=11.sp,color=Color(0xFFD6B56D))
               }
               Box(Modifier.size(58.dp).border(1.dp,Color(0xFFD6B56D).copy(alpha=.7f),RoundedCornerShape(20.dp)).padding(5.dp).border(1.dp,Color(0xFFD6B56D).copy(alpha=.35f),RoundedCornerShape(16.dp)),contentAlignment=Alignment.Center) {
                 Text("۞",fontSize=35.sp,color=Color(0xFFE5C77E))
               }
             }
             Box(Modifier.fillMaxWidth().height(1.dp).background(Color(0xFFD6B56D).copy(alpha=.45f)))
-            Text("وَرْدُكَ يَبْدَأُ مِنْ هُنَا",fontSize=10.sp,color=Color(0xFFE5C77E),fontWeight=FontWeight.Bold,letterSpacing=1.4.sp)
-            Text("اجعل للقرآن\nنصيبًا من يومك.",fontSize=30.sp,lineHeight=39.sp,fontWeight=FontWeight.ExtraBold,color=Color(0xFFFFFCF5))
-            Text("مصحف للقراءة، ومراجعة للتسميع، ومكتبة تعينك على التعلّم.",fontSize=12.sp,lineHeight=21.sp,color=Color(0xFFE6EDE7).copy(alpha=.85f))
+            Text("مَسَارُ الْحِفْظِ وَالتَّسْمِيع",fontSize=10.sp,color=Color(0xFFE5C77E),fontWeight=FontWeight.Bold,letterSpacing=1.4.sp)
+            Text("ابدأ مسارك\nفي حفظ القرآن.",fontSize=30.sp,lineHeight=39.sp,fontWeight=FontWeight.ExtraBold,color=Color(0xFFFFFCF5))
+            Text("قراءة منظمة، وتثبيت للحفظ، وجلسات تسميع ومراجعة في تجربة واحدة.",fontSize=12.sp,lineHeight=21.sp,color=Color(0xFFE6EDE7).copy(alpha=.85f))
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)) {
               Button(onClick=onQuran,modifier=Modifier.weight(1.15f).height(52.dp),shape=RoundedCornerShape(15.dp),colors=ButtonDefaults.buttonColors(containerColor=Color(0xFFE0BD72),contentColor=Color(0xFF10291F))) {
                 Text("افتح المصحف  ←",fontWeight=FontWeight.ExtraBold,fontSize=12.sp)
