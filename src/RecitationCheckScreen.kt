@@ -147,13 +147,13 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
 
   val colors = MaterialTheme.colorScheme
   Column(Modifier.fillMaxSize().background(colors.background).safeDrawingPadding().verticalScroll(rememberScrollState())) {
-    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF062A20)).border(1.dp,androidx.compose.ui.graphics.Color(0xFFB8954B).copy(alpha=.55f),RoundedCornerShape(bottomStart=30.dp,bottomEnd=30.dp)).padding(horizontal=25.dp,vertical=28.dp)) {
+    Column(Modifier.fillMaxWidth().background(androidx.compose.ui.graphics.Color(0xFF0B5B43)).border(1.dp,androidx.compose.ui.graphics.Color(0xFFFFD98A).copy(alpha=.65f),RoundedCornerShape(bottomStart=30.dp,bottomEnd=30.dp)).padding(horizontal=22.dp,vertical=24.dp)) {
       Row(verticalAlignment=Alignment.CenterVertically) {
         Surface(onClick=onBack,shape=CircleShape,color=colors.onPrimary.copy(alpha=.12f)) { Text("‹",Modifier.padding(horizontal=15.dp,vertical=7.dp),fontSize=24.sp,color=colors.onPrimary) }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
-          Text("مُتْقِن  /  القرآن الكريم",fontSize=10.sp,color=colors.secondary,fontWeight=FontWeight.Bold)
-          Text("التسميع والمراجعة",fontSize=25.sp,color=colors.onPrimary,fontWeight=FontWeight.ExtraBold)
+          Text("مِسْبَارُ الْقُرْآن  •  مُتْقِن",fontSize=10.sp,color=androidx.compose.ui.graphics.Color(0xFFFFD98A),fontWeight=FontWeight.Bold)
+          Text("مسار الحفظ والتسميع",fontSize=23.sp,color=colors.onPrimary,fontWeight=FontWeight.ExtraBold)
         }
         Text("◉",fontSize=30.sp,color=colors.secondary)
       }
@@ -171,7 +171,7 @@ fun RecitationCheckScreen(repo: QuranRepository, onBack: () -> Unit) {
     Card(shape = RoundedCornerShape(27.dp), colors = CardDefaults.cardColors(containerColor = colors.surface), border=androidx.compose.foundation.BorderStroke(1.25.dp,colors.secondary.copy(alpha=.66f)), elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
       Column(Modifier.fillMaxWidth().padding(horizontal=19.dp,vertical=20.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
         Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
-          Text("موضع المراجعة", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp,color=colors.primary)
+          Text("مقطع الحفظ", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp,color=colors.primary)
           Spacer(Modifier.weight(1f))
           Text("١",fontSize=11.sp,fontWeight=FontWeight.Bold,color=colors.secondary)
         }
