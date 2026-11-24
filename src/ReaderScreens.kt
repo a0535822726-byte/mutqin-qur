@@ -66,8 +66,8 @@ fun RangeScreen(
       }
       Spacer(Modifier.weight(1f))
       Column(horizontalAlignment = Alignment.End) {
-        Text("مُتْقِن  •  المصحف", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = c.secondary)
-        Text("إعداد القراءة", fontSize = 15.sp, fontWeight = FontWeight.ExtraBold, color = c.onSurface)
+        Text("مِسْبَارُ الْقُرْآن  •  مُتْقِن", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = c.secondary)
+        Text("تحديد مقطع الحفظ", fontSize = 15.sp, fontWeight = FontWeight.ExtraBold, color = c.onSurface)
       }
     }
     Card(
@@ -80,7 +80,7 @@ fun RangeScreen(
       Column(Modifier.fillMaxWidth().background(c.onPrimary.copy(alpha=.035f), RoundedCornerShape(22.dp)).padding(horizontal = 22.dp, vertical = 22.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
           Text("۞", fontSize = 19.sp, color = c.secondary)
-          Text("وَرْدُكَ الْقُرْآنِيّ", fontSize = 11.sp, color = c.secondary, fontWeight = FontWeight.Bold)
+          Text("مَسَارُ الْحِفْظِ", fontSize = 11.sp, color = c.secondary, fontWeight = FontWeight.Bold)
           Spacer(Modifier.weight(1f))
           Surface(shape = RoundedCornerShape(30.dp), color = c.onPrimary.copy(alpha = .12f)) {
             Text("سورة ${toArabic(surah)}", modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp), fontSize = 10.sp, color = c.onPrimary)
@@ -89,7 +89,7 @@ fun RangeScreen(
         Text(SURAH_NAMES[surah - 1], fontSize = 34.sp, fontWeight = FontWeight.ExtraBold, color = c.onPrimary)
         Text("${toArabic(count)} آية  •  اختر موضع البداية والنهاية", fontSize = 12.sp, color = c.onPrimary.copy(alpha=.82f))
         Divider(color = c.secondary.copy(alpha=.55f), thickness = 1.dp)
-        Text("اجعل قراءتك على مهل، واختر المقطع المناسب لجلسة اليوم", fontSize = 12.sp, color = c.onPrimary.copy(alpha=.92f))
+        Text("حدّد الآيات التي تريد تثبيتها في جلسة اليوم", fontSize = 12.sp, color = c.onPrimary.copy(alpha=.92f))
       }
     }
     Card(
