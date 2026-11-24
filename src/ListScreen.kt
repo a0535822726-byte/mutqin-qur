@@ -41,8 +41,15 @@ fun SurahListScreen(
     }
     Card(Modifier.fillMaxWidth().padding(horizontal=16.dp),shape=androidx.compose.foundation.shape.RoundedCornerShape(32.dp),colors=CardDefaults.cardColors(containerColor=c.primary),border=androidx.compose.foundation.BorderStroke(1.6.dp,c.secondary.copy(alpha=.82f)),elevation=CardDefaults.cardElevation(defaultElevation=3.dp)) {
       Column(Modifier.fillMaxWidth().padding(horizontal=27.dp,vertical=29.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
-        Row(verticalAlignment=Alignment.CenterVertically) { Text("۞",fontSize=34.sp,color=c.secondary); Spacer(Modifier.weight(1f)); Text("الْقُرْآنُ الْكَرِيم",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary) }
+        Row(verticalAlignment=Alignment.CenterVertically) { 
+          Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) { 
+            Text("۞  الْقُرْآنُ الْكَرِيم",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary)
+            Text("وَرْدُكَ وَمَسَارُكَ",fontSize=10.sp,color=c.onPrimary.copy(alpha=.65f),fontWeight=FontWeight.SemiBold)
+          }
+          Box(Modifier.size(60.dp).border(1.dp,c.secondary.copy(alpha=.65f),androidx.compose.foundation.shape.RoundedCornerShape(19.dp)).padding(5.dp).border(1.dp,c.secondary.copy(alpha=.3f),androidx.compose.foundation.shape.RoundedCornerShape(15.dp)),contentAlignment=Alignment.Center) { Text("۞",fontSize=34.sp,color=c.secondary) }
+        }
         Text("ابدأ رحلة حفظك",fontSize=30.sp,fontWeight=FontWeight.ExtraBold,color=c.onPrimary)
+        Box(Modifier.fillMaxWidth().height(1.dp).background(c.secondary.copy(alpha=.35f)))
         Text("اختيار السورة والمقطع • متابعة الحفظ • البحث في آيات القرآن",fontSize=12.sp,lineHeight=21.sp,color=c.onPrimary.copy(alpha=.8f))
         if(last!=null) Surface(Modifier.fillMaxWidth().clickable { onResume(last.first,last.second,last.third) },shape=androidx.compose.foundation.shape.RoundedCornerShape(18.dp),color=c.onPrimary.copy(alpha=.09f)) { Row(Modifier.padding(15.dp),verticalAlignment=Alignment.CenterVertically) { Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) { Text("متابعة مسارك",fontSize=11.sp,fontWeight=FontWeight.Bold,color=c.secondary); Text("سورة ${SURAH_NAMES[last.first-1]} • الآية ${toArabic(last.second)}",fontSize=12.sp,color=c.onPrimary) }; Text("←",fontSize=23.sp,color=c.secondary) } }
       }
